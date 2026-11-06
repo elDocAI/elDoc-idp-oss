@@ -1,0 +1,707 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:faces="jakarta.faces"
+                xmlns:pt="jakarta.faces.passthrough"
+                xmlns:p="primefaces"
+                xmlns:o="omnifaces">
+
+    <p:importConstants type="ai.eldoc.model.reco.RecoForm" />
+
+    <!-- Column 1 -->
+    <div class="col-12 xl:col-5">
+        <div class="grid">
+
+            <div faces:id="frdFields" class="col-12">
+
+                <div class="grid">
+
+                    <div class="col-12 md:col-4 lg:col-3">
+                        <p:outputLabel value="#{labels['pRecoForm.name']}" for="formName"/>
+                    </div>
+                    <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                        <p:inputText id="formName" value="#{recoFormController.recoForm.name}" label="#{labels['pRecoForm.name']}"
+                                     autocomplete="off" disabled="#{recoFormController.modeRead}" required="true" converter="stringTrimConverter"/>
+                    </div>
+
+                    <div class="col-12 md:col-4 lg:col-3" faces:rendered="#{recoFormController.classificationAvailable}">
+                        <p:outputLabel value="#{labels['pRecoForm.description']}" for="formDesc"/>
+                    </div>
+                    <div class="col-3 md:col-8 lg:col-9 p-fluid" faces:rendered="#{recoFormController.classificationAvailable}">
+                        <p:inputTextarea id="formDesc" value="#{recoFormController.recoForm.description}" label="#{labels['pRecoForm.description']}" autoResize="true" rows="1"
+                                         maxlength="1000" style="max-height: 150px;" disabled="#{recoFormController.modeRead}" converter="stringTrimConverter"/>
+                        <h:outputText id="formDescNote" value="#{labels['pRecoForm.description.hint']}" rendered="#{recoFormController.modeEdit}" class="muted"/>
+                    </div>
+
+                    <div class="col-12 md:col-4 lg:col-3">
+                        <p:outputLabel value="#{labels['recoForm.type']}" for="formType"/>
+                    </div>
+                    <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                        <p:selectOneMenu id="formType" value="#{recoFormController.recoForm.type}" label="#{labels['recoForm.type']}" disabled="#{recoFormController.modeRead}" widgetVar="formTypeWV">
+                            <f:selectItems value="#{recoFormController.recoFormTypeSI}"/>
+                            <p:ajax event="change" process="@form" update=":f1:frdFields :f1:layoutSettingsArea :f1:fieldSettingsArea"/>
+                            <o:skipValidators/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <ui:fragment rendered="#{recoFormController.recoForm.type eq RecoForm.TYPE_AIBASED}">
+                        <div class="col-12 md:col-4 lg:col-3">
+                            <p:outputLabel value="#{labels['pRecoForm.extractionModel']}" for="formAiExtrMdl"/>
+                        </div>
+                        <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                            <p:selectOneMenu id="formAiExtrMdl" value="#{recoFormController.recoForm.extractionModel}" disabled="#{recoFormController.modeRead}">
+                                <f:selectItems value="#{recoFormController.aiExtractionModelSI}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </ui:fragment>
+
+                    <div class="col-12 md:col-4 lg:col-3">
+                        <p:outputLabel value="#{labels['pRecoForm.langs']}" for="langs"/>
+                    </div>
+                    <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                        <p:autoComplete id="langs" value="#{recoFormController.recoForm.langs}" multiple="true" required="true" selectLimit="3" autoSelection="true"
+                                        completeMethod="#{ocrLangController.completeLangCode}" forceSelection="true"
+                                        var="ocrLang" itemValue="#{ocrLang}" itemLabel="#{ocrLangController.getOcrLangUiLabelByCode(ocrLang)}"
+                                        label="#{labels['pRecoForm.langs']}" disabled="#{recoFormController.modeRead}" cache="true" dropdown="true" maxResults="15" moreText="...">
+                            <f:attribute name="collectionType" value="java.util.ArrayList"/>
+                        </p:autoComplete>
+                    </div>
+
+                    <ui:fragment rendered="#{recoFormController.recoForm.type ne RecoForm.TYPE_AIBASED}">
+                        <div class="col-12 md:col-4 lg:col-3">
+                            <p:outputLabel value="#{labels['pRecoForm.keywords']}" title="#{labels['pRecoForm.keywords.title']}" for="kwrds"/>
+                        </div>
+                        <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                            <p:chips id="kwrds" value="#{recoFormController.recoForm.keywords}" disabled="#{recoFormController.modeRead}">
+                                <f:attribute name="collectionType" value="java.util.ArrayList"/>
+                            </p:chips>
+                        </div>
+                    </ui:fragment>
+
+                    <div class="col-12 md:col-4 lg:col-3">
+                        <p:outputLabel value="#{labels['general.tags']}" for="tags"/>
+                    </div>
+                    <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                        <p:autoComplete id="tags" value="#{recoFormController.recoForm.tags}" multiple="true" selectLimit="5" unique="true" dynamic="true"
+                                        completeMethod="#{recoFormController.completeTags}" cache="true" dropdown="true" maxResults="15" moreText="..."
+                                        label="#{labels['general.tags']}" disabled="#{recoFormController.modeRead}"/>
+                        <h:outputText id="tagsCssn" value="#{labels['general.tags.casesensitive']}" rendered="#{recoFormController.modeEdit}" class="muted"/>
+                    </div>
+
+                    <div class="col-12 md:col-4 lg:col-3" faces:rendered="#{recoFormController.recoForm.type eq RecoForm.TYPE_AIBASED}">
+                        <p:outputLabel value="#{labels['pRecoForm.extractionContext']}" for="formAiExtrCtx"/>
+                    </div>
+                    <div class="col-3 md:col-8 lg:col-9 p-fluid" faces:rendered="#{recoFormController.recoForm.type eq RecoForm.TYPE_AIBASED}">
+                        <p:inputTextarea id="formAiExtrCtx" value="#{recoFormController.recoForm.extractionContext}" label="#{labels['pRecoForm.extractionContext']}" autoResize="true" rows="1"
+                                         maxlength="3000" style="max-height: 150px;" disabled="#{recoFormController.modeRead}" converter="stringTrimConverter"/>
+                        <h:outputText id="extrCtxNote" value="#{labels['pRecoForm.extractionContext.hint']}" rendered="#{recoFormController.modeEdit}" class="muted"/>
+                    </div>
+
+                </div>
+            </div>
+
+            <div faces:id="layoutSettingsArea" class="col-12">
+
+                <p:inputText id="coords" value="#{recoFormController.recoForm}" widgetVar="coordsWV"
+                             rendered="#{not empty recoFormController.recoForm.pages}" readonly="true">
+                    <f:converter converterId="recoFormConverter"/>
+                    <f:attribute name="type" value="hidden"/>
+                </p:inputText>
+
+                <p:dataTable id="fieldsDT" value="#{recoFormController.allFieldsList}" var="rowData" rowIndexVar="rowIndex"
+                             reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" widgetVar="fieldsDTWV">
+
+                    <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                    <f:facet name="header">
+                        #{labels['pRecoForm.layoutSettings']}
+                    </f:facet>
+
+                    <p:column headerText="#{labels['recoForm.recoFieldTable.fieldConfTypeCol']}">
+                        <h:outputText value="#{rowIndex+1}: #{rowData.name} (#{rowData.confidenceThreshold}) [#{rowData.type}]"/>
+                    </p:column>
+
+                    <p:column headerText="#{labels['general.tags']}">
+                        <h:outputText value="#{rowData.tags}" converter="stringToSetConverter"/>
+                    </p:column>
+
+                    <p:column headerText="#{labels['general.actions']}" width="90">
+                        <div class="buttons-left">
+                            <p:commandButton id="btnFldEdit" action="#{recoFormController.btnEditField(rowData)}" title="#{labels['general.btn.edit']}"
+                                             process="fieldsDT :f1:fieldSettingsArea" update=":f1:layoutSettingsArea :f1:fieldSettingsArea"
+                                             pt:data-page-id="#{recoFormController.getPageIdxByField(rowData)}" pt:data-field-id="#{recoFormController.getFieldIdxOnPage(rowData)}"
+                                             disabled="#{recoFormController.modeRead or !recoFormController.isFieldAllowedForEdit(rowData)}"
+                                             icon="fa-regular fa-fw fa-pen-to-square" class="p-button-secondary p-button-outlined" widgetVar="btnFldEditWV_#{rowIndex}"/>
+                            <p:commandButton id="btnFldRemove" action="#{recoFormController.btnRemoveField(rowData)}" title="#{labels['general.btn.delete']}"
+                                             process="fieldsDT" update="f1:layoutSettingsArea :f1:fieldSettingsArea"
+                                             disabled="#{recoFormController.modeRead}" widgetVar="btnFldRemoveWV_#{rowIndex}"
+                                             pt:data-page-id="#{recoFormController.getPageIdxByField(rowData)}" pt:data-field-id="#{recoFormController.getFieldIdxOnPage(rowData)}"
+                                             icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined"/>
+                        </div>
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <div class="buttons-right">
+                            <p:commandButton id="btnFldInit" action="#{recoFormController.btnInitFields}" value="#{labels['ccFormBuilder.btn.initFields']}"
+                                             process=":f1:layoutSettingsArea :f1:fieldSettingsArea" update=":f1:layoutSettingsArea :f1:fieldSettingsArea :f1:docPreviewArea"
+                                             rendered="#{recoFormController.modeEdit and recoFormController.fieldInitAvailable}"
+                                             disabled="#{empty recoFormController.recoForm.sourceFile}"
+                                             icon="fa-solid fa-fw fa-wand-magic-sparkles" class="p-button-secondary p-button-outlined"/>
+                            <p:commandButton id="btnFldAdd" action="#{recoFormController.createField}" value="#{labels['ccFormBuilder.btn.addField']}"
+                                             process=":f1:layoutSettingsArea :f1:fieldSettingsArea" update=":f1:layoutSettingsArea :f1:fieldSettingsArea"
+                                             rendered="#{recoFormController.modeEdit}" disabled="#{empty recoFormController.recoForm.sourceFile}"
+                                             icon="fa-solid fa-fw fa-plus" class="p-button-secondary p-button-outlined" widgetVar="btnFldAddWV"/>
+                        </div>
+                    </f:facet>
+
+                </p:dataTable>
+
+            </div>
+
+
+            <!-- Field Settings Edit Panel -->
+            <div faces:id="fieldSettingsArea" class="col-12">
+                <p:panel header="#{labels['recoField.properties']}" rendered="#{not empty recoFormController.recoField}">
+
+                    <p:inputText id="fieldCoords" value="#{recoFormController.recoField}" widgetVar="fieldCoordsWV">
+                        <f:converter converterId="recoFieldCoordsConverter"/>
+                        <f:attribute name="type" value="hidden"/>
+                    </p:inputText>
+
+                    <!-- Field Name, Tags and Conf. threshold -->
+                    <div class="grid">
+
+                        <div class="col-4">
+                            <div class="grid">
+                                <div class="col-12">
+                                    <p:outputLabel value="#{labels['recoField.name']}" for="fieldName"/>
+                                </div>
+                                <div class="col-12 p-fluid">
+                                    <p:inputText id="fieldName" value="#{recoFormController.recoField.name}" required="true" autocomplete="off" converter="stringTrimConverter"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="grid">
+                                <div class="col-12">
+                                    <p:outputLabel value="#{labels['general.tags']}" for="fieldTags"/>
+                                </div>
+                                <div class="col-12 p-fluid">
+                                    <p:inputText id="fieldTags" value="#{recoFormController.recoField.tags}" converter="stringToSetConverter" autocomplete="off"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4" faces:rendered="#{not recoFormController.recoField.typeTable}">
+                            <div class="grid">
+                                <div class="col-12">
+                                    <p:outputLabel value="#{labels['recoField.confThresh']}" for="confThresh"/>
+                                </div>
+                                <div class="col-12 p-fluid">
+                                    <p:inputNumber id="confThresh" value="#{recoFormController.recoField.confidenceThreshold}" minValue="0" maxValue="100" decimalPlaces="0" autocomplete="off"/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Field type settings -->
+                    <div class="grid">
+
+                        <!-- Field type -->
+                        <div class="col-4"
+                             faces:rendered="#{(recoFormController.recoForm.type eq RecoForm.TYPE_AIBASED) or RecoForm.AUTO_GENERATED_FORMS.contains(recoFormController.recoForm.type)}">
+                            <div class="grid">
+                                <div class="col-12">
+                                    <p:outputLabel for="type" value="#{labels['recoField.type']}"/>
+                                </div>
+                                <div class="col-12 p-fluid">
+                                    <p:selectOneMenu id="type" value="#{recoFormController.recoField.type}" disabled="#{RecoForm.AUTO_GENERATED_FORMS.contains(recoFormController.recoForm.type) and recoFormController.recoField.prop.auto}"
+                                                     widgetVar="fieldTypeWV">
+                                        <p:ajax event="change" process="layoutSettingsArea fieldSettingsArea" update="layoutSettingsArea fieldSettingsArea"/>
+                                        <f:selectItems value="#{recoFormController.fieldTypesSI}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Field description -->
+                        <div class="col-12" faces:rendered="#{recoFormController.recoForm.type eq RecoForm.TYPE_AIBASED}">
+                            <div class="grid">
+                                <div class="col-12">
+                                    <p:outputLabel for="aiDesc" value="#{labels['recoField.prop.aiDesc']}"/>
+                                </div>
+                                <div class="col-12 p-fluid">
+                                    <p:inputTextarea id="aiDesc" value="#{recoFormController.recoField.prop.aiDescription}" autoResize="true" rows="1" maxlength="1000" style="max-height: 150px;" converter="stringTrimConverter"/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Per field type specific settings -->
+                    <div class="grid">
+
+                        <!-- Text type field specific settings -->
+                        <ui:fragment rendered="#{recoFormController.recoField.typeText or recoFormController.recoField.typeTextExtendable}">
+
+                            <div class="col-12">
+                                <h3 class="area-title" style="margin-top: 10px;">#{labels['recoFormUI.recoField.settings.text']}</h3>
+                            </div>
+
+                            <div class="col-12">
+                                <p:selectBooleanCheckbox id="useRegex" value="#{recoFormController.recoField.textProp.useRegex}"
+                                                         label="#{labels['recoField.textProp.useRegex']}"
+                                                         itemLabel="#{labels['recoField.textProp.useRegex']}">
+                                    <p:ajax event="change" process="@this regexInptArea" update="regexInptArea"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+                            <div class="col-12 p-fluid">
+                                <div faces:id="regexInptArea" class="p-inputgroup">
+                                    <p:inputTextarea id="regex" value="#{recoFormController.recoField.textProp.regex}" autoResize="true" rows="1" style="max-height: 200px;"
+                                                     disabled="#{not recoFormController.recoField.textProp.useRegex}" converter="stringTrimConverter"/>
+                                    <p:inputText id="btpErrCnt" value="#{recoFormController.recoField.textProp.regexBitapMistakesCount}"
+                                                 label="#{labels['recoField.textProp.txtRegexBtpMstCnt']}" title="#{labels['recoField.textProp.txtRegexBtpMstCnt.title']}"
+                                                 converter="jakarta.faces.Integer" style="width:50px; text-align: center;" maxlength="2" autocomplete="off"
+                                                 disabled="#{not recoFormController.recoField.textProp.useRegex}" rendered="#{recoFormController.recoField.textProp.regexType == 1}"/>
+                                    <p:selectOneMenu id="regexType" value="#{recoFormController.recoField.textProp.regexType}"
+                                                     disabled="#{not recoFormController.recoField.textProp.useRegex}"
+                                                     style="width: 100px;">
+                                        <f:selectItems value="#{recoFormController.regexTypeSI}"/>
+                                        <p:ajax event="change" process="@this" update="regexInptArea"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+
+                        </ui:fragment>
+
+                        <!-- Table type field specific settings -->
+                        <ui:fragment rendered="#{recoFormController.recoField.typeTable}">
+
+                            <div class="col-12">
+                                <h3 class="area-title" style="margin-top: 10px;">#{labels['recoFormUI.recoField.settings.table']}</h3>
+                            </div>
+
+
+                            <div class="col-12" faces:rendered="#{recoFormController.recoForm.type ne RecoForm.TYPE_AIBASED}">
+                                <div class="grid">
+                                    <div class="col-12">
+                                        <p:selectBooleanCheckbox id="headerRepeated" value="#{recoFormController.recoField.tableProp.headerRepeated}" class="mr-1"/>
+                                        <p:outputLabel value="#{labels['recoField.tableProp.headerRepeated']}" for="headerRepeated"/>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <p:dataTable id="tableCols" value="#{recoFormController.recoField.columns}" var="rowData" rowIndexVar="rowIndex" rows="30"
+                                             reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}"
+                                             scrollable="true" scrollHeight="500" widgetVar="tableColsWV">
+
+                                    <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                                    <p:column headerText="# / #{labels['recoFormUI.recoField.column.name']}" width="180" class="p-fluid">
+                                        <div class="p-inputgroup">
+                                            <h:outputText value="#{rowIndex+1}" class="p-inputgroup-addon"/>
+                                            <p:inputText value="#{rowData.name}" converter="stringTrimConverter"/>
+                                        </div>
+                                        <div style="padding: 5px 7px;">
+                                            <p:selectBooleanCheckbox id="ignored" value="#{rowData.prop.notIgnored}"
+                                                                     itemLabel="#{labels['recoFormUI.recoField.column.enabled']}"
+                                                                     label="#{labels['recoFormUI.recoField.column.enabled']}" widgetVar="colIgnoredWV_#{rowIndex}"/>
+                                        </div>
+                                        <div style="padding: 5px 7px;">
+                                            <p:selectBooleanCheckbox id="colRequired" value="#{rowData.required}"
+                                                                     label="#{labels['recoField.required']}" itemLabel="#{labels['recoField.required']}"
+                                                                     title="#{labels['recoField.required.title.column']}" disabled="#{rowData.prop.ignored}" widgetVar="colRequiredWV_#{rowIndex}"/>
+                                        </div>
+                                    </p:column>
+
+                                    <p:column headerText="#{labels['recoFormUI.recoField.column.properties']}" class="p-fluid">
+                                        <p:inputText id="colName" value="#{rowData.tags}" placeholder="#{labels['general.tags']}" converter="stringToSetConverter" disabled="#{rowData.prop.ignored}"/>
+                                        <p:inputTextarea id="colAiDesc" value="#{rowData.prop.aiDescription}" placeholder="#{labels['recoField.prop.aiDesc']}" autoResize="true" rows="1" maxlength="1000" style="max-height: 150px;"
+                                                         converter="stringTrimConverter" rendered="#{recoFormController.recoForm.type eq RecoForm.TYPE_AIBASED}"/>
+
+                                        <p:selectOneMenu id="colType" value="#{rowData.type}" rendered="#{recoFormController.recoForm.type ne RecoForm.TYPE_AIBASED}">
+                                            <f:selectItems value="#{recoFormController.cellTypesSI}"/>
+                                        </p:selectOneMenu>
+
+                                        <div class="p-inputgroup">
+                                            <span class="p-inputgroup-addon-checkbox">
+                                                <p:selectBooleanCheckbox id="useRegex" value="#{rowData.textProp.useRegex}"
+                                                                         disabled="#{rowData.prop.ignored}">
+                                                    <p:ajax event="change" process="@this regex" update="regex"/>
+                                                </p:selectBooleanCheckbox>
+                                            </span>
+                                            <p:inputText id="regex" value="#{rowData.textProp.regex}" converter="stringTrimConverter" placeholder="#{labels['recoField.textProp.regex']}"
+                                                         disabled="#{not rowData.textProp.useRegex or rowData.prop.ignored}"/>
+                                        </div>
+
+                                        <div class="grid">
+                                            <div class="col-6">
+                                                <p:outputLabel value="#{labels['recoField.confThresh']}" for="confThresh"/>
+                                            </div>
+                                            <div class="col-6 p-fluid">
+                                                <p:inputText id="confThresh" value="#{rowData.confidenceThreshold}" converter="jakarta.faces.Integer" autocomplete="off" disabled="#{rowData.prop.ignored}"/>
+                                            </div>
+                                        </div>
+                                    </p:column>
+
+                                    <p:column headerText="#{labels['general.actions']}" width="50">
+                                        <div class="buttons-center">
+                                            <p:commandButton id="btnClmnEdit" title="#{labels['general.btn.edit']}" process="@this" update="@none"
+                                                             pt:data-page-id="#{recoFormController.getPageIdxByField(recoFormController.recoField)}" pt:data-field-id="#{recoFormController.getFieldIdxOnPage(recoFormController.recoField)}"
+                                                             pt:data-row-id="0" pt:data-col-id="#{rowIndex}" disabled="#{not recoFormController.isTableCollsAllowedForEdit(recoFormController.recoField)}"
+                                                             icon="fa-regular fa-fw fa-pen-to-square" class="p-button-secondary p-button-outlined" style="margin-right: 0;" widgetVar="btnClmnEditWV_#{rowIndex}"/>
+                                            <p:commandButton id="btnClmnRemove" action="#{recoFormController.btnRemoveColumn(rowData)}" title="#{labels['general.btn.delete']}" process="tableCols" update="tableCols"
+                                                             disabled="#{not recoFormController.isTableCollsAllowedForEdit(recoFormController.recoField)}"
+                                                             icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined" widgetVar="btnClnRemoveWV_#{rowIndex}"/>
+                                        </div>
+                                    </p:column>
+
+                                    <f:facet name="footer">
+                                        <div class="buttons-right">
+                                            <p:commandButton id="btnClmnAdd" action="#{recoFormController.btnAddColumn()}" title="#{labels['recoFormUI.column.btnAdd.title']}" process="tableCols" update="tableCols"
+                                                             disabled="#{recoFormController.modeRead || !recoFormController.isTableCollsAllowedForEdit(recoFormController.recoField)}" class="p-button-secondary p-button-outlined"
+                                                             icon="fa-solid fa-fw fa-plus" widgetVar="btnClmnAddWV"/>
+                                        </div>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+
+                        </ui:fragment>
+
+
+                        <!-- OMR type field specific settings -->
+                        <ui:fragment rendered="#{recoFormController.recoField.typeOmr}">
+
+                            <div class="col-12">
+                                <h3 class="area-title" style="margin-top: 10px;">#{labels['recoFormUI.recoField.settings.omr']}</h3>
+                            </div>
+
+                            <div class="col-12">
+                                <p:dataTable id="opMarks" value="#{recoFormController.recoField.opMarks}" var="rowData" rowIndexVar="rowIndex" rows="30"
+                                             reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}"
+                                             scrollable="true" scrollHeight="250" widgetVar="opMarksWV">
+
+                                    <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                                    <p:column headerText="#" width="10">
+                                        <h:outputText value="#{rowIndex+1}"/>
+                                    </p:column>
+
+                                    <p:column headerText="#{labels['recoField.opMark.name']}" class="p-fluid">
+                                        <p:inputText value="#{rowData.name}" converter="stringTrimConverter"/>
+                                    </p:column>
+
+                                    <p:column headerText="#{labels['general.tags']}" class="p-fluid">
+                                        <p:inputText value="#{rowData.tags}" converter="stringToSetConverter"/>
+                                    </p:column>
+
+                                    <p:column headerText="#{labels['general.actions']}" width="90">
+                                        <div class="buttons-center">
+                                            <p:commandButton id="btnMarkRemove" action="#{recoFormController.btnRemoveOpticalMark(rowData)}" title="#{labels['general.btn.delete']}"
+                                                             process="opMarks" update="opMarks" icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined" widgetVar="btnMarkRemoveWV_#{rowIndex}"/>
+                                        </div>
+                                    </p:column>
+
+                                    <f:facet name="footer">
+                                        <div class="buttons-right">
+                                            <p:commandButton id="btnDetect" action="#{recoFormController.initField()}" title="#{labels['idp.btn.omrDetectMarks']}"
+                                                             process=":f1:fieldCoords opMarks" update=":f1:fieldCoords opMarks"
+                                                             disabled="#{recoFormController.modeRead}" icon="fa-solid fa-fw fa-arrows-rotate" class="p-button-secondary p-button-outlined" widgetVar="btnDetectOpMarksWV"/>
+                                        </div>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+
+                        </ui:fragment>
+
+                    </div>
+
+
+                    <!-- Misc settings -->
+                    <div class="grid">
+                        <div class="col-12">
+                            <h3 class="area-title" style="margin-top: 10px;">#{labels['recoFormUI.recoField.settings.misc']}</h3>
+                        </div>
+
+                        <div class="col-12">
+                            <p:selectBooleanCheckbox id="fldRequired" value="#{recoFormController.recoField.required}"
+                                                     label="#{labels['recoField.required']}" itemLabel="#{labels['recoField.required']}"
+                                                     title="#{labels['recoField.required.title']}"/>
+                        </div>
+
+                        <!-- TEXT type field Misc settings -->
+                        <div class="col-12" faces:rendered="#{recoFormController.recoField.typeText}">
+                            <div class="grid">
+                                <div class="col-12">
+                                    <p:outputLabel value="#{labels['recoFormUI.recoField.dateTimeFormat.label']}" rendered="#{recoFormController.recoForm.type ne RecoForm.TYPE_AIBASED}" for="dateTimeFormat"/>
+                                    <p:outputLabel value="#{labels['recoFormUI.recoField.dateTimeFormatAi.label']}" rendered="#{recoFormController.recoForm.type eq RecoForm.TYPE_AIBASED}" for="dateTimeFormatSelect"/>
+                                </div>
+                                <div class="col-12 p-fluid">
+                                    <p:inputText id="dateTimeFormat" value="#{recoFormController.recoField.textProp.dateTimeFormat}" converter="stringTrimConverter" autocomplete="off"
+                                                 placeholder="#{labels['recoFormUI.recoField.dateTimeFormat.placeholder']}" rendered="#{recoFormController.recoForm.type ne RecoForm.TYPE_AIBASED}"/>
+                                    <p:selectOneMenu id="dateTimeFormatSelect" value="#{recoFormController.recoField.textProp.dateTimeFormat}" rendered="#{recoFormController.recoForm.type eq RecoForm.TYPE_AIBASED}">
+                                        <f:selectItems value="#{recoFormController.dateFormatSI}"/>
+                                    </p:selectOneMenu>
+                                    <br/>
+                                    <h:outputText value="#{labels['recoFormUI.recoField.dateTimeFormat.description']}" class="muted" style="font-size: 95%;"/>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Field Post-Processing settings -->
+                        <div class="col-12">
+                            <div class="grid">
+                                <div class="col-12">
+                                    <p:selectBooleanCheckbox id="usePostProc" value="#{recoFormController.recoField.prop.usePostProc}"
+                                                             label="#{labels['recoField.prop.usePostProc']}"
+                                                             itemLabel="#{labels['recoField.prop.usePostProc']}"/>
+                                </div>
+                                <div class="col-12 p-fluid">
+                                    <div id="editor" class="code-editor-shell">
+                                        <h:inputTextarea id="postProcCode" value="#{recoFormController.recoField.prop.postProc}" class="code-editor" style="display: none;"
+                                                         converter="stringToBase64Converter"/>
+                                    </div>
+                                </div>
+                                <div class="col-12 muted" style="padding-top: 0px; font-size: 95%;">
+                                    <ui:include src="/WEB-INF/includes/admin/recoForm/postProcHintFormField.xhtml">
+                                        <ui:param name="type" value="#{recoFormController.recoField.type}"/>
+                                    </ui:include>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Field Settings Edit Panel footer -->
+                    <f:facet name="footer">
+                        <div class="buttons-right">
+                            <p:commandButton id="btnFldSave" action="#{recoFormController.setRecoField(null)}" value="#{labels['general.btn.apply']}"
+                                             process=":f1:layoutSettingsArea :f1:fieldSettingsArea" update=":f1:layoutSettingsArea :f1:fieldSettingsArea"
+                                             icon="fa-solid fa-fw fa-check" disabled="#{recoFormController.modeRead or empty recoFormController.recoForm.sourceFile}" widgetVar="btnFldSaveWV"/>
+                            <p:remoteCommand id="fldInitRc" name="fldInitRc" action="#{recoFormController.initField()}" value="InitFld"
+                                             process=":f1:fieldSettingsArea" update=":f1:fieldCoords"/>
+                        </div>
+                    </f:facet>
+
+                </p:panel>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Column 2 -->
+    <div faces:id="docPreviewArea" class="col-12 xl:col-7">
+
+        <ui:fragment rendered="#{empty recoFormController.recoForm.sourceFile and recoFormController.modeEdit}">
+            <p:fileUpload listener="#{recoFormController.handleFileUpload}" mode="advanced" dragDrop="false" auto="true"
+                          update="docPreviewArea" onstart="attachSampleStart()" accept=".jpeg,.jpg,.tif,.tiff,.png,.bmp,.pdf"
+                          label="#{labels['fileUpload.label']}" uploadLabel="#{labels['fileUpload.uploadLabel']}" cancelLabel="#{labels['fileUpload.cancelLabel']}">
+                <p:validateFile fileLimit="1" allowTypes="/(\.|\/)(jpeg|jpg|tiff|tif|bmp|png|pdf)$/" sizeLimit="15000000" contentType="true"/>
+            </p:fileUpload>
+            <p:remoteCommand name="attachSampleStart" process="@form" update="@none">
+                <o:skipValidators/>
+            </p:remoteCommand>
+        </ui:fragment>
+
+
+        <ui:fragment rendered="#{not empty recoFormController.recoForm.sourceFile}">
+
+            <p:dataList id="pagePaginator" value="#{recoFormController.recoForm.pages}" var="page" rowIndexVar="pageIdx"
+                        type="none" paginator="true" rows="1" paginatorPosition="top" widgetVar="pagePaginatorWV" lazy="true">
+
+                <p:ajax event="page" listener="#{recoFormController.setCurrentPageNumber}"
+                        process=":f1:layoutSettingsArea :f1:fieldSettingsArea :f1:docPreviewArea" update=":f1:layoutSettingsArea :f1:fieldSettingsArea :f1:frdData"/>
+
+                <div faces:id="pageProperties" class="grid section-divider" faces:rendered="#{recoFormController.modeEdit and not empty recoFormController.recoForm and recoFormController.recoForm.type ne RecoForm.TYPE_AIBASED}">
+                    <div class="col-12">
+                        <h3 class="area-title">#{labels['recoFormUI.recoPage.settings']}</h3>
+                    </div>
+
+                    <!-- Misc settings -->
+                    <div class="col-12 py-0">
+                        <div class="grid">
+                            <div class="col-12 lg:col-6">
+                                <p:selectBooleanCheckbox id="applyAfter" value="#{recoFormController.applyHeaderFooterRemainingPages}" itemLabel="#{labels['recoFormUI.recoPage.applyHeaderFooterAfter']}"
+                                                         label="#{labels['recoFormUI.recoPage.applyHeaderFooterAfter']}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+
+                            <div class="col-12 lg:col-6" faces:rendered="#{pageIdx > 0}">
+                                <p:selectBooleanCheckbox id="usePageBreakBefore" value="#{page.prop.applyPageBreakBefore}" itemLabel="#{labels['recoPage.prop.applyPageBreakBefore']}"
+                                                         label="#{labels['recoPage.prop.applyPageBreakBefore']}" title="#{labels['recoPage.prop.applyPageBreakBefore.title']}"
+                                                         disabled="#{recoFormController.modeRead}">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Header settings -->
+                    <div class="col-12 lg:col-6">
+                        <div faces:id="pageHeaderArea" class="grid">
+                            <div class="col-12 pb-0">
+                                <h3 class="area-title">#{labels['recoFormUI.recoPage.header.settings']}</h3>
+                            </div>
+
+                            <div class="col-12">
+                                <p:selectBooleanCheckbox id="headerEnabled" value="#{recoFormController.headerEnabled}" itemLabel="#{labels['recoFormUI.recoPage.header.enabled']}"
+                                                         label="#{labels['recoFormUI.recoPage.header.enabled']}" title="#{labels['recoFormUI.recoPage.header.enabled.title']}"
+                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerEnabledWV">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+
+                            <div class="col-12">
+                                <p:selectBooleanCheckbox id="headerAuto" value="#{recoFormController.headerAuto}" itemLabel="#{labels['recoFormUI.recoPage.header.auto']}"
+                                                         label="#{labels['recoFormUI.recoPage.header.auto']}" title="#{labels['recoFormUI.recoPage.header.auto.title']}"
+                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerAutoWV">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+
+                            <div class="col-12 md:col-4 lg:col-3">
+                                <p:outputLabel value="#{labels['recoFormUI.recoPage.header.height']}" for="hdrHeight"/>
+                            </div>
+                            <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                                <p:inputNumber id="hdrHeight" value="#{recoFormController.headerHeight}" label="#{labels['recoFormUI.recoPage.header.height']}" minValue="0" maxValue="25" symbol="%" symbolPosition="s"
+                                               autocomplete="off" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" required="true" widgetVar="headerHeightWV">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:inputNumber>
+                            </div>
+
+                            <div class="col-12 md:col-4 lg:col-3">
+                                <p:outputLabel value="#{labels['recoFormUI.recoPage.header.keywords']}" for="hdrKwrds"/>
+                            </div>
+                            <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                                <p:chips id="hdrKwrds" value="#{recoFormController.headerKeywords}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerKwdsWV">
+                                    <f:attribute name="collectionType" value="java.util.ArrayList"/>
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:chips>
+                            </div>
+
+                            <div class="col-12">
+                                <p:selectBooleanCheckbox id="headerKeywordsAsBorder" value="#{recoFormController.headerUseKeywordsAsBorder}" itemLabel="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder']}"
+                                                         label="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder']}" title="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder.title']}"
+                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerKeywordsAsBorderdWV">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Footer settings -->
+                    <div class="col-12 lg:col-6">
+                        <div faces:id="pageFooterArea" class="grid">
+                            <div class="col-12 pb-0">
+                                <h3 class="area-title">#{labels['recoFormUI.recoPage.footer.settings']}</h3>
+                            </div>
+
+                            <div class="col-12">
+                                <p:selectBooleanCheckbox id="footerEnabled" value="#{recoFormController.footerEnabled}" itemLabel="#{labels['recoFormUI.recoPage.footer.enabled']}"
+                                                         label="#{labels['recoFormUI.recoPage.footer.enabled']}" title="#{labels['recoFormUI.recoPage.footer.enabled.title']}"
+                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerEnabledWV">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+
+                            <div class="col-12">
+                                <p:selectBooleanCheckbox id="footerAuto" value="#{recoFormController.footerAuto}" itemLabel="#{labels['recoFormUI.recoPage.footer.auto']}"
+                                                         label="#{labels['recoFormUI.recoPage.footer.auto']}" title="#{labels['recoFormUI.recoPage.footer.auto.title']}"
+                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerAutoWV">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+
+                            <div class="col-12 md:col-4 lg:col-3">
+                                <p:outputLabel value="#{labels['recoFormUI.recoPage.footer.height']}" for="ftrHeight"/>
+                            </div>
+                            <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                                <p:inputNumber id="ftrHeight" value="#{recoFormController.footerHeight}" label="#{labels['recoFormUI.recoPage.footer.height']}" minValue="0" maxValue="25" symbol="%" symbolPosition="s"
+                                               autocomplete="off" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" required="true" widgetVar="footerHeightWV">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:inputNumber>
+                            </div>
+
+                            <div class="col-12 md:col-4 lg:col-3">
+                                <p:outputLabel value="#{labels['recoFormUI.recoPage.footer.keywords']}" for="ftrKwrds"/>
+                            </div>
+                            <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                                <p:chips id="ftrKwrds" value="#{recoFormController.footerKeywords}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerKwdsWV">
+                                    <f:attribute name="collectionType" value="java.util.ArrayList"/>
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:chips>
+                            </div>
+
+                            <div class="col-12">
+                                <p:selectBooleanCheckbox id="footerKeywordsAsBorder" value="#{recoFormController.footerUseKeywordsAsBorder}" itemLabel="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder']}"
+                                                         label="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder']}" title="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder.title']}"
+                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerKeywordsAsBorderdWV">
+                                    <p:ajax event="change" process="@this" update="@none"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div faces:id="ldSpnr" class="loading-area">
+                    <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
+                    <h:outputText value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
+                </div>
+
+                <div id="pageViewContainer"
+                     imgUrl="/api/preview?id=#{recoFormController.pageImageUrlPreviewId}&amp;p=#{pageIdx}"
+                     spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}"
+                     data-form-id="#{recoFormController.id}"/>
+
+            </p:dataList>
+
+            <div style="margin-top: 5px;">
+                <p:link value="#{workflowFilesController.getFileNameSizeLabel(recoFormController.recoForm.sourceFile)}"
+                        href="#{workflowFilesController.getFileHref(recoFormController.recoForm.sourceFile)}" target="_blank"/>
+            </div>
+
+            <script charset="UTF-8" type="text/javascript">
+                $(document).ready(function () {
+                    initRecoFormEditor();
+                });
+            </script>
+
+        </ui:fragment>
+
+    </div>
+
+
+    <h:inputHidden id="frdData" value="#{recoFormController.frdData}">
+        <f:attribute name="readonly" value="true"/>
+    </h:inputHidden>
+
+</ui:composition>

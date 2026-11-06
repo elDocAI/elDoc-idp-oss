@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (C) 2022-2026 elDoc Limited
+  ~  *
+  ~  * This file is part of elDoc IDP OSS.
+  ~  *
+  ~  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  ~  * it under the terms of the GNU Affero General Public License as published
+  ~  * by the Free Software Foundation, version 3.
+  ~  *
+  ~  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  ~  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  ~  * General Public License for more details.
+  ~  *
+  ~  * SPDX-License-Identifier: AGPL-3.0-only
+  ~  */
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ai.eldoc</groupId>
+    <artifactId>eldoc-idp-parent</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <description>elDoc IDP Open-Source Software</description>
+    <url>https://eldoc.ai/</url>
+    <inceptionYear>2022</inceptionYear>
+    <organization>
+        <name>elDoc Limited</name>
+        <url>https://eldoc.ai/</url>
+    </organization>
+
+    <modules>
+        <module>modules/eldoc-base-api</module>
+        <module>modules/eldoc-idp-core</module>
+        <module>modules/eldoc-idp-web</module>
+    </modules>
+
+    <properties>
+        <!-- Version matches the full elDoc version -->
+        <revision>7.2026.4</revision>
+        <payara.version>7.2026.10</payara.version>
+        <flapdoodle.embed.mongo.version>5.0.0</flapdoodle.embed.mongo.version>
+        <twelvemonkeys.version>3.15.3</twelvemonkeys.version>
+        <shiro.version>3.0.1</shiro.version>
+        <jakarta-ee.version>11.0.0</jakarta-ee.version>
+        <langchain4j.version>1.22.0</langchain4j.version>
+        <langchain4j.beta.version>1.22.0-beta32</langchain4j.beta.version>
+        <awssdk.version>2.42.4</awssdk.version>
+        <pdfbox.version>3.0.8</pdfbox.version>
+        <zxing.version>3.5.4</zxing.version>
+        <slf4j.version>2.0.20</slf4j.version>
+        <graalvm.version>25.4.4.1.1</graalvm.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.plugin.showDeprecation>false</maven.compiler.plugin.showDeprecation>
+        <maven.compiler.plugin.debug>true</maven.compiler.plugin.debug>
+        <!-- Set by the OS/architecture profiles below; unsupported hosts fail before staging. -->
+        <javacpp.platform>unsupported</javacpp.platform>
+        <native.libs.platform>unsupported</native.libs.platform>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <name>Sonatype Snapshot Repository</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- elDoc libs -->
+            <dependency>
+                <groupId>ai.eldoc</groupId>
+                <artifactId>eldoc-idp-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.eldoc</groupId>
+                <artifactId>eldoc-base-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- DB -->
+            <dependency>
+                <groupId>de.flapdoodle.embed</groupId>
+                <artifactId>de.flapdoodle.embed.mongo</artifactId>
+                <version>${flapdoodle.embed.mongo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver-sync</artifactId>
+                <version>5.13.0</version>
+            </dependency>
+
+            <!-- UI (WEB) -->
+            <dependency>
+                <groupId>org.omnifaces</groupId>
+                <artifactId>omnifaces</artifactId>
+                <version>5.5.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.primefaces</groupId>
+                <artifactId>primefaces</artifactId>
+                <version>17.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <!-- Required by PF TextEditor component when secure="true" -->
+                <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+                <artifactId>owasp-java-html-sanitizer</artifactId>
+                <version>20261011.1</version>
+            </dependency>
+
+            <!-- Shiro dependencies -->
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-core</artifactId>
+                <version>${shiro.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-web</artifactId>
+                <version>${shiro.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-jaxrs</artifactId>
+                <version>${shiro.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <!-- Exclude transitive jakarta annotation dependencies due to version conflict -->
+                        <groupId>jakarta.annotation</groupId>
+                        <artifactId>jakarta.annotation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-cache</artifactId>
+                <version>${shiro.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-jakarta-ee</artifactId>
+                <version>${shiro.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-cdi</artifactId>
+                <version>${shiro.version}</version>
+            </dependency>
+
+            <!-- AI / LangChain4j / AWS -->
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j</artifactId>
+                <version>${langchain4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-open-ai</artifactId>
+                <version>${langchain4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-bedrock</artifactId>
+                <version>${langchain4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-agentic</artifactId>
+                <version>${langchain4j.beta.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-embeddings</artifactId>
+                <version>${langchain4j.beta.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-jina</artifactId>
+                <version>${langchain4j.beta.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-onnx-scoring</artifactId>
+                <version>${langchain4j.beta.version}</version>
+            </dependency>
+            <!-- Keep every AWS SDK module, including transitive modules pulled in
+                 by langchain4j-bedrock, on exactly the same release. The BOM also
+                 manages apache-client and netty-nio-client used by the core module. -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${awssdk.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.bitbucket.b_c</groupId>
+                <artifactId>jose4j</artifactId>
+                <version>0.9.7</version>
+            </dependency>
+
+            <!-- Commons -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.21.0</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.22.0</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>1.11.0</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.23.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>3.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>1.14.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-configuration2</artifactId>
+                <version>2.15.1</version>
+            </dependency>
+
+            <!-- Jakarta EE 11 and container dependencies -->
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-web-api</artifactId>
+                <version>${jakarta-ee.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>${jakarta-ee.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.5</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>5.7.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <!-- Jackson is alternate Jsonb provider available in Payara 6 -->
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.22.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-binding</artifactId>
+                <version>4.0.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <!-- JAX-RS extension for file upload support -->
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
+                <version>4.0.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>4.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.cache</groupId>
+                <artifactId>cache-api</artifactId>
+                <version>1.1.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <!-- Yasson is the default Jsonb provider in Payara -->
+                <groupId>org.eclipse.yasson</groupId>
+                <artifactId>yasson</artifactId>
+                <version>3.0.5</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- OCR / PDF / image processing -->
+            <dependency>
+                <groupId>org.bytedeco</groupId>
+                <artifactId>opencv-platform</artifactId>
+                <version>4.14.0-1.5.14</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.bytedeco</groupId>
+                <artifactId>tesseract-platform</artifactId>
+                <version>5.5.3-1.5.14</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>fontbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>xmpbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>jbig2-imageio</artifactId>
+                <version>3.0.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.icu</groupId>
+                <artifactId>icu4j</artifactId>
+                <version>78.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.taimos</groupId>
+                <artifactId>totp</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.sejda.imageio</groupId>
+                <artifactId>webp-imageio</artifactId>
+                <version>0.1.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.jai-imageio</groupId>
+                <artifactId>jai-imageio-core</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-transcoder</artifactId>
+                <version>1.20</version>
+            </dependency>
+
+            <!-- TwelveMonkeys ImageIO -->
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-core</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.servlet</groupId>
+                <artifactId>servlet</artifactId>
+                <version>${twelvemonkeys.version}</version>
+                <classifier>jakarta</classifier>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-jpeg</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-tiff</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-hdr</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-psd</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-sgi</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-pnm</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-tga</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-xwd</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-batik</artifactId>
+                <version>${twelvemonkeys.version}</version>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <!-- GraalVM JS engine -->
+            <dependency>
+                <groupId>org.graalvm.polyglot</groupId>
+                <artifactId>polyglot</artifactId>
+                <version>${graalvm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js-scriptengine</artifactId>
+                <version>${graalvm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js-community</artifactId>
+                <version>${graalvm.version}</version>
+                <type>pom</type>
+            </dependency>
+
+            <!-- Misc -->
+            <dependency>
+                <groupId>org.noggit</groupId>
+                <artifactId>noggit</artifactId>
+                <version>0.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.23.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.14.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.seruco.encoding</groupId>
+                <artifactId>base62</artifactId>
+                <version>0.1.3</version>
+            </dependency>
+
+            <!-- ******************** -->
+            <!-- Testing dependencies -->
+            <!-- ******************** -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>6.1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-reporting</artifactId>
+                <version>6.1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>nl.jqno.equalsverifier</groupId>
+                <artifactId>equalsverifier</artifactId>
+                <version>4.5.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>5.24.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>5.24.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-junit5</artifactId>
+                <version>5.0.3.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>fish.payara.extras</groupId>
+                <artifactId>payara-embedded-all</artifactId>
+                <version>${payara.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>bytedeco-linux-amd64</id>
+            <activation>
+                <os>
+                    <name>Linux</name>
+                    <family>unix</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>linux-x86_64</javacpp.platform>
+                <native.libs.platform>linux</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-linux-x86_64</id>
+            <activation>
+                <os>
+                    <name>Linux</name>
+                    <family>unix</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>linux-x86_64</javacpp.platform>
+                <native.libs.platform>linux</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-linux-aarch64</id>
+            <activation>
+                <os>
+                    <name>Linux</name>
+                    <family>unix</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>linux-arm64</javacpp.platform>
+                <native.libs.platform>linux</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-linux-arm64</id>
+            <activation>
+                <os>
+                    <name>Linux</name>
+                    <family>unix</family>
+                    <arch>arm64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>linux-arm64</javacpp.platform>
+                <native.libs.platform>linux</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-macos-amd64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>macosx-x86_64</javacpp.platform>
+                <native.libs.platform>mac</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-macos-x86_64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>macosx-x86_64</javacpp.platform>
+                <native.libs.platform>mac</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-macos-aarch64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>macosx-arm64</javacpp.platform>
+                <native.libs.platform>mac</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-macos-arm64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>arm64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>macosx-arm64</javacpp.platform>
+                <native.libs.platform>mac</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-windows-amd64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>windows-x86_64</javacpp.platform>
+                <native.libs.platform>win</native.libs.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>bytedeco-windows-x86_64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javacpp.platform>windows-x86_64</javacpp.platform>
+                <native.libs.platform>win</native.libs.platform>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.16.0</version>
+                    <configuration>
+                        <release>${maven.compiler.release}</release>
+                        <showDeprecation>${maven.compiler.plugin.showDeprecation}</showDeprecation>
+                        <debug>${maven.compiler.plugin.debug}</debug>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.5.1</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                            <addMavenDescriptor>false</addMavenDescriptor>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.5.1</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                            <addMavenDescriptor>false</addMavenDescriptor>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.5.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>fish.payara.maven.plugins</groupId>
+                    <artifactId>payara-micro-maven-plugin</artifactId>
+                    <version>2.6.0</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

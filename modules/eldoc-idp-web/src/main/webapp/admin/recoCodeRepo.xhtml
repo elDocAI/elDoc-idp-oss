@@ -1,0 +1,117 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:pt="jakarta.faces.passthrough"
+                xmlns:o="omnifaces"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <!-- CodeEditor -->
+        <h:outputStylesheet library="codemirror" name="/lib/codemirror.css" />
+        <h:outputScript library="codemirror" name="/lib/codemirror.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/mode/javascript/javascript.js" pt:defer="true" />
+        <!-- CodeMirror editor addons -->
+        <h:outputStylesheet library="codemirror" name="/addon/dialog/dialog.css" />
+        <h:outputScript library="codemirror" name="/addon/edit/closebrackets.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/edit/matchbrackets.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/dialog/dialog.js" pt:defer="true" />
+        <!-- CodeMirror scrollbar addons -->
+        <h:outputScript library="codemirror" name="/addon/scroll/annotatescrollbar.js" pt:defer="true" />
+        <!-- CodeMirror search system -->
+        <h:outputStylesheet library="codemirror" name="/addon/search/matchesonscrollbar.css" />
+        <h:outputScript library="codemirror" name="/addon/search/search.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/searchcursor.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/matchesonscrollbar.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/match-highlighter.js" pt:defer="true" />
+        <!-- CodeMirror comments system -->
+        <h:outputScript library="codemirror" name="/addon/comment/comment.js" pt:defer="true" />
+        <!-- CodeMirror folding system -->
+        <h:outputScript library="codemirror" name="/addon/fold/foldcode.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/fold/brace-fold.js" pt:defer="true" />
+        <!-- CodeMirror hint system -->
+        <h:outputStylesheet library="codemirror" name="/addon/hint/show-hint.css" />
+        <h:outputScript library="codemirror" name="/addon/hint/show-hint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/hint/javascript-hint.js" pt:defer="true" />
+        <!-- CodeMirror lint system -->
+        <h:outputStylesheet library="codemirror" name="/addon/lint/lint.css" />
+        <h:outputScript library="codemirror" name="/addon/lint/lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/javascript-lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/json-lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/coffeescript-lint.js" pt:defer="true" />
+        <!-- CodeMirror initialization script -->
+        <h:outputScript library="eldoc" name="js/codeEditor.js" pt:defer="true" />
+    </ui:define>
+
+    <ui:define name="content">
+        <o:form id="f1" styleClass="#{codeSnippetsController.modeEdit ? 'modeEdit' : 'modeRead'}" >
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header">
+                        <h1>Recognition code repository</h1>
+                    </div>
+                </div>
+            </div>
+
+            <ui:fragment rendered="#{userContext.adminDocRW}">
+                <div class="grid">
+                    <div class="col-12">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="btnEdit" value="${labels['general.btn.edit']}" action="#{codeSnippetsController.setModeEdit}" process="@this" update="@form"
+                                                 icon="fa-regular fa-fw fa-pen-to-square" rendered="#{codeSnippetsController.modeRead}" />
+                                <p:commandButton id="btnSave" value="${labels['general.btn.save']}" action="#{codeSnippetsController.btnSave}" process="@form" update="@form"
+                                                 icon="fa-solid fa-fw fa-check" rendered="#{codeSnippetsController.modeEdit}"/>
+                                <p:commandButton id="btnCancel" value="${labels['general.btn.cancel']}" action="#{codeSnippetsController.btnCancel}" process="@this" immediate="true"
+                                                 icon="fa-solid fa-fw fa-share" styleClass="p-button-secondary p-button-outlined" rendered="#{codeSnippetsController.modeEdit}"/>
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+            </ui:fragment>
+
+            <div class="grid">
+                <div class="col-12 p-fluid">
+                    <div id="editor" class="code-editor-shell">
+                        <h:inputTextarea id="cdEdtr" value="#{codeSnippetsController.codeSnippet.code}" styleClass="code-editor" style="display: none;height:70vh;"
+                                         readonly="#{codeSnippetsController.modeRead}" disabled="#{codeSnippetsController.modeRead}" converter="stringToBase64Converter" />
+                    </div>
+                </div>
+            </div>
+
+        </o:form>
+
+        <p:growl id="growl" life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+            <p:autoUpdate />
+        </p:growl>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,47 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:faces="jakarta.faces"
+        xmlns:p="primefaces">
+
+    <!--@elvariable id="reactionTo" type="java.lang.String"-->
+    <!--@elvariable id="refId" type="java.lang.String"-->
+
+    <ui:param name="reactionsCount" value="#{reactionController.getReactionsCount(userContext.getId(), null, refId)}"/>
+
+    <!-- IMPORTANT: do not change 'rctLnk' - it is hard-coded in the ReactionController, see: reactionController.reactionActionListener -->
+    <p:commandLink id="rctLnk" actionListener="#{reactionController.reactionActionListener}" action="#{reactionController.giveReaction(reactionTo, refId, false)}"
+                   process="@this" update=":rctf:rctd" immediate="true" partialSubmit="true" oncomplete="PF('__elDoc_rct').show()">
+        <f:event type="preRenderComponent" listener="#{reactionController.enableReactionDialog}" />
+        <i class="fa-regular fa-face-smile muted" faces:rendered="#{reactionsCount eq 0}" />
+        <i class="fa-solid fa-face-smile" faces:rendered="#{reactionsCount gt 0}" />
+    </p:commandLink>
+
+    <!-- IMPORTANT: do not change 'rctCnt' - it is hard-coded in the ReactionController, see: reactionController.reactionActionListener -->
+    <p:commandLink id="rctCnt" actionListener="#{reactionController.reactionActionListener}" action="#{reactionController.showReactionList(reactionTo, refId)}"
+                   oncomplete="PF('__elDoc_rct').show()" process="@this" update=":rctf:rctd" immediate="true" partialSubmit="true"
+                   value="(#{reactionController.getReactionsCount(null, null, refId)})" title="#{labels['reactionUI.resp.reactions']}"
+                   rendered="#{reactionController.isHaveReaction(null, null, refId)}" styleClass="muted">
+    </p:commandLink>
+
+</ui:composition>

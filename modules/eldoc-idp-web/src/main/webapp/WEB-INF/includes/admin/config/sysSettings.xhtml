@@ -1,0 +1,105 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+>
+
+    <!-- System settings -->
+    <p:panel header="#{labels['pAdminConfig.mainConfig']}" collapsed="false">
+
+        <div class="grid">
+
+            <ui:fragment>
+                <div class="col-5">
+                    <p:outputLabel value="${labels['pAdminConfig.systemUrlAddress']}" for="systemUrl" />
+                </div>
+                <div class="col-7 p-fluid">
+                    <p:inputText id="systemUrl" value="#{configController.appConfig.systemUrl}" required="true" label="${labels['pAdminConfig.systemUrlAddress']}"
+                                 autocomplete="off" converter="stringTrimConverter" disabled="#{configController.modeRead}" />
+                </div>
+            </ui:fragment>
+
+            <div class="col-5">
+                <p:outputLabel value="${labels['pAdminConfig.systemTimezone']}" for="systemTz" />
+            </div>
+            <div class="col-7 p-fluid">
+                <p:autoComplete id="systemTz" value="#{configController.appConfig.systemTimezone}" label="#{labels['pAdminConfig.systemTimezone']}"
+                                completeMethod="#{pageController.completeTimeZone}" forceSelection="true" dropdown="true" maxResults="5" moreText="..."
+                                var="tz" itemValue="#{tz}" itemLabel="#{pageController.getTimeZoneUiLabelByCode(tz)}" disabled="#{configController.modeRead}" />
+            </div>
+
+            <div class="col-5">
+                <p:outputLabel value="${labels['pAdminConfig.systemDateFormat']}" for="sysDtFrmt" />
+            </div>
+            <div class="col-7 p-fluid">
+                <p:selectOneMenu id="sysDtFrmt" value="#{configController.appConfig.systemDateFormat}" label="#{labels['pAdminConfig.systemDateFormat']}"
+                                 converter="stringTrimConverter" disabled="#{configController.modeRead}" >
+                    <f:selectItems value="#{pageController.dateFormatSI}" />
+                </p:selectOneMenu>
+            </div>
+
+            <div class="col-5">
+                <p:outputLabel value="${labels['pAdminConfig.systemTimeFormat']}" for="sysTmFrmt" />
+            </div>
+            <div class="col-7 p-fluid">
+                <p:selectOneMenu id="sysTmFrmt" value="#{configController.appConfig.systemTimeFormat}" label="#{labels['pAdminConfig.systemTimeFormat']}"
+                                 converter="stringTrimConverter" disabled="#{configController.modeRead}" >
+                    <f:selectItems value="#{pageController.timeFormatSI}" />
+                </p:selectOneMenu>
+            </div>
+
+            <div class="col-5">
+                <p:outputLabel value="${labels['pAdminConfig.systemLangs']}" for="langs" />
+            </div>
+            <div class="col-7 p-fluid">
+                <p:autoComplete id="langs" value="#{configController.appConfig.langs}" multiple="true" selectLimit="10" autoSelection="true"
+                                completeMethod="#{configController.completeLang}" forceSelection="true" dropdown="true" maxResults="10" moreText="..."
+                                var="lang" itemValue="#{lang}" itemLabel="#{configController.getLangUiLabelByCode(lang)}"
+                                label="#{labels['pAdminConfig.systemLangs']}" disabled="#{configController.modeRead}">
+                    <f:attribute name="collectionType" value="java.util.ArrayList" />
+                </p:autoComplete>
+            </div>
+
+            <div class="col-5">
+                <p:outputLabel value="${labels['pAdminConfig.mfaRequired']}" for="mfaRequired" />
+            </div>
+            <div class="col-7">
+                <p:selectBooleanCheckbox id="mfaRequired" value="#{configController.appConfig.mfaRequired}" disabled="#{configController.modeRead}" styleClass="mr-1"/>
+                <h:outputText value="${labels['pAdminConfig.mfaIgnoreHint']}" styleClass="muted" rendered="#{configController.modeEdit}" />
+            </div>
+
+            <div class="col-5">
+                <p:outputLabel value="${labels['pAdminConfig.defaultFileFormat']}" for="defFileFmt" />
+            </div>
+            <div class="col-7 p-fluid">
+                <p:selectOneMenu id="defFileFmt" value="#{configController.appConfig.filesFormat}" label="#{labels['pAdminConfig.defaultFileFormat']}"
+                                 disabled="#{configController.modeRead}" >
+                    <f:selectItems value="#{configController.fileFormatsSI}" />
+                </p:selectOneMenu>
+            </div>
+
+        </div>
+
+    </p:panel>
+
+</ui:composition>

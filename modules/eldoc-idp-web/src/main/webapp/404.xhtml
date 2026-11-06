@@ -1,0 +1,78 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="primefaces"
+      data-p-density="compact">
+
+    <f:view locale="#{localeContext.locale}">
+
+        <h:head id="pageHead">
+            <f:facet name="first">
+                <meta charset="UTF-8" />
+                <title>Page not found | #{pageController.pageTitle}</title>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+                <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/jakarta.faces.resource/favicon.png" />
+                <meta name="mobile-web-app-capable" content="yes" />
+            </f:facet>
+            <meta name="robots" content="noindex, nofollow" />
+            <meta name="description" content="#{pageController.pageDescription}" />
+        </h:head>
+
+        <h:body styleClass="eldoc-theme exception-body notfound" lang="#{localeContext.localeLanguageTag}">
+
+            <div class="exception-text">
+                <div class="notfound-box">
+                    <span>404</span>
+                </div>
+                <span class="notfound-text">Page Not Found</span>
+            </div>
+
+            <div class="exception-panel">
+                <div class="exception-image">
+                    <span class="exception-icon" aria-hidden="true">!</span>
+                </div>
+                <div class="exception-panel-content">
+                    <div class="information-text">
+                        <span><strong>That wasn’t supposed to happen...</strong></span>
+                        <p style="display: none;">Better get back home and forget about that</p>
+                    </div>
+                    <ui:fragment rendered="#{!userContext.anonymous}">
+                        <p:button value="#{labels['menuUI.dashboard']}" outcome="/idp/start.xhtml" />
+                    </ui:fragment>
+                    <ui:fragment rendered="#{userContext.anonymous}">
+                        <p:button value="#{labels['pLogin.name']}" outcome="/login" />
+                    </ui:fragment>
+                </div>
+            </div>
+
+            <h:outputStylesheet name="fonts/Inter/Inter.css" />
+            <h:outputStylesheet library="eldoc" name="css/layout.css" />
+            <h:outputStylesheet library="eldoc" name="css/eldoc.css" />
+        </h:body>
+
+    </f:view>
+
+</html>

@@ -1,0 +1,164 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:jsf="jakarta.faces"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+        </f:metadata>
+    </ui:define>
+
+    <p:importConstants type="ai.eldoc.constants.Pages" />
+
+    <ui:define name="title">${labels['pAdminCounters.header']} | #{pageController.pageTitleSuffix}</ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="f1">
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header">
+                        <h1 title="#{labels['pAdminCounters.header.title']}">#{labels['pAdminCounters.header']}</h1>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="grid">
+                <div class="col-12">
+                    <p:growl globalOnly="true" life="30000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                        <p:autoUpdate />
+                    </p:growl>
+                </div>
+            </div>
+
+
+            <div class="grid">
+                <div class="col-12">
+
+                    <p:dataTable id="countersTable" widgetVar="countersTableWV" value="#{numSeqController.dataProvider}" var="rowData" rowIndexVar="rowIndex" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rows="25"
+                                 rowsPerPageTemplate="25,50,100" paginatorPosition="top" paginatorAlwaysVisible="true" reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" filterDelay="800"
+                                 styleClass="table-sm" size="small">
+
+                        <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                        <p:column headerText="#" style="width: 50px; text-align: center;">
+                            <h:outputText value="#{rowIndex + 1}" />
+                        </p:column>
+
+                        <p:column headerText="#{labels['pAdminCounters.destination']}">
+                            <p:link outcome="#{Pages.PAGE_ADMIN_FORM}">
+                                <f:param name="id" value="#{rowData.name}" />
+                                <h:outputText value="#{numSeqController.getAssignedFormDefinition(rowData.name).name[localeContext.langSystemCode]} (#{rowData.name})" />
+                            </p:link>
+                        </p:column>
+
+                        <p:column headerText="#{labels['pAdminCounters.nextValue']}">
+                            <h:outputText value="#{numSeqController.getNextValueCalculated(rowData.name)}" />
+                        </p:column>
+
+                        <p:column headerText="#{labels['pAdminCounters.actions']}" width="70">
+                            <p:commandButton id="btnEdit" title="#{labels['general.btn.edit']}" action="#{numSeqController.editItem(rowData)}" process="@this" update=":f1:counterDlg"
+                                             oncomplete="PF('counterDlg').show();" icon="fa-regular fa-pen-to-square" rendered="#{userContext.adminDocRW}" styleClass="p-button-secondary p-button-outlined" />
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                    <p:dialog id="counterDlg" widgetVar="counterDlg" header="#{labels['pAdminCounters.editCounter']}" modal="true" closeOnEscape="true" width="500" resizable="false"
+                              fitViewport="true" responsive="true" position="center" dynamic="true">
+
+                        <div jsf:id="counterDlgForm" class="grid">
+                            <div class="col-12 pt-0 pb-0">
+                                <p:messages globalOnly="false" closable="true" redisplay="false" />
+                            </div>
+
+                            <div class="col-12 p-fluid">
+                                <p:outputLabel value="#{labels['pAdminCounters.counterFormat']}" for="counterValue" styleClass="block mb-1" />
+                                <p:inputText id="counterValue" label="#{labels['pAdminCounters.counterFormat']}" value="#{numSeqController.selectedNumSeq.VText}"
+                                             placeholder="#{labels['pAdminCounters.dlg.remarkExmpl']}: Memo-*N*/*YYYY*"
+                                             converter="stringTrimConverter" validator="#{numSeqController.validatorCounterFormat}" autocomplete="off" />
+                            </div>
+
+                            <div class="col-12">
+                                <h:outputText value="#{labels['pAdminCounters.dlg.remarkTitle']}" styleClass="block mb-1" />
+
+                                <div>
+                                    <h:outputText value="*N*" styleClass="inline-block w-4rem"/>
+                                    <h:outputText value="#{labels['pAdminCounters.dlg.remarkN']}" />
+                                </div>
+
+                                <div>
+                                    <h:outputText value="*DD*" styleClass="inline-block w-4rem"/>
+                                    <h:outputText value="#{labels['pAdminCounters.dlg.remarkDD']}" />
+                                </div>
+
+                                <div>
+                                    <h:outputText value="*MM*" styleClass="inline-block w-4rem"/>
+                                    <h:outputText value="#{labels['pAdminCounters.dlg.remarkMM']}" />
+                                </div>
+
+                                <div>
+                                    <h:outputText value="*YY*" styleClass="inline-block w-4rem"/>
+                                    <h:outputText value="#{labels['pAdminCounters.dlg.remarkYY']}" />
+                                </div>
+
+                                <div>
+                                    <h:outputText value="*YYYY*" styleClass="inline-block w-4rem"/>
+                                    <h:outputText value="#{labels['pAdminCounters.dlg.remarkYYYY']}" />
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <f:facet name="footer">
+                            <div class="buttons-right">
+                                <p:commandButton id="btnCancel" value="#{labels['general.btn.cancel']}" actionListener="#{numSeqController.scDealogCancel}"
+                                                 process="btnCancel" update="@form"
+                                                 oncomplete="PF('counterDlg').hide();" styleClass="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-ban">
+                                    <p:resetInput target="counterDlgForm" />
+                                </p:commandButton>
+
+                                <p:commandButton id="btnSave" value="#{labels['general.btn.save']}" actionListener="#{numSeqController.scDealogSave}"
+                                                 process="counterValue btnSave" update="counterDlgForm countersTable"
+                                                 oncomplete="if (args &amp;&amp; !args.validationFailed){PF('counterDlg').hide();}"
+                                                 icon="fa-solid fa-fw fa-check" />
+                            </div>
+                        </f:facet>
+
+                    </p:dialog>
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

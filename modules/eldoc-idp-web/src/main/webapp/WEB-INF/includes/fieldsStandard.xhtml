@@ -1,0 +1,87 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:cc="jakarta.faces.composite/elcomp"
+        xmlns:faces="jakarta.faces"
+        xmlns:p="primefaces">
+
+    <!--@elvariable id="dataSource" type="ai.eldoc.model.Workflow"-->
+    <!--@elvariable id="fieldsDef" type="ai.eldoc.model.StandardFieldDef"-->
+    <!--@elvariable id="modeRead" type="java.lang.Boolean"-->
+    <!--@elvariable id="modeEdit" type="java.lang.Boolean"-->
+
+    <p:importConstants type="ai.eldoc.constants.DirectoryConstants" />
+
+    <div class="col-12 lg:col-4">
+        <p:outputLabel id="l1" value="#{labels['general.docs.author']}" for="i1"/>
+    </div>
+    <div class="col-12 lg:col-8 flex flex-row flex-nowrap gap-2 justify-content-between align-items-center">
+        <cc:nameItem id="i1" value="#{dataSource.author}" />
+
+        <!-- Show this block when document created by someone else (on behalf of author) AND not by elDocROBOT -->
+        <div faces:rendered="#{not empty dataSource.authorBy and dataSource.authorBy ne DirectoryConstants.ELDOC_ROBOT}" class="flex flex-row flex-nowrap gap-0.5">
+            <div class="muted" style="font-size: 90%;">#{labels['deputy.doneBy']}</div>
+            <cc:nameItemText value="#{dataSource.authorBy}" addStyleClass="muted" />
+        </div>
+    </div>
+
+    <ui:fragment rendered="#{fieldsDef.num.isRendered(dataSource)}">
+        <div class="col-12 lg:col-4">
+            <p:outputLabel id="l2" value="#{labels['general.docs.number']}" for="i2"/>
+        </div>
+        <div class="col-12 lg:col-8 p-fluid">
+            <p:inputText id="i2" value="#{dataSource.num}" autocomplete="off" required="#{fieldsDef.num.required}" converter="stringTrimConverter" disabled="#{fieldsDef.num.isDisabled(dataSource, modeEdit)}" />
+        </div>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{fieldsDef.topic.enabled}">
+        <div class="col-12 lg:col-4">
+            <p:outputLabel id="l3" value="#{labels['general.docs.subject']}" for="i3"/>
+        </div>
+        <div class="col-12 lg:col-8 p-fluid">
+            <p:inputText id="i3" value="#{dataSource.topic}" autocomplete="off" required="#{fieldsDef.topic.required}" converter="stringTrimConverter" disabled="#{modeRead}" />
+        </div>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{fieldsDef.dateCreated.enabled}">
+        <div class="col-12 lg:col-4">
+            <p:outputLabel id="l4" value="#{labels['general.docs.dateCreated']}" for="i4"/>
+        </div>
+        <div class="col-12 lg:col-8 p-fluid">
+            <p:datePicker id="i4" value="#{dataSource.dateCreated}" autocomplete="off" disabled="#{modeEdit ? !fieldsDef.dateCreated.editable : true}" required="true"
+                          timeZone="#{userContext.timezone}" pattern="#{userContext.dateFormat}" showTime="true" hourFormat="#{userContext.hourFormat}"
+                          showIcon="true" showOnFocus="false" monthNavigator="true" yearNavigator="true" showWeek="false" showOtherMonths="true" selectOtherMonths="true" />
+        </div>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{fieldsDef.dateDue.enabled}">
+        <div class="col-12 lg:col-4">
+            <p:outputLabel id="l5" value="#{labels['general.docs.dateDue']}" for="i5" rendered="#{fieldsDef.dateDue.enabled}" />
+        </div>
+        <div class="col-12 lg:col-8 p-fluid">
+            <p:datePicker id="i5" value="#{dataSource.dateDue}" autocomplete="off" disabled="#{modeRead}" required="#{fieldsDef.dateDue.required}" rendered="#{fieldsDef.dateDue.enabled}"
+                          timeZone="#{userContext.timezone}" pattern="#{userContext.dateFormat}" showTime="true" hourFormat="#{userContext.hourFormat}"
+                          showIcon="true" showOnFocus="false" monthNavigator="true" yearNavigator="true" showWeek="false" showOtherMonths="true" selectOtherMonths="true" />
+        </div>
+    </ui:fragment>
+
+</ui:composition>

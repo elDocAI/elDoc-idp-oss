@@ -1,0 +1,59 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="primefaces">
+
+    <!-- Doc Picker Dialog: Single selection mode -->
+    <p:dataTable id="docTbl" widgetVar="docTblWV" value="#{uiRefWFPicker.dataProvider}" lazy="true" var="rowData" rowIndexVar="rowIndex"
+                 selection="#{uiRefWFPicker.selected}" rowKey="#{rowData.getId()}" selectionRowMode="new" selectionMode="single"
+                 paginator="true" rows="7" rowsPerPageTemplate="7,15,25" pageLinks="5" paginatorAlwaysVisible="false"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 paginatorPosition="top" reflow="true" emptyMessage="#{labels['general.dataTable.noDocumentsFound']}" filterDelay="800" size="small" styleClass="ref-docs-table">
+
+        <p:column selectionBox="true" width="20"/>
+
+        <p:column field="num" headerText="#{labels['general.docs.number']}" width="150">
+            <h:outputText value="#{rowData.num}" />
+        </p:column>
+
+        <p:column field="nm.#{localeContext.langSystemCode}" headerText="#{labels['pCreateSelect.docType']}">
+            <f:facet name="filter">
+                <p:selectCheckboxMenu value="#{uiRefWFPicker.dataProvider.formFilter}" label="#{labels['general.docs.title']}"
+                                      filter="true" filterMatchMode="contains" panelStyle="width: 350px" scrollHeight="250px" styleClass="custom-filter">
+                    <p:ajax event="change" process="@this" oncomplete="PF('docTblWV').filter();" delay="300" />
+                    <p:ajax event="toggleSelect" process="@this" oncomplete="PF('docTblWV').filter();" delay="300" />
+                    <f:attribute name="collectionType" value="java.util.ArrayList" />
+                    <f:selectItems value="#{formDefController.searchDocTitleLabelsSI}"/>
+                </p:selectCheckboxMenu>
+            </f:facet>
+            <h:outputText value="#{rowData.name[localeContext.langSystemCode]}" />
+        </p:column>
+
+        <p:column field="topic" headerText="#{labels['general.docs.subject']}">
+            <h:outputText value="#{rowData.topic}" />
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>

@@ -1,0 +1,122 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces"
+        xmlns:jsf="jakarta.faces"
+        xmlns:cc="jakarta.faces.composite/elcomp"
+        xmlns:pt="jakarta.faces.passthrough">
+
+    <div class="grid">
+
+        <div jsf:id="monControls" class="col-12 pb-0 monitoringSwitch">
+            <p:outputLabel value="#{labels['ccRespsMonitor.header']}" class="mr-1" />
+            <p:selectOneMenu value="#{workflowController.monitoringData.docState}" class="mr-1" converter="jakarta.faces.Integer">
+                <f:selectItems value="#{workflowController.monitoringStatesSI}" />
+                <p:ajax event="change" process="monControls" update="monControls monGrid tabInfo" />
+            </p:selectOneMenu>
+            <p:outputLabel value="#{labels['ccRespsMonitor.iteration']}" class="mr-1" />
+            <p:selectOneMenu value="#{workflowController.monitoringData.iteration}" class="mr-1" converter="jakarta.faces.Integer">
+                <f:selectItems value="#{workflowController.monitoringIterationSI}" />
+                <p:ajax event="change" process="monControls" update="monControls monGrid tabInfo" />
+            </p:selectOneMenu>
+            <p:commandButton id="btnMonUpdate" action="#{workflowController.monitoringData.updateMonitoringDS}" class="p-button-secondary p-button-outlined" process="monControls" update="monGrid" icon="fa-solid fa-fw fa-arrows-rotate" />
+        </div>
+
+        <div jsf:id="tabInfo" class="col-12 tabInfo">
+            <p:outputLabel value="#{labels['pDocument.print.respList']}" style="margin-right: 5px;" />
+            <p:outputLabel id="state" pt:state="#{workflowController.monitoringData.docState}" value="#{labels[workflowController.getStateLabelByStateId(workflowController.monitoringData.docState)]}" />
+            <br/>
+            <p:outputLabel value="#{labels['ccRespsMonitor.iteration']}:" style="margin-right: 5px;" />
+            <p:outputLabel id="iter" pt:iter="#{workflowController.monitoringData.iteration}" value="#{workflowController.monitoringData.iteration}" />
+            <!-- Important to keep the id 'tabMonitoring' - used in the JS -->
+            <span id="tabMonitoring"></span>
+        </div>
+
+        <div class="col-12">
+
+            <p:panelGrid id="monGrid" class="monitoring-grid w-full" layout="tabular" columns="0" >
+
+                <f:facet name="header">
+                    <p:row>
+                        <p:column style="width: 100px; text-align: center;">#{labels['general.workflow.step']}</p:column>
+                        <p:column>#{labels['ccRespsMonitor.name']}</p:column>
+                        <p:column style="width: 180px; text-align: center;">#{labels['ccRespsMonitor.action']}</p:column>
+                        <p:column style="width: 120px; text-align: center;">#{labels['ccRespsMonitor.timeIn']}</p:column>
+                        <p:column style="width: 120px; text-align: center;">#{labels['ccRespsMonitor.timeOut']}</p:column>
+                    </p:row>
+                </f:facet>
+
+                <ui:repeat value="#{workflowController.monitoringData.monitoringDS}" var="rowStepData" varStatus="stepStatus">
+                    <ui:repeat value="#{rowStepData}" var="rowUserRespData" varStatus="userRespStatus">
+
+                        <p:row>
+
+                            <p:column rowspan="#{rowStepData.size()}" rendered="#{userRespStatus.index eq 0}" style="width: 100px; text-align: center;">
+                                <h:outputLabel value="#{labels['ccRespsMonitor.phaseStart']}" rendered="#{stepStatus.index == 0}" />
+                                <h:outputLabel value="#{labels['general.workflow.step']} #{stepStatus.index}" rendered="#{stepStatus.index != 0}"/>
+                            </p:column>
+
+                            <p:column class="#{rowUserRespData.styleClass}">
+                                <cc:nameItem value="#{rowUserRespData.author}" />
+                                <ui:fragment rendered="#{rowUserRespData.delegated}">
+                                    <i class="fa-solid fa-fw fa-arrow-right" style="margin:0 7px 0 0;" />
+                                    <cc:nameItem value="#{rowUserRespData.delegatedTo}" />
+                                </ui:fragment>
+                            </p:column>
+
+                            <p:column class="#{rowUserRespData.styleClass}" style="width: 180px; text-align: center;">
+                                #{labels[rowUserRespData.taskStatusText]}
+                            </p:column>
+
+                            <p:column class="#{rowUserRespData.styleClass}" style="width: 120px; text-align: center;">
+                                <p:outputLabel value="#{rowUserRespData.logTimeIn}">
+                                    <f:convertDateTime pattern="#{userContext.dateTimeShortFormat}" timeZone="#{userContext.timezone}" />
+                                </p:outputLabel>
+                            </p:column>
+
+                            <p:column class="#{rowUserRespData.styleClass}" style="width: 120px; text-align: center;">
+                                <p:outputLabel value="#{rowUserRespData.logTimeOut}">
+                                    <f:convertDateTime pattern="#{userContext.dateTimeShortFormat}" timeZone="#{userContext.timezone}" />
+                                </p:outputLabel>
+                            </p:column>
+
+                        </p:row>
+
+                    </ui:repeat>
+                </ui:repeat>
+
+                <f:facet name="footer">
+                    <p:row>
+                        <p:column colspan="5" style="text-align: right" rendered="#{workflowController.monitoringData.optimizeRoute}">
+                            <p:outputLabel value="#{labels['bpmPrcsDef.optimizeRoute']}: #{labels['general.on']}" style="font-weight: normal;" />
+                        </p:column>
+                    </p:row>
+                </f:facet>
+
+            </p:panelGrid>
+
+        </div>
+    </div>
+
+</ui:composition>

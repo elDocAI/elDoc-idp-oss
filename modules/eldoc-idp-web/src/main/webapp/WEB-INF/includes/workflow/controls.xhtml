@@ -1,0 +1,186 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:o="omnifaces"
+    xmlns:jsf="jakarta.faces"
+    xmlns:pt="jakarta.faces.passthrough">
+
+    <!--@elvariable id="showLeft" type="java.lang.Boolean"-->
+    <!--@elvariable id="showRight" type="java.lang.Boolean"-->
+
+    <p:importConstants type="ai.eldoc.bpm.BpmConstants" />
+    <p:importConstants type="ai.eldoc.bpm.BpmAclConstants" />
+
+    <div class="col-12 flex btnArea">
+
+        <!-- Buttons left -->
+        <div jsf:id="btnLeft" jsf:rendered="#{showLeft}" class="flex flex-auto flex-wrap align-items-center justify-content-start gap-1">
+
+            <p:commandButton type="button" title="#{labels['general.btn.print']}" icon="fa-solid fa-fw fa-print" class="p-button-primary p-button-outlined"
+                             pt:eldoc-print="true" pt:eldoc-print-id="#{workflowController.id}" pt:eldoc-print-type="document" />
+
+            <p:commandButton id="btnReminder" title="#{labels['ccBtn.btnReminder.title']}"
+                             actionListener="#{reminderController.btnReminderActionListener}"
+                             action="#{reminderController.btnReminderDialogOpen(workflowController.currentWF)}" oncomplete="PF('__elDoc_rm').show()"
+                             process="@this" update="rmf:rmd" immediate="true" partialSubmit="true"
+                             rendered="#{workflowController.getDocACL().contains(BpmAclConstants.ACTION_REMINDER)}"
+                             class="#{reminderController.getBtnRemiderStyleClass(workflowController.id)}" icon="fa-solid fa-fw fa-bell">
+                <f:event type="preRenderComponent" listener="#{reminderController.enableReminderDialog}" />
+            </p:commandButton>
+
+            <p:commandButton id="btnSuspend" action="#{workflowController.btnSuspend}" icon="fa-solid fa-fw fa-pause"
+                             title="#{labels['ccBtn_common.suspend.title']}"
+                             rendered="#{workflowController.getDocACL().contains(BpmAclConstants.ACTION_SUSPEND)}" immediate="true"
+                             onclick="if (!confirm('#{labels['confirm.action']}'))
+                                             return false;" class="p-button-primary p-button-outlined" />
+
+            <p:commandButton id="btnResume" action="#{workflowController.btnResume}" icon="fa-solid fa-fw fa-play"
+                             title="#{labels['ccBtn_common.resume.title']}"
+                             rendered="#{workflowController.getDocACL().contains(BpmAclConstants.ACTION_RESUME)}" immediate="true"
+                              />
+
+            <p:commandButton id="btnTerm" action="#{workflowController.btnTerminate}" icon="fa-solid fa-fw fa-stop"
+                             title="#{labels['ccBtn_common.cancelAll.title']}"
+                             rendered="#{workflowController.getDocACL().contains(BpmAclConstants.ACTION_TERMINATE)}" immediate="true"
+                             onclick="if (!confirm('#{labels['confirm.action']}'))
+                                             return false;" class="p-button-primary p-button-outlined" />
+
+            <p:commandButton id="btnBlock" action="#{workflowController.btnBlock}" icon="fa-solid fa-fw fa-ban"
+                             title="#{labels['ccBtn_common.block.title']}"
+                             rendered="#{workflowController.btnBlockRendered}" immediate="true"
+                             onclick="if (!confirm('#{labels['confirm.action']}'))
+                                             return false;" class="p-button-danger p-button-outlined" />
+
+            <p:commandButton id="btnUnBlock" action="#{workflowController.btnUnBlock}" icon="fa-solid fa-fw fa-play"
+                             title="#{labels['ccBtn_common.unBlock.title']}"
+                             rendered="#{workflowController.btnUnBlockRendered}" immediate="true"
+                             onclick="if (!confirm('#{labels['confirm.action']}'))
+                                             return false;" class="p-button-warning p-button-outlined" />
+
+            <p:commandButton id="btnDeleteDoc" action="#{workflowController.btnDeleteDoc}" icon="fa-solid fa-fw fa-trash"
+                             title="#{labels['ccBtn_common.delDoc.title']}"
+                             rendered="#{workflowController.getDocACL().contains(BpmAclConstants.ACTION_DELETE)}" immediate="true"
+                             onclick="if (!confirm('#{labels['confirm.del']}'))
+                                             return false;" class="p-button-primary p-button-outlined" />
+
+        </div>
+
+        <!-- Buttons right -->
+        <div jsf:id="btnRight" jsf:rendered="#{showRight}" class="flex flex-auto flex-wrap align-items-center justify-content-end gap-1">
+
+            <p:commandButton id="btnEdit" action="#{workflowController.setModeEdit()}" process="@this" update="@form" immediate="true"
+                             value="#{labels['ccRespMgmt.btnEdit.value']}" title="#{labels['ccRespMgmt.btnEdit.title']}"
+                             rendered="#{workflowController.modeRead and workflowController.getDocACL().contains(BpmAclConstants.ACTION_EDIT)}"
+                             icon="fa-solid fa-fw fa-pencil" class="p-button-primary p-button-outlined" />
+
+            <p:commandButton id="btnSaveEdit" action="#{workflowController.btnSaveEdit}" process="@form" update="@form"
+                             value="#{labels['general.btn.save']}" title="#{labels['general.btn.save']}"
+                             rendered="#{workflowController.btnSaveEditRendered}"
+                             icon="fa-regular fa-fw fa-floppy-disk"/>
+
+            <p:commandButton id="btnCancel" action="#{workflowController.btnCancel}" process="@this" update="@form" resetValues="true" immediate="true"
+                             value="#{labels['general.btn.cancel']}" title="#{labels['general.btn.cancel']}"
+                             rendered="#{workflowController.btnSaveEditRendered}"
+                             icon="fa-solid fa-fw fa-share" class="p-button-primary p-button-outlined" />
+
+            <p:commandButton id="btnSaveDraft" action="#{workflowController.btnSaveDraft}" process="@form" update="@form"
+                             value="#{labels['ccBtn.saveDraft.value']}" title="#{labels['ccBtn.saveDraft.title']}"
+                             rendered="#{workflowController.modeEdit and workflowController.getDocACL().contains(BpmAclConstants.ACTION_SAVE_DRAFT)}"
+                             icon="fa-regular fa-fw fa-floppy-disk">
+                <o:skipValidators />
+            </p:commandButton>
+
+            <p:commandButton id="btnToApprove" action="#{workflowController.btnToApprove}" process="@form" update="@form"
+                             value="#{labels['ccBtn.inWork.value']}" title="#{labels['ccBtn.inWork.title']}"
+                             rendered="#{workflowController.btnToApproveRendered}"
+                             icon="fa-solid fa-fw fa-arrow-right">
+            </p:commandButton>
+
+            <p:commandButton id="btnToSign" action="#{workflowController.btnToSign}" process="@form" update="@form"
+                             value="#{labels['ccBtn.toSign.value']}" title="#{labels['ccBtn.toSign.title']}"
+                             rendered="#{workflowController.btnToSignRendered}"
+                             icon="fa-solid fa-fw fa-arrow-right"/>
+
+            <p:commandButton id="btnToExecute" action="#{workflowController.btnToExecute}" process="@form" update="@form"
+                             value="#{labels['ccRespMgmt.btnToExecute.value']}" title="#{labels['ccRespMgmt.btnToExecute.title']}"
+                             rendered="#{workflowController.btnToExecuteRendered}"
+                             icon="fa-solid fa-fw fa-arrow-right"/>
+
+            <p:commandButton id="btnToWorkAgain" action="#{workflowController.btnToWorkAgain}" process="@form" update="@form"
+                             value="#{labels['ccBtn.inWorkAgain.value']}" title="#{labels['ccBtn.inWorkAgain.title']}"
+                             rendered="#{workflowController.modeEdit and workflowController.getDocACL().contains(BpmAclConstants.ACTION_TO_WORK_AGAIN)}"
+                             icon="fa-solid fa-fw fa-retweet">
+                <f:param name="action_btnToWorkAgain" value="true"/>
+            </p:commandButton>
+
+            <p:commandButton id="btnToRepo" action="#{workflowController.btnToRepo}" process="@form" update="@form"
+                             value="#{labels['ccBtn.toRepo.value']}" title="#{labels['ccBtn.toRepo.title']}"
+                             rendered="#{workflowController.btnToRepoRendered}"
+                             icon="fa-solid fa-fw fa-folder"/>
+
+            <p:commandButton id="btnToArchive" action="#{workflowController.btnToArchive}" process="@form" update="@form"
+                             value="#{labels['ccBtn.toArchive.value']}" title="#{labels['ccBtn.toArchive.title']}"
+                             rendered="#{workflowController.btnToArchiveRendered}"
+                             icon="fa-solid fa-fw fa-folder"/>
+
+            <p:commandButton id="btnDlgateCncl" action="#{workflowController.btnDelegateCancel}" process="@this" update="@none"
+                             value="#{labels['ccBtn.delegateCancel.value']}" title="#{labels['ccBtn.delegateCancel.title']}"
+                             rendered="#{workflowController.getDocACL().contains(BpmAclConstants.ACTION_DLG_CANCEL)}"
+                             icon="fa-solid fa-fw fa-stop" class="p-button-primary p-button-outlined" />
+
+            <p:commandButton id="btnDecline" action="#{workflowController.btnDecline}" process=":f1:dr:drForm" update=":f1:dr:drForm"
+                             value="#{labels['ccBtn.decline.value']}" title="#{labels['ccBtn.decline.title']}"
+                             rendered="#{workflowController.getDocACL().contains(BpmAclConstants.ACTION_DECLINE)}"
+                             icon="fa-solid fa-fw fa-xmark" class="p-button-danger">
+                <f:param name="drCommentRequred" value="true" />
+            </p:commandButton>
+
+            <p:commandButton id="btnConfirmEdit" action="#{workflowController.btnConfirmEdit}" process=":f1:dr:drForm" update=":f1:dr:drForm"
+                             value="#{labels['ccBtn.confirmWithEdit.value']}" title="#{labels['ccBtn.confirmWithEdit.value']}"
+                             rendered="#{workflowController.state eq BpmConstants.STATE_ID_APPROVE and workflowController.getDocACL().contains(BpmAclConstants.ACTION_DONE_W_COMMENTS)}"
+                             icon="fa-solid fa-fw fa-check"  >
+                <f:param name="drCommentRequred" value="true" />
+            </p:commandButton>
+
+            <p:commandButton id="btnConfirm" action="#{workflowController.btnConfirm}" process=":f1:dr:drForm" update=":f1:dr:drForm"
+                             value="#{labels['ccBtn.confirm.value']}" title="#{labels['ccBtn.confirm.title']}"
+                             rendered="#{workflowController.state eq BpmConstants.STATE_ID_APPROVE and workflowController.getDocACL().contains(BpmAclConstants.ACTION_DONE)}"
+                             icon="fa-solid fa-fw fa-check"/>
+
+            <p:commandButton id="btnSign" action="#{workflowController.btnSign}" process=":f1:dr:drForm" update=":f1:dr:drForm"
+                             value="#{labels['ccBtn.sign.value']}" title="#{labels['ccBtn.sign.title']}"
+                             rendered="#{workflowController.state eq BpmConstants.STATE_ID_SIGN and workflowController.getDocACL().contains(BpmAclConstants.ACTION_DONE)}"
+                             icon="fa-solid fa-fw fa-check"/>
+
+            <p:commandButton id="btnExecuteDone" action="#{workflowController.btnExecuteDone}" process=":f1:dr:drForm" update=":f1:dr:drForm"
+                             value="#{labels['ccBtn.executeDone.value']}" title="#{labels['ccBtn.executeDone.title']}"
+                             rendered="#{workflowController.state eq BpmConstants.STATE_ID_EXEC and workflowController.getDocACL().contains(BpmAclConstants.ACTION_DONE)}"
+                             icon="fa-solid fa-fw fa-check"/>
+
+        </div>
+
+    </div>
+
+</ui:composition>

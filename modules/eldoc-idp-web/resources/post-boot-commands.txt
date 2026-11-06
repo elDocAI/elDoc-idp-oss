@@ -1,0 +1,29 @@
+# Disable dynamic reloading of applications
+set configs.config.server-config.admin-service.das-config.dynamic-reload-enabled=false
+
+# Disable auto deployment
+set configs.config.server-config.admin-service.das-config.autodeploy-enabled=false
+
+# Configuring Hazelcast cluster
+#set-hazelcast-configuration --clusterName=my-production-cluster --target=server-config
+
+# Using a reference to a system property payara.deployed-app-name
+#set configs.config.server-config.http-service.virtual-server.server.default-web-module=${payara.deployed-app-name}
+
+# Using a reference to an environment variable security-enabled
+#set configs.config.server-config.network-config.protocols.protocol.http-listener-1.security-enabled=${ENV=security-enabled}
+
+# Disable HealthChecks
+# https://payara.gitbooks.io/payara-server/documentation/microprofile/healthcheck.html
+set-microprofile-healthcheck-configuration --enabled=false
+
+# Disable Metrics
+# https://payara.gitbooks.io/payara-server/documentation/microprofile/metrics/metrics-configuration.html
+set-metrics-configuration --enabled=false
+
+# Disable OpenAPI
+# https://payara.gitbooks.io/payara-server/documentation/microprofile/openapi.html
+set-openapi-configuration --enabled=false
+
+# Disable ORequestTracing
+set-requesttracing-configuration --enabled=false

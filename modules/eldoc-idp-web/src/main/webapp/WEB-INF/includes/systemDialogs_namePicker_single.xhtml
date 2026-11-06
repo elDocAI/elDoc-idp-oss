@@ -1,0 +1,73 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces"
+        xmlns:cc="jakarta.faces.composite/elcomp"
+>
+
+    <!-- Name Picker Dialog: Single selection mode -->
+    <div class="grid grid-nogutter">
+
+        <div class="col-12 lg:col-5 np-left-panel">
+            <p:dataTable id="diPkrTbl" widgetVar="diPkrTblWV" value="#{uiNamePicker.lazyDS}" lazy="true" var="rowData" rowIndexVar="rowIndex"
+                         rowKey="#{rowData.getId()}" selection="#{uiNamePicker.sourceDISelected}" selectionRowMode="add" selectionMode="single"
+                         paginator="false" scrollable="true" scrollRows="25" scrollHeight="200" virtualScroll="true"
+                         emptyMessage="#{labels['general.dataTable.noRecordsFound']}" filterDelay="800" selectionDisabled="#{uiNamePicker.isDisabledSelection(rowData)}" >
+
+                <p:column selectionBox="true" width="20" />
+
+                <p:column headerText="#{labels['ccNamePicker.itemsSelection']}">
+                    <h:outputText value="#{rowData}" converter="directoryItemNameConverter" />
+                </p:column>
+
+            </p:dataTable>
+        </div>
+
+        <div class="col-12 lg:col-2 np-mid-panel p-picklist">
+            <div class="p-picklist-buttons">
+                <p:commandButton id="addSelectedBtn" action="#{uiNamePicker.addSelected()}" process="diPkrTbl addSelectedBtn" update="diPkrTbl diSelTbl"
+                                 title="#{labels['ccNamePicker.btn.addSelected']}" icon="ui-icon-arrow-1-e" />
+                <p:commandButton id="removeSelectedBtn" action="#{uiNamePicker.removeSelected()}" process="diSelTbl removeSelectedBtn" update="diPkrTbl diSelTbl"
+                                 title="#{labels['ccNamePicker.btn.removeSelected.title']}" icon="ui-icon-arrow-1-w" class="p-button-secondary p-button-outlined" />
+                <p:commandButton id="removeAllBtn" action="#{uiNamePicker.removeAll()}" process="removeAllBtn" update="diPkrTbl diSelTbl" onstart="PF('diPkrTblWV').unselectAllRows();"
+                                 title="#{labels['ccNamePicker.btn.removeAll.title']}" icon="ui-icon-arrowstop-1-w" class="p-button-secondary p-button-outlined" />
+            </div>
+        </div>
+
+        <div class="col-12 lg:col-5 np-right-panel">
+            <p:dataTable id="diSelTbl" value="#{uiNamePicker.targetDIList}" var="rowData" rowIndexVar="rowIndex"
+                         rowKey="#{rowData.getId()}" selection="#{uiNamePicker.targetDISelected}"
+                         paginator="false" scrollable="true" scrollHeight="200" emptyMessage="#{labels['ccNamePicker.noItemsSelected']}">
+
+                <p:column selectionBox="true" width="20" />
+
+                <p:column headerText="#{labels['ccNamePicker.selectedItems']}">
+                    <cc:nameItem value="#{rowData.idSys}" />
+                </p:column>
+
+            </p:dataTable>
+        </div>
+
+    </div>
+
+</ui:composition>

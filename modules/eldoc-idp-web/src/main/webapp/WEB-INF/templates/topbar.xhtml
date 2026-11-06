@@ -1,0 +1,129 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:faces="jakarta.faces"
+        xmlns:c="jakarta.tags.core"
+        xmlns:p="primefaces">
+
+    <p:importConstants type="ai.eldoc.constants.Pages"/>
+    <p:importConstants type="ai.eldoc.constants.DirectoryConstants"/>
+
+    <div class="topbar clearfix">
+        <div class="topbar-left">
+            <p:link id="logo-lnk" outcome="#{pageController.logoLinkUrl}" title="#{pageController.pageTitle}">
+                <span class="topbar-logo">elDoc</span>
+                <span class="topbar-brand-module">IDP</span>
+                <span class="topbar-brand-tag">OSS</span>
+            </p:link>
+        </div>
+
+        <div class="topbar-right">
+            <a id="menu-button" href="#" class="#{pageController.menuButtonClassAddon}" aria-label="Toggle main menu" aria-controls="main-menu" aria-expanded="false">
+                <i class="fa-solid fa-angle-left" style="width: auto;"></i>
+            </a>
+
+            <a id="topbar-menu-button" href="#" aria-label="Toggle navigation" aria-controls="main-menu" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </a>
+
+            <span id="modSel" class="module-select disabled">#{labels[pageController.uiModuleLabelId]}</span>
+
+            <ul class="topbar-items fadeInDown">
+
+                <li faces:rendered="#{userContext.userTypeInternal ? configContext.langsEnabled.size() > 1 : configContext.langsDefault.size() > 1}">
+                    <a href="#" title="#{labels['menuUI.uiLang']}" aria-label="#{labels['menuUI.uiLang']}" aria-expanded="false" aria-controls="langSelect">
+                        <i class="topbar-icon fa-solid fa-fw fa-language" aria-hidden="true"></i>
+                    </a>
+                    <ul id="langSelect" class="layout-menu">
+                        <c:forEach items="#{userContext.userTypeInternal ? configContext.langsEnabled : configContext.langsDefault}" var="lang">
+                            <li role="menuitem">
+                                <a href="#" data-lang="#{lang}">
+                                    <span>#{localeContext.getLabel("general.lang.".concat(lang).concat(".label"), lang)}</span>
+                                </a>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </li>
+
+                <li faces:rendered="#{userContext.adminAny}">
+                    <a href="#" title="#{labels['menuUI.systemSettings']}" aria-label="#{labels['menuUI.systemSettings']}" aria-expanded="false" aria-controls="systemSettingsMenu">
+                        <i class="topbar-icon pi pi-fw pi-cog" aria-hidden="true"/>
+                    </a>
+                    <ul id="systemSettingsMenu" class="layout-menu">
+                        <li role="menuitem">
+                            <p:link id="adminLogs" outcome="#{Pages.PAGE_ADMIN_LOGS}">
+                                <i class="fa-solid fa-fw fa-align-justify"/>
+                                <span>#{labels['menuUI.adminLogs']}</span>
+                            </p:link>
+                        </li>
+                        <li role="menuitem">
+                            <p:link id="adminConfig" outcome="#{Pages.PAGE_ADMIN_CONFIG}">
+                                <i class="fa-solid fa-fw fa-gear"/>
+                                <span>#{labels['menuUI.adminConfig']}</span>
+                            </p:link>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="profile-item">
+                    <a href="#" aria-expanded="false">
+                        <ui:fragment rendered="#{(not empty userContext.user) and (not empty directoryController.getItemPicUrl(userContext.user))}">
+                            <p:graphicImage url="#{directoryController.getItemPicUrl(userContext.user)}" styleClass="profile-image"/>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{(empty userContext.user) or (empty directoryController.getItemPicUrl(userContext.user))}">
+                            <i class="fa-solid fa-user profile-image profile-image-placeholder" aria-hidden="true"></i>
+                        </ui:fragment>
+                        <span class="topbar-item-name">#{userContext.nameShort}</span>
+                    </a>
+
+                    <ul class="layout-menu">
+
+                        <li role="menuitem">
+                            <a id="userGuide" href="#{pageController.userGuideUrl}" title="#{labels['general.userGuide']}" target="_blank">
+                                <i class="fa-solid fa-fw fa-book"></i>
+                                <span>#{labels['general.userGuide']}</span>
+                            </a>
+                        </li>
+
+                        <li role="menuitem" faces:rendered="#{userContext.adminAny}">
+                            <a id="adminGuide" href="#{pageController.adminGuideUrl}" title="#{labels['general.adminGuide']}" target="_blank">
+                                <i class="fa-solid fa-fw fa-book-bookmark"></i>
+                                <span>#{labels['general.adminGuide']}</span>
+                            </a>
+                        </li>
+
+                        <li role="menuitem">
+                            <a id="logoutLnk" href="#" title="#{labels['header.logout.title']}">
+                                <i class="fa-solid fa-fw fa-right-from-bracket"></i>
+                                <span>#{labels['header.logout']}</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+</ui:composition>

@@ -1,0 +1,139 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:p="primefaces"
+      xmlns:o="omnifaces"
+      xmlns:faces="jakarta.faces"
+      xmlns:c="jakarta.tags.core"
+      xmlns:ui="jakarta.faces.facelets"
+      data-p-density="compact">
+
+    <f:view locale="#{localeContext.locale}">
+
+        <f:metadata>
+            <o:viewAction action="#{loginController.onLoginPageLoad()}"/>
+        </f:metadata>
+
+        <h:head>
+            <f:facet name="first">
+                <meta charset="UTF-8"/>
+                <title>Login | #{pageController.pageTitle}</title>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+                <meta name="mobile-web-app-capable" content="yes"/>
+                <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/jakarta.faces.resource/favicon.png"/>
+            </f:facet>
+            <meta name="robots" content="noindex, nofollow"/>
+            <meta name="description" content="#{pageController.pageDescription}"/>
+            <link rel="image_src" type="image/jpeg" href="#{request.contextPath}/jakarta.faces.resource/elDocThumbnail.jpg"/>
+            <meta property="og:title" content="#{pageController.pageTitle}"/>
+            <meta property="og:description" content="#{pageController.pageDescription}"/>
+            <meta property="og:image" content="#{request.contextPath}/jakarta.faces.resource/elDocThumbnail.jpg"/>
+            <meta property="og:image:type" content="image/jpeg"/>
+
+            <h:outputScript name="js/vldt.js" library="eldoc" pt:defer="true"/>
+        </h:head>
+
+        <h:body styleClass="eldoc-theme login-body" lang="#{localeContext.localeLanguageTag}">
+
+            <div class="login-image-eldoc" />
+
+            <div class="card login-panel login-eldoc p-fluid">
+
+                <div class="login-panel-content">
+
+                    <o:form id="f1">
+
+                        <div class="login-brand">
+                            <span class="login-logo">elDoc</span>
+                            <span class="login-brand-module">IDP</span>
+                            <span class="login-brand-tag">OSS</span>
+                        </div>
+
+                        <div class="login-heading">
+                            <span class="login-mark" aria-hidden="true"><i class="pi pi-user"></i></span>
+                            <div>
+                                <h2 class="welcome-text">#{labels['page.login.welcome']}</h2>
+                                <span class="guest-sign-in">#{labels['page.login.pleasesignin']}</span>
+                            </div>
+                        </div>
+
+                        <!-- Messages -->
+                        <div class="login-messages">
+                            <p:messages id="msgs" showDetail="false" closable="true" globalOnly="false">
+                                <p:autoUpdate/>
+                            </p:messages>
+                        </div>
+
+                        <!-- Login form fields -->
+                        <ui:fragment rendered="#{loginController.loginFormRendered}">
+
+                            <div class="login-field">
+                                <p:inputText id="login" value="#{loginController.username}" label="#{labels['user.login']}" converter="stringTrimConverter"
+                                             placeholder="Hint: admin" placeholder2="#{labels['user.login']}" required="true" pt:autofocus="on"/>
+                            </div>
+
+                            <div class="login-field">
+                                <p:password id="passwd" value="#{loginController.password}" label="#{labels['user.password']}" converter="stringTrimConverter"
+                                            placeholder="Hint: see console output" placeholder2="#{labels['user.password']}" feedback="false" required="true"/>
+                            </div>
+
+                            <p:selectBooleanCheckbox id="remember-me" value="#{loginController.rememberMe}" itemLabel="#{labels['page.login.rememberme']}" label="#{labels['page.login.rememberme']}" rendered="false"/>
+
+                            <div class="login-actions">
+                                <p:commandButton id="btnLogin" action="#{loginController.doLogin}" value="#{labels['general.btn.logIn']}" process="@form" update="@form" icon="pi pi-sign-in"/>
+                            </div>
+
+                        </ui:fragment>
+
+                        <!-- Languages Select -->
+                        <c:if test="#{configContext.langsDefault.size() > 1}">
+                            <div faces:id="langSelect" class="login-languages">
+                                <c:forEach items="#{configContext.langsDefault}" var="langSysCode">
+                                    <p:commandLink id="lsl_#{langSysCode}" value="#{localeContext.getLabel('general.lang.'.concat(langSysCode), langSysCode)}" action="#{localeContext.setLocale(langSysCode)}"
+                                                   immediate="true" ajax="false"/>
+                                </c:forEach>
+                            </div>
+                        </c:if>
+
+                        <div class="login-version">
+                            <h:outputLabel value="v#{configContext.version}"/>
+                        </div>
+
+                    </o:form>
+
+                </div>
+
+            </div>
+
+            <h:outputStylesheet name="fonts/Inter/Inter.css" />
+            <h:outputStylesheet library="webjars" name="primeflex/4.0.0/primeflex.min.css"/>
+            <h:outputStylesheet library="eldoc" name="css/layout.css" />
+            <h:outputStylesheet library="eldoc" name="css/eldoc.css" />
+        </h:body>
+
+    </f:view>
+
+</html>

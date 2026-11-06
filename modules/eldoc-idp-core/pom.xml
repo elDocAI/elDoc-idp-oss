@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (C) 2022-2026 elDoc Limited
+  ~  *
+  ~  * This file is part of elDoc IDP OSS.
+  ~  *
+  ~  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  ~  * it under the terms of the GNU Affero General Public License as published
+  ~  * by the Free Software Foundation, version 3.
+  ~  *
+  ~  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  ~  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  ~  * General Public License for more details.
+  ~  *
+  ~  * SPDX-License-Identifier: AGPL-3.0-only
+  ~  */
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ai.eldoc</groupId>
+        <artifactId>eldoc-idp-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>eldoc-idp-core</artifactId>
+    <packaging>jar</packaging>
+
+    <name>eldoc-idp-core</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>ai.eldoc</groupId>
+            <artifactId>eldoc-base-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+            <artifactId>owasp-java-html-sanitizer</artifactId>
+        </dependency>
+
+        <!--elDoc basic dependencies-->
+        <dependency>
+            <groupId>org.omnifaces</groupId>
+            <artifactId>omnifaces</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bitbucket.b_c</groupId>
+            <artifactId>jose4j</artifactId>
+        </dependency>
+
+        <!-- Langchain4j (AI) -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-agentic</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Integration with Amazon AWS Bedrock -->
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-bedrock</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Required explicitly to support configuring Bedrock http client -->
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>apache-client</artifactId>
+            <!-- IMPORTANT! It is also a runtime dependency of an AWS SDK library (transitive from langchain4j-bedrock) - versions need to be in sync  -->
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
+            <!-- IMPORTANT! It is also a runtime dependency of an AWS SDK library (transitive from langchain4j-bedrock) - versions need to be in sync  -->
+        </dependency>
+        <dependency>
+            <!-- Integration with OpenAI-compatible api -->
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+        <dependency>
+            <!-- In-process embedding model - ONNX -->
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Jina scoring integration - as primarily used API standard in open-source implementations -->
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-jina</artifactId>
+        </dependency>
+        <dependency>
+            <!-- In-process scoring model - ONNX -->
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-onnx-scoring</artifactId>
+        </dependency>
+
+        <!-- OpenCV and OCR dependencies -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>opencv-platform</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>tesseract-platform</artifactId>
+        </dependency>
+
+        <!-- PDF Box libs -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>xmpbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+        </dependency>
+        <!-- Support for JBIG2 -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>jbig2-imageio</artifactId>
+        </dependency>
+
+        <!-- MFA dependencies -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.taimos</groupId>
+            <artifactId>totp</artifactId>
+        </dependency>
+
+        <!-- Commons -->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+        </dependency>
+
+        <!-- Shiro dependencies -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-jakarta-ee</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-cdi</artifactId>
+        </dependency>
+
+        <!-- Logging dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+
+        <!-- ImageIO Implementation -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.servlet</groupId>
+            <artifactId>servlet</artifactId>
+            <classifier>jakarta</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-jpeg</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-tiff</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-hdr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-psd</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-sgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-pnm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-tga</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-xwd</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.sejda.imageio</groupId>
+            <artifactId>webp-imageio</artifactId>
+        </dependency>
+        <!-- Support for JPEG2000 -->
+        <dependency>
+            <groupId>com.github.jai-imageio</groupId>
+            <artifactId>jai-imageio-core</artifactId>
+        </dependency>
+        <!-- Support for SVG -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-transcoder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-batik</artifactId>
+        </dependency>
+
+        <!-- Misc dependencies -->
+        <dependency>
+            <groupId>org.noggit</groupId>
+            <artifactId>noggit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.seruco.encoding</groupId>
+            <artifactId>base62</artifactId>
+        </dependency>
+
+        <!-- Jakarta EE 11 and container dependencies -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.cache</groupId>
+            <artifactId>cache-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Yasson is the default Jsonb provider in Payara 6 -->
+            <groupId>org.eclipse.yasson</groupId>
+            <artifactId>yasson</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Jackson is alternate Jsonb provider available in Payara 6 -->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-binding</artifactId>
+        </dependency>
+        <dependency>
+            <!-- JAX-RS extension for file upload support -->
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+        </dependency>
+
+        <!-- GraalVM JS engine -->
+        <dependency>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js-scriptengine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js-community</artifactId>
+            <type>pom</type>
+            <scope>runtime</scope>
+        </dependency>
+
+
+        <!-- ******************** -->
+        <!-- Testing dependencies -->
+        <!-- ******************** -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-reporting</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Below dependencies required for using JsonbUtils (JsonbBuilder.newBuilder().withConfig(getConfigStandard()).build() requires beanManager for building the instance) -->
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>fish.payara.extras</groupId>
+            <artifactId>payara-embedded-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>reset-bytedeco-runtime-staging</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <condition property="bytedeco.unsupported.platform">
+                                    <or>
+                                        <equals arg1="${javacpp.platform}" arg2="unsupported"/>
+                                        <equals arg1="${native.libs.platform}" arg2="unsupported"/>
+                                    </or>
+                                </condition>
+                                <fail if="bytedeco.unsupported.platform"
+                                      message="No Bytedeco native classifier is configured for this OS and CPU architecture."/>
+                                <delete dir="${project.build.directory}/bytedeco-runtime-libs"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stage-bytedeco-runtime-libraries</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <resourcecount property="bytedeco.host.jar.count">
+                                    <fileset dir="${project.build.directory}/bytedeco-runtime-libs"
+                                             includes="*-${javacpp.platform}.jar"/>
+                                </resourcecount>
+                                <condition property="bytedeco.host.jar.missing">
+                                    <equals arg1="${bytedeco.host.jar.count}" arg2="0"/>
+                                </condition>
+                                <fail if="bytedeco.host.jar.missing"
+                                      message="No Bytedeco JARs were resolved for ${javacpp.platform}."/>
+
+                                <delete quiet="true">
+                                    <fileset dir="${project.basedir}/../../libs"
+                                             includes="javacpp-*.jar,leptonica-*.jar,openblas-*.jar,opencv-*.jar,tesseract-*.jar"
+                                             erroronmissingdir="false"/>
+                                    <fileset dir="${project.basedir}/../../libs/linux"
+                                             includes="javacpp-*.jar,leptonica-*.jar,openblas-*.jar,opencv-*.jar,tesseract-*.jar"
+                                             erroronmissingdir="false"/>
+                                    <fileset dir="${project.basedir}/../../libs/win"
+                                             includes="javacpp-*.jar,leptonica-*.jar,openblas-*.jar,opencv-*.jar,tesseract-*.jar"
+                                             erroronmissingdir="false"/>
+                                    <fileset dir="${project.basedir}/../../libs/mac"
+                                             includes="javacpp-*.jar,leptonica-*.jar,openblas-*.jar,opencv-*.jar,tesseract-*.jar"
+                                             erroronmissingdir="false"/>
+                                </delete>
+                                <mkdir dir="${project.basedir}/../../libs/${native.libs.platform}"/>
+                                <copy todir="${project.basedir}/../../libs">
+                                    <fileset dir="${project.build.directory}/bytedeco-runtime-libs"
+                                             includes="*.jar"
+                                             excludes="*-android-*.jar,*-ios-*.jar,*-linux-*.jar,*-macosx-*.jar,*-windows-*.jar"/>
+                                </copy>
+                                <copy todir="${project.basedir}/../../libs/${native.libs.platform}">
+                                    <fileset dir="${project.build.directory}/bytedeco-runtime-libs"
+                                             includes="*-${javacpp.platform}.jar"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-bytedeco-runtime-dependencies</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>org.bytedeco</includeGroupIds>
+                            <includeScope>provided</includeScope>
+                            <outputDirectory>${project.build.directory}/bytedeco-runtime-libs</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

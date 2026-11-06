@@ -1,0 +1,75 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        xmlns:p="primefaces"
+        xmlns:composite="jakarta.faces.composite"
+>
+
+    <composite:interface componentType="cfTable">
+        <composite:attribute name="dataSource" type="java.lang.Object" required="true" shortDescription="Document data source" />
+        <composite:attribute name="fieldName" type="java.lang.String" required="true" shortDescription="Field name" />
+        <composite:attribute name="label" type="java.lang.String" required="false" shortDescription="Field UI label" />
+        <composite:attribute name="required" type="java.lang.Boolean" required="false" shortDescription="Required flag" />
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag" />
+        <composite:attribute name="fieldIndex" type="java.lang.Integer" required="true" shortDescription="Field Index value" />
+        <composite:attribute name="fieldDef" type="ai.eldoc.model.CustomField" required="true" shortDescription="Custom Field definition" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <div class="col-12">
+
+            <p:dataTable id="cfDt" value="#{cc.attrs.dataSource[cc.attrs.fieldName]}" var="row" rowIndexVar="rowNum" reflow="true" styleClass="table-sm cf-field cf-table" size="small"
+                         paginator="true" rows="15" paginatorPosition="bottom" paginatorAlwaysVisible="false" pageLinks="3" rowsPerPageTemplate="5,15,25,50,100"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         emptyMessage="#{labels['general.dataTable.noRecordsFound']}">
+
+                <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                <f:facet name="header">
+                    <p:outputLabel id="hdrLbl" value="#{cc.attrs.label}" for="cfDt" class="mr-1" />
+                    <p:commandButton id="btnTableRowAdd" action="#{cc.addRowToTable(cc.attrs.fieldDef, cc.attrs.dataSource, cc.attrs.fieldName)}" value="Add row"
+                                     process="cfDt" update="cfDt" rendered="#{!cc.attrs.disabled and !cc.attrs.fieldDef.properties.dsblRowAdd}"
+                                     icon="fa-solid fa-fw fa-plus" styleClass="btn-sm p-button-secondary p-button-outlined" style="margin-top: -5px; margin-bottom: -5px;" />
+                </f:facet>
+
+                <p:columns id="cell" value="#{cc.attrs.fieldDef.fields}" var="column" columnIndexVar="colIndex" headerText="#{column.name[localeContext.langSystemCode]}" styleClass="p-fluid">
+                    <!--@elvariable id="colIndex" type="java.lang.Integer"-->
+                    <p:inputText id="i1" value="#{row[colIndex]}" converter="stringTrimConverter" autocomplete="off"
+                                 required="#{cc.attrs.required or column.required}" disabled="#{cc.attrs.disabled or !column.enabled}">
+                        <f:attribute name="label" value="Table [#{cc.attrs.label}] column [#{column.name[localeContext.langSystemCode]}] row [#{rowIndex + 1}]" />
+                    </p:inputText>
+                </p:columns>
+
+                <p:column headerText="" width="32" rendered="#{!cc.attrs.disabled and !cc.attrs.fieldDef.properties.dsblRowRmv}">
+                    <p:commandButton id="btnTableRowRemove" action="#{cc.removeRowFromTable(cc.attrs.dataSource, cc.attrs.fieldName, rowIndex)}"
+                                     process="cfDt" update="cfDt" rendered="#{!cc.attrs.disabled}" title="#{labels['general.btn.delete']}"
+                                     icon="fa-solid fa-fw fa-trash" styleClass="p-button-secondary p-button-outlined"/>
+                </p:column>
+            </p:dataTable>
+
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

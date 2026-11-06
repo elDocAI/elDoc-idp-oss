@@ -1,0 +1,33 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <option name="RIGHT_MARGIN" value="250" />
+    <HTMLCodeStyleSettings>
+      <option name="HTML_DO_NOT_INDENT_CHILDREN_OF" value="" />
+    </HTMLCodeStyleSettings>
+    <JavaCodeStyleSettings>
+      <option name="FIELD_NAME_PREFIX" value="_" />
+      <option name="DELETE_UNUSED_MODULE_IMPORTS" value="true" />
+      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="3" />
+      <option name="IMPORT_LAYOUT_TABLE">
+        <value>
+          <package name="" withSubpackages="true" static="false" module="true" />
+          <package name="" withSubpackages="true" static="false" />
+          <package name="javax" withSubpackages="true" static="false" />
+          <package name="java" withSubpackages="true" static="false" />
+          <package name="" withSubpackages="true" static="true" />
+        </value>
+      </option>
+      <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
+      <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
+    </JavaCodeStyleSettings>
+    <codeStyleSettings language="JAVA">
+      <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="1" />
+      <option name="BLANK_LINES_AFTER_PACKAGE" value="0" />
+      <option name="BLANK_LINES_AROUND_METHOD" value="2" />
+      <option name="BLANK_LINES_AFTER_CLASS_HEADER" value="1" />
+    </codeStyleSettings>
+    <codeStyleSettings language="XML">
+      <option name="LINE_COMMENT_AT_FIRST_COLUMN" value="false" />
+    </codeStyleSettings>
+  </code_scheme>
+</component>

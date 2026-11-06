@@ -1,0 +1,113 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:p="primefaces"
+      data-p-density="compact">
+
+    <p:importConstants type="ai.eldoc.constants.Pages"/>
+    <p:importConstants type="ai.eldoc.bpm.BpmConstants"/>
+    <p:importConstants type="ai.eldoc.bpm.BpmAclConstants"/>
+    <p:importConstants type="ai.eldoc.constants.DirectoryConstants"/>
+
+    <f:view locale="#{localeContext.locale}">
+
+        <ui:insert name="metadata"/>
+
+        <h:head id="pageHead">
+            <f:facet name="first">
+                <meta charset="UTF-8"/>
+                <title><ui:insert name="title">#{pageController.pageTitle}</ui:insert></title>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+                <meta name="mobile-web-app-capable" content="yes"/>
+                <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/jakarta.faces.resource/favicon.png"/>
+                <meta name="contextPath" content="#{request.contextPath}"/>
+            </f:facet>
+
+            <meta name="robots" content="noindex, nofollow"/>
+            <meta name="description" content="#{pageController.pageDescription}"/>
+            <link rel="image_src" type="image/jpeg" href="#{request.contextPath}/jakarta.faces.resource/elDocThumbnail.jpg"/>
+            <meta property="og:title" content="#{pageController.pageTitle}"/>
+            <meta property="og:description" content="#{pageController.pageDescription}"/>
+            <meta property="og:image" content="#{request.contextPath}/jakarta.faces.resource/elDocThumbnail.jpg"/>
+            <meta property="og:image:type" content="image/jpeg"/>
+            <!--<meta name="theme-color" content="{uiConfigContext.themeColorValuesMap[uiConfigContext.theme]}" />-->
+
+            <h:outputScript name="js/eldoc.js" library="eldoc" target="head" pt:defer="true"/>
+
+            <ui:insert name="head"/>
+        </h:head>
+
+        <h:body styleClass="eldoc-theme main-body #{pageController.cssPageName}" lang="#{localeContext.localeLanguageTag}">
+
+            <div class="layout-wrapper menu-layout-static #{pageController.menuLayoutClassAddon}">
+
+                <ui:include src="./topbar.xhtml"/>
+                <ui:include src="./menu.xhtml"/>
+
+                <div class="layout-main">
+                    <ui:insert name="content"/>
+                </div>
+
+                <!--<ui:include src="./footer.xhtml"/>-->
+
+            </div>
+
+            <ui:include src="/WEB-INF/includes/systemDialogs.xhtml"/>
+            <ui:include src="/WEB-INF/includes/licOverlay.xhtml"/>
+
+            <p:ajaxStatus id="stat">
+                <f:facet name="start">
+                    <div style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
+                        <i class="pi pi-spin pi-spinner layout-ajax-loader-icon" aria-hidden="true"/>
+                    </div>
+                </f:facet>
+                <f:facet name="complete">
+                    <h:outputText value=""/>
+                </f:facet>
+            </p:ajaxStatus>
+
+
+            <h:outputStylesheet library="fa" name="all.min.css"/>
+            <h:outputStylesheet library="webjars" name="primeflex/4.0.0/primeflex.min.css"/>
+            <h:outputStylesheet name="fonts/Inter/Inter.css"/>
+            <h:outputStylesheet library="eldoc" name="css/layout.css"/>
+            <h:outputStylesheet library="eldoc" name="css/eldoc.css">
+                <f:attribute name="media" value="screen,handheld,tv,projection"/>
+            </h:outputStylesheet>
+            <h:outputStylesheet library="eldoc" name="css/eldoc-print.css">
+                <f:attribute name="media" value="print"/>
+            </h:outputStylesheet>
+
+            <ui:insert name="pageBottom"/>
+
+            <h:outputScript library="eldoc" name="js/eldoc-locales.js" target="body" pt:defer="true"/>
+
+        </h:body>
+
+    </f:view>
+
+</html>

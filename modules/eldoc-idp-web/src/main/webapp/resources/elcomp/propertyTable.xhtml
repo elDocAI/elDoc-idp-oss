@@ -1,0 +1,82 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:composite="jakarta.faces.composite"
+    xmlns:cc="jakarta.faces.composite/elcomp"
+    xmlns:f="jakarta.faces.core"
+    xmlns:jsf="jakarta.faces"
+    xmlns:h="jakarta.faces.html"
+    xmlns:o="omnifaces">
+
+    <composite:interface componentType="propertyTable">
+        <composite:attribute name="propAwareModel" type="ai.eldoc.model.PropertyAwareModel" required="true" shortDescription="Property aware model" />
+        <composite:attribute name="propPrefix" type="java.lang.String" required="true" shortDescription="Propertyies prefix" />
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <p:dataTable id="propTbl" value="#{cc.getPropList(cc.attrs.propAwareModel, cc.attrs.propPrefix)}" var="rowData" rowIndexVar="rowIndex"
+                     rows="10" rowsPerPageTemplate="10,25,50,100" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" pageLinks="5"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     currentPageReportTemplate="Showing {startRecord}-{endRecord} of {totalRecords}"
+                     reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" widgetVar="tablePropsWV" class="table-sm" size="small">
+
+            <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+            <p:column headerText="#" width="18">
+                <h:outputText value="#{rowIndex+1}"/>
+            </p:column>
+
+            <p:column headerText="#{labels['property.name']}">
+                <p:outputLabel id="prpNm" value="#{rowData}" title="#{cc.getDescription(rowData)}" />
+            </p:column>
+
+            <p:column headerText="#{labels['property.value']}">
+                <cc:propertyField id="prpVl" value="#{cc.attrs.propAwareModel.properties[rowData]}" name="#{rowData}" disabled="#{cc.attrs.disabled}" />
+            </p:column>
+
+            <p:column headerText="" width="32">
+                <p:commandButton id="btnPropRemove" action="#{cc.actionRemove(rowData, cc.attrs.propAwareModel)}" process="propTbl" update="propTbl"
+                                 rendered="#{!cc.attrs.disabled}" icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined">
+                    <o:skipValidators />
+                </p:commandButton>
+            </p:column>
+
+            <f:facet name="footer">
+                <div jsf:id="propAddArea" jsf:rendered="#{!cc.attrs.disabled}" class="buttons-right">
+                    <p:autoComplete id="newProp" value="#{cc.propName}" dropdown="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" completeMethod="#{cc.completePropName}" effect="fade">
+                        <f:attribute name="propPrefix" value="#{cc.attrs.propPrefix}" />
+                    </p:autoComplete>
+                    <p:commandButton id="btnPropAdd" value="#{labels['property.btnAdd.title']}" action="#{cc.actionAdd(cc.attrs.propPrefix, cc.attrs.propAwareModel)}" process="propTbl" update="propTbl"
+                                     icon="fa-solid fa-fw fa-plus" class="p-button-secondary p-button-outlined">
+                        <o:skipValidators />
+                    </p:commandButton>
+                </div>
+            </f:facet>
+
+        </p:dataTable>
+
+    </composite:implementation>
+
+</ui:component>

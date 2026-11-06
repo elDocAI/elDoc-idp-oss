@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (C) 2022-2026 elDoc Limited
+  ~  *
+  ~  * This file is part of elDoc IDP OSS.
+  ~  *
+  ~  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  ~  * it under the terms of the GNU Affero General Public License as published
+  ~  * by the Free Software Foundation, version 3.
+  ~  *
+  ~  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  ~  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  ~  * General Public License for more details.
+  ~  *
+  ~  * SPDX-License-Identifier: AGPL-3.0-only
+  ~  */
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ai.eldoc</groupId>
+        <artifactId>eldoc-idp-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>eldoc-idp-web</artifactId>
+    <packaging>war</packaging>
+
+    <name>eldoc-idp-web</name>
+
+    <properties>
+        <payara.http.port>8080</payara.http.port>
+        <payara.debug.port>5080</payara.debug.port>
+
+        <!-- Runtime libraries are staged in the repository-level libs/ folder by the core
+             module. Common jars live directly in libs/; host-specific natives live in the
+             selected platform subfolder. Both directories are embedded into MICRO-INF/lib
+             of the Payara Micro Uber JAR and added at runtime by the `dev-idea` and
+             `dev-mvn` profiles. -->
+        <custom.libs.dir>${project.basedir}/../../libs</custom.libs.dir>
+        <custom.libs.platform.dir>${project.basedir}/../../libs/${native.libs.platform}</custom.libs.platform.dir>
+        <!-- Payara Micro deployment configuration (logging, boot commands). This is a
+             non-Maven folder, so its contents are not added to the WAR classpath; the
+             bundle step reads them explicitly. -->
+        <payara.resources.dir>${project.basedir}/resources</payara.resources.dir>
+        <uber.jar.classifier>${revision}-server-${native.libs.platform}</uber.jar.classifier>
+        <!-- Exploded web application deployed by the development profiles. `dev-idea`
+             overrides this with the IntelliJ artifact; `dev-mvn` with the Maven target. -->
+        <eldoc.deploy.dir>${project.basedir}/../../out/artifacts/eldoc</eldoc.deploy.dir>
+    </properties>
+
+    <dependencies>
+        <!-- elDoc own dependencies -->
+        <dependency>
+            <groupId>ai.eldoc</groupId>
+            <artifactId>eldoc-idp-core</artifactId>
+        </dependency>
+
+        <!--elDoc basic dependencies-->
+        <dependency>
+            <groupId>org.omnifaces</groupId>
+            <artifactId>omnifaces</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>primeflex</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- Required by PF TextEditor component when secure="true" -->
+            <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+            <artifactId>owasp-java-html-sanitizer</artifactId>
+        </dependency>
+
+        <!-- Shiro dependencies -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-jakarta-ee</artifactId>
+        </dependency>
+
+        <!-- Jakarta EE 11 and container dependencies -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Added with provided scope to avoid it being included into resulting WAR -->
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>elDoc-idp-oss</finalName>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <archiveClasses>true</archiveClasses>
+                    <webResources>
+                        <resource>
+                            <!-- Required for filtering web.xml for replacing secret keys in the path \target\elDoc-5.10.1-SNAPSHOT\WEB-INF\web.xml and the resulting WAR -->
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>WEB-INF/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+
+            <!--
+                Executable Payara Micro Uber JAR containing the built WAR. Bound to the
+                package phase so `mvn package` / `mvn verify` produce
+                target/${project.build.finalName}-${uber.jar.classifier}.jar with the WAR
+                under MICRO-INF/deploy/ROOT.war.
+                The plugin version is managed in the parent POM; the Payara Micro runtime
+                version is aligned with ${payara.version}.
+            -->
+            <plugin>
+                <groupId>fish.payara.maven.plugins</groupId>
+                <artifactId>payara-micro-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bundle-uber-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <payaraMicroVersion>${payara.version}</payaraMicroVersion>
+                    <autoDeployArtifact>true</autoDeployArtifact>
+                    <autoDeployEmptyContextRoot>true</autoDeployEmptyContextRoot>
+                    <uberJarClassifier>${uber.jar.classifier}</uberJarClassifier>
+                    <systemProperties>
+                        <property>
+                            <name>payaramicro.noCluster</name>
+                            <value>true</value>
+                        </property>
+                        <property>
+                            <name>payaramicro.disablePhoneHome</name>
+                            <value>true</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+
+            <!--
+                The bundle goal only supports repository artifacts as custom libraries
+                (its customJars parameter feeds maven-dependency-plugin:copy). The runtime
+                libraries in ../../libs are plain local files, so they are added straight
+                into MICRO-INF/lib of the already-built Uber JAR. This runs after the
+                bundle execution above because both are bound to the package phase.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>embed-custom-libs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <available property="uber.jar.present"
+                                           file="${project.build.directory}/${project.build.finalName}-${uber.jar.classifier}.jar"/>
+                                <fail unless="uber.jar.present"
+                                      message="Payara Micro Uber JAR ${project.build.finalName}-${uber.jar.classifier}.jar was not produced; cannot embed ${custom.libs.dir} into MICRO-INF/lib."/>
+                                <available property="platform.libs.present"
+                                           file="${custom.libs.platform.dir}"
+                                           type="dir"/>
+                                <fail unless="platform.libs.present"
+                                      message="Host-specific libraries directory ${custom.libs.platform.dir} does not exist."/>
+                                <available property="payara.logging.present"
+                                           file="${payara.resources.dir}/eldoc-logging.properties"/>
+                                <fail unless="payara.logging.present"
+                                      message="Payara logging configuration ${payara.resources.dir}/eldoc-logging.properties does not exist."/>
+                                <available property="payara.preBoot.present"
+                                           file="${payara.resources.dir}/pre-boot-commands.txt"/>
+                                <fail unless="payara.preBoot.present"
+                                      message="Payara pre-boot commands ${payara.resources.dir}/pre-boot-commands.txt do not exist."/>
+                                <available property="payara.postBoot.present"
+                                           file="${payara.resources.dir}/post-boot-commands.txt"/>
+                                <fail unless="payara.postBoot.present"
+                                      message="Payara post-boot commands ${payara.resources.dir}/post-boot-commands.txt do not exist."/>
+                                <zip destfile="${project.build.directory}/${project.build.finalName}-${uber.jar.classifier}.jar"
+                                     update="true">
+                                    <zipfileset dir="${custom.libs.dir}"
+                                                includes="*.jar"
+                                                prefix="MICRO-INF/lib"/>
+                                    <zipfileset dir="${custom.libs.platform.dir}"
+                                                includes="*.jar"
+                                                prefix="MICRO-INF/lib"/>
+                                    <!-- Payara Micro reads MICRO-INF/domain/logging.properties;
+                                         replace its default config with the elDoc one. -->
+                                    <zipfileset file="${payara.resources.dir}/eldoc-logging.properties"
+                                                fullpath="MICRO-INF/domain/logging.properties"/>
+                                    <zipfileset file="${payara.resources.dir}/pre-boot-commands.txt"
+                                                fullpath="MICRO-INF/pre-boot-commands.txt"/>
+                                    <zipfileset file="${payara.resources.dir}/post-boot-commands.txt"
+                                                fullpath="MICRO-INF/post-boot-commands.txt"/>
+                                </zip>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <!-- Shared Payara Micro start configuration for the two development profiles.
+             The profiles only select the exploded application directory; every other
+             option is identical. The start goal is not bound to a lifecycle phase, so
+             declaring its execution here does not start a server during `package`
+             (the execution above remains the only package-bound one). -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>fish.payara.maven.plugins</groupId>
+                    <artifactId>payara-micro-maven-plugin</artifactId>
+                    <configuration>
+                        <payaraMicroVersion>${payara.version}</payaraMicroVersion>
+                        <appendSystemProperties>true</appendSystemProperties>
+                        <uberJarClassifier>${uber.jar.classifier}</uberJarClassifier>
+                        <deployWar>false</deployWar>
+                        <exploded>true</exploded>
+                        <contextRoot>/</contextRoot>
+                        <daemon>false</daemon>
+                        <hotDeploy>true</hotDeploy>
+                        <keepState>true</keepState>
+                        <liveReload>false</liveReload>
+                        <trimLog>false</trimLog>
+                        <javaCommandLineOptions>
+                            <option>
+                                <value>-server</value>
+                            </option>
+                            <option>
+                                <value>-Xmx2048m</value>
+                            </option>
+                            <option>
+                                <value>-Dai.eldoc.disableSchedulers=false</value>
+                            </option>
+                            <option>
+                                <value>-Djava.net.preferIPv4Stack=true</value>
+                            </option>
+                            <option>
+                                <value>-Dai.eldoc.maintenance.password=dev@CC12#4</value>
+                            </option>
+                        </javaCommandLineOptions>
+                        <commandLineOptions>
+                            <option>
+                                <key>--port</key>
+                                <value>${payara.http.port}</value>
+                            </option>
+                            <option>
+                                <key>--deploy</key>
+                                <value>${eldoc.deploy.dir}</value>
+                            </option>
+                            <option>
+                                <key>--prebootcommandfile</key>
+                                <value>${payara.resources.dir}/pre-boot-commands.txt</value>
+                            </option>
+                            <option>
+                                <key>--postbootcommandfile</key>
+                                <value>${payara.resources.dir}/post-boot-commands.txt</value>
+                            </option>
+                            <option>
+                                <key>--logProperties</key>
+                                <value>${payara.resources.dir}/dev-logging-console.properties</value>
+                            </option>
+                            <option>
+                                <key>--disablephonehome</key>
+                            </option>
+                            <option>
+                                <key>--nocluster</key>
+                            </option>
+                            <option>
+                                <key>--addLibs</key>
+                                <value>${custom.libs.dir}</value>
+                            </option>
+                            <option>
+                                <key>--addLibs</key>
+                                <value>${custom.libs.platform.dir}</value>
+                            </option>
+                        </commandLineOptions>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+
+        <!-- IntelliJ development: deploy the exploded artifact built by the IDE
+             (out/artifacts/eldoc, classes in WEB-INF/classes). Used by the IDE run
+             configuration dev_idea.xml. -->
+        <profile>
+            <id>dev-idea</id>
+            <properties>
+                <eldoc.deploy.dir>${project.basedir}/../../out/artifacts/eldoc</eldoc.deploy.dir>
+            </properties>
+        </profile>
+
+        <!-- CLI development: deploy the exploded web application produced by the Maven
+             build (target/elDoc-idp-oss, classes archived under WEB-INF/lib). -->
+        <profile>
+            <id>dev-mvn</id>
+            <properties>
+                <eldoc.deploy.dir>${project.build.directory}/${project.build.finalName}</eldoc.deploy.dir>
+            </properties>
+        </profile>
+
+    </profiles>
+
+</project>

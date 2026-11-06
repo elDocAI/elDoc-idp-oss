@@ -1,0 +1,71 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+Apache Shiro :: Cryptography :: Support :: BCrypt
+
+
+From: 'an unknown organization'
+
+  - AOP alliance (http://aopalliance.sourceforge.net) aopalliance:aopalliance:jar:1.0
+    License: Public Domain 
+
+  - Guava InternalFutureFailureAccess and InternalFutures (https://github.com/google/guava/failureaccess) com.google.guava:failureaccess:jar:1.0.3
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Guava: Google Core Libraries for Java (https://github.com/google/guava) com.google.guava:guava:bundle:33.7.1-jre
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Guava ListenableFuture only (https://github.com/google/guava/listenablefuture) com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - J2ObjC Annotations (https://github.com/google/j2objc/) com.google.j2objc:j2objc-annotations:jar:3.1
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Bouncy Castle Provider (https://www.bouncycastle.org/download/bouncy-castle-java/) org.bouncycastle:bcprov-jdk18on:jar:1.85.2
+    License: Bouncy Castle Licence  (https://www.bouncycastle.org/licence.html)
+
+  - JSpecify annotations (http://jspecify.org/) org.jspecify:jspecify:jar:1.0.0
+    License: The Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+
+From: 'Eclipse Foundation' (https://www.eclipse.org)
+
+  - Jakarta Dependency Injection (https://github.com/eclipse-ee4j/injection-api) jakarta.inject:jakarta.inject-api:jar:2.0.1
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+
+From: 'Google LLC' (http://www.google.com)
+
+  - error-prone annotations (https://errorprone.info/error_prone_annotations) com.google.errorprone:error_prone_annotations:jar:2.18.0
+    License: Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+
+From: 'Google, Inc.' (http://www.google.com)
+
+  - Google Guice - Core Library (https://github.com/google/guice/guice) com.google.inject:guice:jar:7.0.0
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+
+From: 'QOS.ch' (http://www.qos.ch)
+
+  - SLF4J API Module (http://www.slf4j.org) org.slf4j:slf4j-api:jar:2.0.18
+    License: MIT  (https://opensource.org/license/mit)
+
+
+From: 'The Apache Software Foundation' (https://www.apache.org/)
+
+  - Apache Shiro :: Cryptography :: Core (https://shiro.apache.org/shiro-crypto/shiro-crypto-core/) org.apache.shiro:shiro-crypto-core:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Cryptography :: Hashing (https://shiro.apache.org/shiro-crypto/shiro-crypto-hash/) org.apache.shiro:shiro-crypto-hash:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Lang (https://shiro.apache.org/shiro-lang/) org.apache.shiro:shiro-lang:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+
+
+
+

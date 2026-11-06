@@ -1,0 +1,67 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <!--@elvariable id="type" type="java.lang.String"-->
+
+    <!-- RecoForm Field Post-Processing Hint -->
+
+    Scripting Hints:<br/>
+
+    Field data is passed as the "field" variable, with the following properties:<br/>
+
+    <ui:fragment rendered="#{type eq 'TEXT'}">
+        * field.conf - (Integer) Confidence level of the captured value<br/>
+        * field.confThreshold - (Integer) Confidence threshold defined for the field<br/>
+        * field.name - (String) Name of the field<br/>
+        * field.tags - (List&lt;String&gt;) List of tags associated with the field<br/>
+        * field.type - (String) Type of the field; should be 'reco'<br/>
+        * field.validated - (Boolean) Whether the field was automatically verified<br/>
+        * field.value - (String) Value of the field<br/>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{type eq 'TABLE'}">
+        * field.conf - (List&lt;List&lt;Integer&gt;&gt;) Confidence level of the captured values: A list (rows) of lists (columns) of integers (confidence per cell)<br/>
+        * field.fields - A list of fields with the same structure as this variable, describing each column<br/>
+        * field.name - (String) Name of the field<br/>
+        * field.tags - (List&lt;String&gt;) List of tags associated with the field<br/>
+        * field.type - (String) Type of the field; should be 'recoTable'<br/>
+        * field.validated - (List&lt;List&lt;Boolean&gt;&gt;) Flags indicating whether cell values were automatically validated: A list (rows) of lists (cells) of booleans (validation status per cell)<br/>
+        * field.value - (List&lt;List&lt;String&gt;&gt;) Value of the field: A list (rows) of lists (columns) of strings (values)<br/>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{type eq 'OMR'}">
+        * field.conf - (List&lt;Integer&gt;) Confidence level of the captured values: A list (marks) of integers (confidence per mark)<br/>
+        * field.confThreshold - (Integer) Confidence threshold defined for the field<br/>
+        * field.fields - A list of fields with the same structure as this variable, describing each optical mark<br/>
+        * field.name - (String) Name of the field<br/>
+        * field.tags - (List&lt;String&gt;) List of tags associated with the field<br/>
+        * field.type - (String) Type of the field; should be 'recoOmr'<br/>
+        * field.validated - (Boolean) Whether the field was automatically verified<br/>
+        * field.value - (List&lt;Boolean&gt;) Value of the field<br/>
+    </ui:fragment>
+
+    Global script scope (Map&lt;String, Object&gt;) can be accessed as the "scope" variable. The scope is shared between script invocations.<br/>
+    If a value different from the initial one is returned, the field's confidence level is set to 99%.<br/>
+    If the script does not return any value, the original field value and confidence level remain unchanged.<br/>
+    Hint: You may modify the provided field value as needed and use "return field;" at the end of the script code.
+
+</ui:composition>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalDependencies">
+    <plugin id="HtmlTools" />
+    <plugin id="JUnit" />
+    <plugin id="Subversion" />
+    <plugin id="com.intellij.beanValidation" />
+    <plugin id="com.intellij.cdi" />
+    <plugin id="com.intellij.css" />
+    <plugin id="com.intellij.javaee" />
+    <plugin id="com.intellij.javaee.ejb" />
+    <plugin id="com.intellij.javaee.el" />
+    <plugin id="com.intellij.javaee.jakarta.data" />
+    <plugin id="com.intellij.javaee.web" />
+    <plugin id="com.intellij.jpa.jpb.model" />
+    <plugin id="com.intellij.jsf" />
+    <plugin id="com.intellij.jsp" />
+    <plugin id="com.intellij.microservices.ui" />
+    <plugin id="com.intellij.plugins.netbeanskeymap" />
+    <plugin id="com.intellij.swagger" />
+    <plugin id="com.jetbrains.restClient" />
+    <plugin id="com.jetbrains.restWebServices" />
+    <plugin id="de.marhali.easyi18n" />
+    <plugin id="fish.payara.intellij" />
+    <plugin id="org.jetbrains.idea.maven" />
+    <plugin id="org.jetbrains.plugins.sass" />
+  </component>
+</project>

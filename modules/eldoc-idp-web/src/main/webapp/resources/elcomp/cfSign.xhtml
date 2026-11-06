@@ -1,0 +1,52 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:composite="jakarta.faces.composite"
+    xmlns:f="jakarta.faces.core">
+
+    <composite:interface>
+        <composite:attribute name="dataSource" type="java.lang.Object" required="true" shortDescription="Document data source" />
+        <composite:attribute name="fieldName" type="java.lang.String" required="true" shortDescription="Field name" />
+        <composite:attribute name="label" type="java.lang.String" required="false" shortDescription="Field UI label" />
+        <composite:attribute name="required" type="java.lang.Boolean" required="false" shortDescription="Required flag" />
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <div class="col-12 lg:col-4">
+            <p:outputLabel id="l1" value="#{cc.attrs.label}" />
+        </div>
+
+        <div class="col-12 lg:col-8 p-fluid">
+            <p:signature id="i1" value="#{cc.attrs.dataSource[cc.attrs.fieldName]}" readonly="#{cc.attrs.disabled}" required="#{cc.attrs.required}" class="cf-field"
+                         style="width:100%;height:200px;" backgroundColor="#fafafa" color="#689f38" guideline="true" widgetVar="#{cc.attrs.fieldName}_signWV">
+                <f:attribute name="label" value="#{cc.attrs.label}" />
+            </p:signature>
+            <p:commandButton value="#{labels['general.btn.clear']}" type="button" icon="pi pi-times" onclick="PF('#{cc.attrs.fieldName}_signWV').clear()"
+                             rendered="#{not cc.attrs.disabled}" styleClass="p-button-secondary p-button-outlined" style="margin-top: 5px;" />
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

@@ -1,0 +1,108 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="jakarta.faces.core"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:c="jakarta.tags.core"
+    xmlns:pt="jakarta.faces.passthrough"
+    xmlns:p="primefaces">
+
+    <p:importConstants type="ai.eldoc.constants.DirectoryConstants" />
+    <p:importConstants type="ai.eldoc.constants.Pages" />
+
+    <h:form id="menuform">
+
+        <div class="layout-menu-container" id="main-menu">
+
+            <div class="nano">
+
+                <div class="nano-content menu-scroll-content">
+
+                    <div class="menu-section-label">#{labels[pageController.uiModuleLabelId]}</div>
+
+                    <p:menu id="mainMenuItems" styleClass="main-menu">
+
+                        <c:if test="#{pageController.moduleIdp}">
+                            <p:menuitem id="inbox" outcome="#{Pages.PAGE_WORKFLOW_INBOX}" value="#{labels['menuUI.inbox']}" title="#{labels['menuUI.inbox.title']}"
+                                        icon="fa-solid fa-fw fa-inbox" pt:data-badge="#{wfListController.menuInboxCount}"
+                                        styleClass="#{facesContext.viewRoot.viewId eq Pages.PAGE_WORKFLOW_INBOX ? 'is-active' : null}"
+                                        ariaLabel="#{labels['menuUI.inbox']} #{wfListController.menuInboxCount}"
+                                        pt:aria-current="#{facesContext.viewRoot.viewId eq Pages.PAGE_WORKFLOW_INBOX ? 'page' : null}" />
+                        </c:if>
+
+                        <!-- IDP menus -->
+                        <c:if test="#{pageController.moduleIdp}">
+                            <p:menuitem id="idpStart" outcome="#{Pages.PAGE_IDP_START}" value="#{labels['menuUI.idp.start']}" icon="fa-solid fa-fw fa-table-list" rendered="#{configContext.licModIDP}"
+                                        styleClass="#{facesContext.viewRoot.viewId eq Pages.PAGE_IDP_START ? 'is-active' : null}"
+                                        pt:aria-current="#{facesContext.viewRoot.viewId eq Pages.PAGE_IDP_START ? 'page' : null}" />
+                            <p:menuitem id="wrkfRecoQueue" outcome="#{Pages.PAGE_WORKFLOW_STATUS}" value="#{labels['menuUI.workflow.recoQueue']}" icon="fa-solid fa-fw fa-list-check"
+                                        styleClass="#{facesContext.viewRoot.viewId eq Pages.PAGE_WORKFLOW_STATUS ? 'is-active' : null}"
+                                        pt:aria-current="#{facesContext.viewRoot.viewId eq Pages.PAGE_WORKFLOW_STATUS ? 'page' : null}" />
+                        </c:if>
+
+                    </p:menu>
+
+                    <p:panelMenu id="menu" styleClass="main-menu">
+
+                        <c:if test="#{pageController.moduleIdp}">
+                            <p:submenu id="adminMenu" label="#{labels['menuUI.configuration']}" icon="fa-solid fa-fw fa-gears" rendered="#{userContext.adminAny}">
+
+                                <c:if test="#{pageController.moduleIdp}">
+                                    <p:menuitem id="adminRecoForms" outcome="#{Pages.PAGE_ADMIN_RECOFORMS}" value="#{labels['menuUI.adminRecoRules']}" icon="fa-solid fa-fw fa-table-cells" rendered="#{configContext.licModIDP}"
+                                                styleClass="#{facesContext.viewRoot.viewId eq Pages.PAGE_ADMIN_RECOFORMS ? 'is-active' : null}"
+                                                pt:aria-current="#{facesContext.viewRoot.viewId eq Pages.PAGE_ADMIN_RECOFORMS ? 'page' : null}" />
+                                    <p:menuitem id="adminFormDsgnr" outcome="#{Pages.PAGE_ADMIN_FORM}" value="#{labels['menuUI.adminFormsDesigner']}" icon="fa-regular fa-fw fa-rectangle-list"
+                                                styleClass="#{facesContext.viewRoot.viewId eq Pages.PAGE_ADMIN_FORM ? 'is-active' : null}"
+                                                pt:aria-current="#{facesContext.viewRoot.viewId eq Pages.PAGE_ADMIN_FORM ? 'page' : null}">
+                                        <f:param name="id" value="frd1" />
+                                    </p:menuitem>
+                                </c:if>
+
+                                <c:if test="#{pageController.moduleIdp}">
+                                    <p:menuitem id="adminCounters" outcome="#{Pages.PAGE_ADMIN_COUNTERS}" value="#{labels['menuUI.adminCounters']}" icon="fa-regular fa-fw fa-clock"
+                                                styleClass="#{facesContext.viewRoot.viewId eq Pages.PAGE_ADMIN_COUNTERS ? 'is-active' : null}"
+                                                pt:aria-current="#{facesContext.viewRoot.viewId eq Pages.PAGE_ADMIN_COUNTERS ? 'page' : null}" />
+                                </c:if>
+
+                            </p:submenu>
+                        </c:if>
+
+                    </p:panelMenu>
+
+                    <div class="menu-brand-footer">
+                        <div>elDoc IDP OSS <h:outputLabel value="v#{configContext.version}" /></div>
+                        <div class="flex gap-1 align-items-center">
+                            <span>elDoc Limited</span>
+                            <i class="fa-solid fa-copyright" />
+                            <span>All Rights Reserved</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+</ui:composition>

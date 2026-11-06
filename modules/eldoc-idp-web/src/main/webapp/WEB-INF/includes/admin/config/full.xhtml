@@ -1,0 +1,206 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:faces="jakarta.faces"
+                xmlns:cc="jakarta.faces.composite/elcomp"
+                xmlns:p="primefaces">
+
+    <p:importConstants type="ai.eldoc.constants.Pages" />
+
+    <div class="flex flex-column lg:flex-row flex-wrap gap-3">
+
+
+        <!-- System settings -->
+        <div class="flex-grow-1 flex-shrink-1" style="flex-basis: calc(33.3333% - 1rem);">
+            <ui:include src="/WEB-INF/includes/admin/config/sysSettings.xhtml" />
+        </div>
+
+
+        <!-- AI IDP settings -->
+        <div class="flex-grow-1 flex-shrink-1" style="flex-basis: calc(33.3333% - 1rem);" faces:rendered="#{configContext.licModIDP}">
+            <ui:include src="/WEB-INF/includes/admin/config/idpAiSettings.xhtml" />
+        </div>
+
+
+        <!-- AI IDP Queue Settings -->
+        <div class="flex-grow-1 flex-shrink-1" style="flex-basis: calc(33.3333% - 1rem);" faces:rendered="#{configContext.licModIDP}">
+            <p:panel header="#{labels['pAdminConfig.idp.queue.settings.title']}" collapsed="false">
+                <div class="grid">
+
+                    <div class="col-5">
+                        <p:outputLabel value="#{labels['pAdminConfig.idp.preprocessingQueue']}" for="schedPreprocChkb"/>
+                    </div>
+                    <div class="col-7 p-fluid">
+                        <p:toggleSwitch id="schedPreprocChkb" value="#{configContext.idpPreProcessingTimerEnabled}" label="#{labels['pAdminConfig.idp.preprocessingQueue']}"
+                                        converter="jakarta.faces.Boolean" disabled="#{!userContext.adminSysRW}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:ajax process="@this" update="@none"/>
+                        </p:toggleSwitch>
+                    </div>
+
+                    <div class="col-5">
+                        <p:outputLabel value="#{labels['pAdminConfig.idp.preprocessingQueue.status']}"/>
+                    </div>
+                    <div class="col-7 p-fluid">
+                        <ui:repeat value="#{configController.recoPreProcessingItems}" var="queueItem" rendered="#{not empty configController.recoPreProcessingItems}">
+                            <p:link id="rcpItm" value="#{queueItem}" outcome="#{Pages.PAGE_WORKFLOW}?id=#{queueItem}"
+                                    title="#{labels['pAdminConfig.idp.queue.status.hint']}" target="_blank"/>
+                            <br/>
+                        </ui:repeat>
+                        <p:outputLabel value="#{labels['pAdminConfig.idp.queue.status.idle']}" rendered="#{empty configController.recoPreProcessingItems}"/>
+                    </div>
+
+                    <div class="col-12 section-divider"/>
+
+                    <div class="col-5">
+                        <p:outputLabel value="#{labels['pAdminConfig.idp.recognitionQueue']}" for="schedRecoChkb"/>
+                    </div>
+                    <div class="col-7 p-fluid">
+                        <p:toggleSwitch id="schedRecoChkb" value="#{configContext.idpProcessingTimerEnabled}" label="#{labels['pAdminConfig.idp.recognitionQueue']}"
+                                        converter="jakarta.faces.Boolean" disabled="#{!userContext.adminSysRW}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:ajax process="@this" update="@none"/>
+                        </p:toggleSwitch>
+                    </div>
+
+                    <div class="col-5">
+                        <p:outputLabel value="#{labels['pAdminConfig.idp.recognitionQueue.status']}"/>
+                    </div>
+                    <div class="col-7 p-fluid">
+                        <p:link id="rcpItm" value="#{configController.recoProcessingItem}" outcome="#{Pages.PAGE_WORKFLOW}?id=#{configController.recoProcessingItem}"
+                                title="#{labels['pAdminConfig.idp.queue.status.hint']}" target="_blank" rendered="#{not empty configController.recoProcessingItem}"/>
+                        <p:outputLabel value="#{labels['pAdminConfig.idp.queue.status.idle']}" rendered="#{empty configController.recoProcessingItem}"/>
+                    </div>
+
+                </div>
+            </p:panel>
+        </div>
+
+        <!-- Logging settings -->
+        <div class="flex-grow-1 flex-shrink-1" style="flex-basis: calc(33.3333% - 1rem);">
+            <p:panel id="logLvlArea" header="System logging settings" collapsed="false">
+
+                <div class="col-12 pb-0">
+                    <p:outputLabel value="elDoc logging level"/>
+                </div>
+                <div class="col-12 flex flex-wrap gap-1">
+                    <p:commandButton value="ALL" action="#{configController.setLogLevel('ELDOC', 'ALL')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('ELDOC', 'ALL')}"/>
+                    <p:commandButton value="FINEST" action="#{configController.setLogLevel('ELDOC', 'FINEST')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('ELDOC', 'FINEST')}"/>
+                    <p:commandButton value="FINER" action="#{configController.setLogLevel('ELDOC', 'FINER')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('ELDOC', 'FINER')}"/>
+                    <p:commandButton value="FINE" action="#{configController.setLogLevel('ELDOC', 'FINE')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('ELDOC', 'FINE')}"/>
+                    <p:commandButton value="INFO" action="#{configController.setLogLevel('ELDOC', 'INFO')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('ELDOC', 'INFO')}"/>
+                    <p:commandButton value="WARNING" action="#{configController.setLogLevel('ELDOC', 'WARNING')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('ELDOC', 'WARNING')}"/>
+                    <p:commandButton value="SEVERE" action="#{configController.setLogLevel('ELDOC', 'SEVERE')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('ELDOC', 'SEVERE')}"/>
+                    <p:commandButton value="OFF" action="#{configController.setLogLevel('ELDOC', 'OFF')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('ELDOC', 'OFF')}"/>
+                </div>
+
+                <div class="col-12 pb-0">
+                    <p:outputLabel value="Server components logging level"/>
+                </div>
+                <div class="col-12 flex flex-wrap gap-1">
+                    <p:commandButton value="ALL" action="#{configController.setLogLevel('*', 'ALL')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('*', 'ALL')}" disabled="true"/>
+                    <p:commandButton value="FINEST" action="#{configController.setLogLevel('*', 'FINEST')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('*', 'FINEST')}" disabled="true"/>
+                    <p:commandButton value="FINER" action="#{configController.setLogLevel('*', 'FINER')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('*', 'FINER')}"/>
+                    <p:commandButton value="FINE" action="#{configController.setLogLevel('*', 'FINE')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('*', 'FINE')}"/>
+                    <p:commandButton value="INFO" action="#{configController.setLogLevel('*', 'INFO')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('*', 'INFO')}"/>
+                    <p:commandButton value="WARNING" action="#{configController.setLogLevel('*', 'WARNING')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('*', 'WARNING')}"/>
+                    <p:commandButton value="SEVERE" action="#{configController.setLogLevel('*', 'SEVERE')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('*', 'SEVERE')}"/>
+                    <p:commandButton value="OFF" action="#{configController.setLogLevel('*', 'OFF')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('*', 'OFF')}"/>
+                    <p:commandButton value="DEFAULT" title="Restore default levels" action="#{configController.setLogLevel('*', 'DEFAULT')}" process="@this" update="logLvlArea"
+                                     styleClass="#{configController.getLogLevelBtnStypeClass('*', 'DEFAULT')}"/>
+                </div>
+
+                <div class="col-12 pb-0">
+                    <p:outputLabel value="FileHandler logging level"/>
+                </div>
+                <div class="col-12 flex flex-wrap gap-1">
+                    <p:commandButton value="ALL" action="#{configController.setLogLevel('FILE', 'ALL')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('FILE', 'ALL')}"/>
+                    <p:commandButton value="FINEST" action="#{configController.setLogLevel('FILE', 'FINEST')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('FILE', 'FINEST')}"/>
+                    <p:commandButton value="FINER" action="#{configController.setLogLevel('FILE', 'FINER')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('FILE', 'FINER')}"/>
+                    <p:commandButton value="FINE" action="#{configController.setLogLevel('FILE', 'FINE')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('FILE', 'FINE')}"/>
+                    <p:commandButton value="INFO" action="#{configController.setLogLevel('FILE', 'INFO')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('FILE', 'INFO')}"/>
+                    <p:commandButton value="WARNING" action="#{configController.setLogLevel('FILE', 'WARNING')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('FILE', 'WARNING')}"/>
+                    <p:commandButton value="SEVERE" action="#{configController.setLogLevel('FILE', 'SEVERE')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('FILE', 'SEVERE')}"/>
+                    <p:commandButton value="OFF" action="#{configController.setLogLevel('FILE', 'OFF')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('FILE', 'OFF')}"/>
+                </div>
+
+                <div class="col-12 pb-0">
+                    <p:outputLabel value="ConsoleHandler logging level"/>
+                </div>
+                <div class="col-12 flex flex-wrap gap-1">
+                    <p:commandButton value="ALL" action="#{configController.setLogLevel('CONSOLE', 'ALL')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('CONSOLE', 'ALL')}"/>
+                    <p:commandButton value="FINEST" action="#{configController.setLogLevel('CONSOLE', 'FINEST')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('CONSOLE', 'FINEST')}"/>
+                    <p:commandButton value="FINER" action="#{configController.setLogLevel('CONSOLE', 'FINER')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('CONSOLE', 'FINER')}"/>
+                    <p:commandButton value="FINE" action="#{configController.setLogLevel('CONSOLE', 'FINE')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('CONSOLE', 'FINE')}"/>
+                    <p:commandButton value="INFO" action="#{configController.setLogLevel('CONSOLE', 'INFO')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('CONSOLE', 'INFO')}"/>
+                    <p:commandButton value="WARNING" action="#{configController.setLogLevel('CONSOLE', 'WARNING')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('CONSOLE', 'WARNING')}"/>
+                    <p:commandButton value="SEVERE" action="#{configController.setLogLevel('CONSOLE', 'SEVERE')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('CONSOLE', 'SEVERE')}"/>
+                    <p:commandButton value="OFF" action="#{configController.setLogLevel('CONSOLE', 'OFF')}" process="@this" update="logLvlArea" styleClass="#{configController.getLogLevelBtnStypeClass('CONSOLE', 'OFF')}"/>
+                </div>
+
+            </p:panel>
+        </div>
+
+
+        <!-- Custom configuration params -->
+        <div class="flex-grow-1 flex-shrink-1" style="flex-basis: calc(33.3333% - 1rem);">
+            <p:panel header="#{labels['pAdminConfig.customProp']}" collapsed="false">
+                <cc:propertyTable propAwareModel="#{configController.appConfig}" propPrefix="app_" disabled="#{configController.modeRead}"/>
+            </p:panel>
+        </div>
+
+
+        <!-- Init Indexes -->
+        <div class="flex-grow-1 flex-shrink-1" style="flex-basis: calc(33.3333% - 1rem);">
+            <p:panel id="dbIndexes" header="DB Iindexes initialization" collapsed="false">
+                <div class="grid">
+                    <div class="col-4">
+                        Deletes all indexes in DB (except default _id) and re-creates them again in background.
+                    </div>
+
+                    <div class="col-4">
+                        <strong>IMPORTANT:</strong> to be used only once after initial system deployment, or when requested by the upgrade manual
+                    </div>
+
+                    <div class="col-4">
+                        Do not perform this operation when system is under high load
+                    </div>
+
+                    <div class="col-12 flex flex-wrap gap-2">
+
+                        <p:commandButton value="Workflows" action="#{configController.doWorkflowsIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="WorkflowTasks" action="#{configController.doWorkflowTasksIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="Forms" action="#{configController.doFormDefIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="Logs" action="#{configController.doLogIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="Reactions" action="#{configController.doReactionIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="Reminders" action="#{configController.doReminderIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="ListValues" action="#{configController.doListValueIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="NumSequence" action="#{configController.doNumSequenceIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="BpmProcesses" action="#{configController.doBpmProcessDefIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+                        <p:commandButton value="RecoForms" action="#{configController.doRecoFormIndexesHouskeeping}" process="@this" disabled="#{!userContext.adminSysRW}" styleClass="p-button-secondary p-button-outlined w-10rem"/>
+
+                    </div>
+
+                </div>
+            </p:panel>
+        </div>
+
+    </div>
+
+</ui:composition>

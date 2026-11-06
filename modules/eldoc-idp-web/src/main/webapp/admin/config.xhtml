@@ -1,0 +1,93 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces"
+        xmlns:o="omnifaces"
+        template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="title">${labels['pAdminConfig.header']} | #{pageController.pageTitleSuffix}</ui:define>
+
+    <ui:define name="content">
+
+        <o:form id="f1">
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header">
+                        <h1 title="${labels['pAdminConfig.header.title']}">#{labels['pAdminConfig.header']}<span class="page-header-meta">v#{configContext.version}</span></h1>
+                    </div>
+                </div>
+            </div>
+
+            <ui:fragment rendered="#{userContext.adminSysAny}">
+                <div class="grid">
+                    <div class="col-12">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="btnEdit" value="${labels['general.btn.edit']}" action="#{configController.setModeEdit}" process="@this" update="@form"
+                                                 rendered="#{userContext.adminSysRW and configController.modeRead}" icon="fa-solid fa-fw fa-pencil"/>
+                                <p:commandButton id="btnSave" value="${labels['general.btn.save']}" action="#{configController.btnSave}" process="@form" update="@form"
+                                                 rendered="#{configController.modeEdit}" icon="fa-regular fa-fw fa-floppy-disk" />
+                                <p:commandButton id="btnCancel" value="#{labels['general.btn.cancel']}" action="#{configController.btnCancel}" process="@this" update="@none"
+                                                 immediate="true" rendered="#{configController.modeEdit}" icon="fa-solid fa-fw fa-share" styleClass="p-button-secondary p-button-outlined" />
+                                <!--<span class="toolbar-separator"">-->
+                                <!--<span class="fa-solid fa-ellipsis-vertical" />-->
+                                <!--</span>-->
+                            </f:facet>
+                            <f:facet name="right">
+                                <p:commandButton id="btnConfReload" value="Reload system configuration" action="#{configController.btnConfReload}" process="@this" update="@none"
+                                                 title="#{labels['pAdminConfig.sysConfigReload']}" icon="fa-solid fa-fw fa-arrows-rotate"
+                                                 rendered="#{configController.modeEdit}" styleClass="p-button-secondary p-button-outlined">
+                                    <o:skipValidators />
+                                </p:commandButton>
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+            </ui:fragment>
+
+
+            <div class="grid">
+                <div class="col-12">
+                    <p:growl id="growl" globalOnly="true" life="30000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                        <p:autoUpdate />
+                    </p:growl>
+                    <p:messages id="msgs" globalOnly="false" closable="true" redisplay="false">
+                        <p:autoUpdate />
+                    </p:messages>
+                </div>
+            </div>
+
+            <ui:include src="#{configController.includePageName}" />
+
+        </o:form>
+
+    </ui:define>
+
+</ui:composition>

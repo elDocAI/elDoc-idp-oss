@@ -1,0 +1,166 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:cc="jakarta.faces.composite/elcomp">
+
+    <div class="grid form-common">
+
+        <div class="col-12 md:col-6">
+            <p:panel id="canCreate" header="#{labels['ccFormCommon.accessCreateSettings']}" collapsed="false">
+                <div class="grid">
+                    <div class="col-12 md:col-7 lg:col-8">
+                        <h:outputText value="#{labels['ccFormCommon.accessCreateByAll']}"/>
+                    </div>
+                    <div class="col-12 md:col-5 lg:col-4 p-fluid">
+                        <p:selectBooleanCheckbox value="#{formDefController.currentFD.accessCreateAvailableToAll}" converter="jakarta.faces.Boolean" disabled="#{formDefController.modeRead || !formDefController.accessCreateEditable}">
+                            <p:ajax event="change" process="@this" update="@parent" partialSubmit="true"/>
+                        </p:selectBooleanCheckbox>
+                    </div>
+                    <ui:fragment rendered="#{!formDefController.currentFD.accessCreateAvailableToAll}">
+                        <div class="col-12">
+                            <h:outputText value="#{labels['ccFormCommon.accessCreateBySpecific']}"/>
+                        </div>
+                        <div class="col-12">
+                            <cc:nameList id="canCreateNl" value="#{formDefController.currentFD.accessCreate}"/>
+                            <cc:namePicker id="canCreatePkr" bindTo="#{formDefController.currentFD.accessCreate}" units="true" groups="true"
+                                           refreshId=":f1:tabs:formGeneral:canCreate" rendered="#{formDefController.modeEdit and formDefController.accessCreateEditable}"/>
+                        </div>
+                    </ui:fragment>
+                </div>
+            </p:panel>
+        </div>
+
+        <div class="col-12 md:col-6">
+            <p:panel header="#{labels['ccFormCommon.accessEditSettings']}" collapsed="false">
+                <div class="grid">
+                    <div class="col-12 md:col-7 lg:col-8">
+                        <h:outputText value="#{labels['ccFormCommon.accessEditByAuthor']}"/>
+                    </div>
+                    <div class="col-12 md:col-5 lg:col-4 p-fluid">
+                        <p:selectOneMenu value="#{formDefController.accessEditByAuthor}" label="#{labels['ccFormCommon.accessEditByAuthor']}" disabled="#{formDefController.modeRead}">
+                            <f:selectItems value="#{formDefController.docEditStagesSI}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-12 md:col-7 lg:col-8">
+                        <h:outputText value="#{labels['ccFormCommon.accessEditByAdmin']}"/>
+                    </div>
+                    <div class="col-12 md:col-5 lg:col-4 p-fluid">
+                        <p:selectOneMenu value="#{formDefController.accessEditByAdmin}" label="#{labels['ccFormCommon.accessEditByAdmin']}" disabled="#{formDefController.modeRead}">
+                            <f:selectItems value="#{formDefController.docEditStagesSI}"/>
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+            </p:panel>
+        </div>
+
+        <div class="col-12 md:col-6">
+            <p:panel id="autoReg" header="#{labels['ccFormCommon.autoRegSettings']}" collapsed="false">
+                <div class="grid">
+                    <div class="col-12 md:col-7 lg:col-8">
+                        <h:outputText value="#{labels['ccFormCommon.autoRegEnable']}"/>
+                    </div>
+                    <div class="col-12 md:col-5 lg:col-4 p-fluid">
+                        <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.num.autoReg}" converter="jakarta.faces.Boolean" disabled="#{formDefController.modeRead || !formDefController.autoRegEditable}">
+                            <p:ajax event="change" process="@this" update="@parent" partialSubmit="true"/>
+                        </p:selectBooleanCheckbox>
+                    </div>
+                    <ui:fragment rendered="#{formDefController.currentFD.sfDef.num.autoReg}">
+                        <div class="col-12 md:col-7 lg:col-8">
+                            <h:outputText value="#{labels['ccFormCommon.autoRegState']}"/>
+                        </div>
+                        <div class="col-12 md:col-5 lg:col-4 p-fluid">
+                            <p:selectOneMenu value="#{formDefController.currentFD.sfDef.num.autoRegState}" label="" disabled="#{formDefController.modeRead || !formDefController.autoRegEditable}">
+                                <f:selectItems value="#{bpmProcessDefinitionController.processStatesSI}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </ui:fragment>
+                </div>
+            </p:panel>
+        </div>
+
+        <div class="col-12 md:col-6">
+            <p:panel id="defAccArea" header="#{labels['ccFormCommon.accessReadDefault']}" collapsed="false">
+                <div class="grid">
+                    <div class="col-12 md:col-7 lg:col-8">
+                        <h:outputText value="#{labels['ccFormCommon.accessReadDefaultEditable']}"/>
+                    </div>
+                    <div class="col-12 md:col-5 lg:col-4 p-fluid">
+                        <p:selectBooleanCheckbox value="#{formDefController.currentFD.accessReadEditable}" converter="jakarta.faces.Boolean" disabled="#{formDefController.modeRead}">
+                            <p:ajax event="change" process="@this" update="@none" partialSubmit="true"/>
+                        </p:selectBooleanCheckbox>
+                    </div>
+
+                    <div class="col-12 md:col-7 lg:col-8">
+                        <h:outputText value="#{labels['ccFormCommon.accessReadDefaultAllowAll']}"/>
+                    </div>
+                    <div class="col-12 md:col-5 lg:col-4 p-fluid">
+                        <p:selectBooleanCheckbox value="#{formDefController.currentFD.accessReadAvailableToAll}" converter="jakarta.faces.Boolean" disabled="#{formDefController.modeRead}">
+                            <p:ajax event="change" process="@this" update="@parent" partialSubmit="true"/>
+                        </p:selectBooleanCheckbox>
+                    </div>
+
+                    <ui:fragment rendered="#{!formDefController.currentFD.accessReadAvailableToAll}">
+                        <div class="col-12">
+                            <cc:nameList id="defAccNmLst" value="#{formDefController.currentFD.accessRead}"/>
+                            <cc:namePicker id="defAccPkr" bindTo="#{formDefController.currentFD.accessRead}" units="true" groups="true" bpmNames="true"
+                                           refreshId=":f1:tabs:formGeneral:defAccArea" rendered="#{formDefController.modeEdit}"/>
+                        </div>
+                    </ui:fragment>
+                </div>
+            </p:panel>
+        </div>
+
+        <div class="col-12 md:col-6">
+            <p:panel id="defRetArea" header="#{labels['ccFormCommon.retention']}" collapsed="false">
+                <div class="grid">
+                    <div class="col-12 md:col-7 lg:col-8">
+                        <h:outputText value="#{labels['ccFormCommon.retentionAction']}"/>
+                    </div>
+                    <div class="col-12 md:col-5 lg:col-4 p-fluid">
+                        <p:selectOneMenu value="#{formDefController.currentFD.retentionAction}" label="" disabled="#{formDefController.modeRead}" converter="jakarta.faces.Integer">
+                            <f:selectItems value="#{formDefController.retentionActionsSI}"/>
+                            <p:ajax event="change" process="@this" update="@parent" partialSubmit="true"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <ui:fragment rendered="#{formDefController.currentFD.retentionAction != 0}">
+                        <div class="col-12 md:col-7 lg:col-8">
+                            <h:outputText value="#{labels['ccFormCommon.retentionPeriod']}"/>
+                        </div>
+                        <div class="col-12 md:col-5 lg:col-4 p-fluid p-inputgroup">
+                            <p:selectOneMenu value="#{formDefController.retentionPeriod}" label="" disabled="#{formDefController.modeRead}">
+                                <f:selectItems value="#{formDefController.retentionPeriodSI}"/>
+                            </p:selectOneMenu>
+                            <p:selectOneMenu value="#{formDefController.retentionPeriodType}" label="" disabled="#{formDefController.modeRead}">
+                                <f:selectItems value="#{formDefController.retentionPeriodTypeSI}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </ui:fragment>
+                </div>
+            </p:panel>
+        </div>
+
+    </div>
+
+</ui:composition>

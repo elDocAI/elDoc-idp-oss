@@ -1,0 +1,24 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+Apache Shiro :: Lang
+
+
+From: 'Eclipse Foundation' (https://www.eclipse.org)
+
+  - Jakarta Server Pages API (https://projects.eclipse.org/projects/ee4j.jsp) jakarta.servlet.jsp:jakarta.servlet.jsp-api:jar:4.0.0
+    License: Eclipse Public License v. 2.0  (https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt)
+    License: GNU General Public License, version 2 with the GNU Classpath Exception  (https://www.gnu.org/software/classpath/license.html)
+
+
+From: 'QOS.ch' (http://www.qos.ch)
+
+  - SLF4J API Module (http://www.slf4j.org) org.slf4j:slf4j-api:jar:2.0.18
+    License: MIT  (https://opensource.org/license/mit)
+
+
+
+
+

@@ -1,0 +1,60 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:faces="jakarta.faces"
+    xmlns:c="jakarta.tags.core"
+    xmlns:composite="jakarta.faces.composite">
+
+    <composite:interface componentType="nameItem">
+        <composite:attribute name="value" type="java.lang.Object" shortDescription="String representing systemId or Object of DirectoryItem class, or any successor: Person, Group, OrgUnit, etc." />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <c:set var="dirItemUrl" value="#{cc.getItemUrl(cc.valueData)}" />
+        <c:set var="dirItemPic" value="#{cc.getItemPicUrl(cc.valueData)}" />
+
+        <p:link id="lnk" href="#{dirItemUrl}" title="#{cc.titleUI}" styleClass="#{cc.valueData.getItemStyleClassUI()}" target="_blank" rendered="#{not empty dirItemUrl}">
+            <div class="userLinkInner">
+                <div class="userFoto">
+                    <h:graphicImage url="#{dirItemPic}" rendered="#{not empty dirItemPic}" />
+                    <i class="fa-solid fa-fw #{cc.valueData.getItemIconClassUI()}" faces:rendered="#{empty dirItemPic}" style="font-size:16px;padding:1px 1px 3px;" />
+                </div>
+                <h:outputText value="#{cc.valueData}" styleClass="userData white-space-nowrap" converter="directoryItemNameConverter" />
+            </div>
+        </p:link>
+
+        <div faces:id="blk" class="#{cc.valueData.getItemStyleClassUI()}" title="#{cc.titleUI}" faces:rendered="#{empty dirItemUrl}">
+            <div class="userLinkInner">
+                <div class="userFoto">
+                    <h:graphicImage url="#{dirItemPic}" rendered="#{not empty dirItemPic}" />
+                    <i class="fa-solid fa-fw #{cc.valueData.getItemIconClassUI()}" faces:rendered="#{empty dirItemPic}" style="font-size:16px;padding:1px 1px 3px;" />
+                </div>
+                <h:outputText value="#{cc.valueData}" styleClass="userData white-space-nowrap" converter="directoryItemNameConverter" />
+            </div>
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

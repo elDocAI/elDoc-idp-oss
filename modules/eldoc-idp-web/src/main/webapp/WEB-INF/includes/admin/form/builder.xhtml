@@ -1,0 +1,432 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:jsf="jakarta.faces"
+                xmlns:c="jakarta.tags.core"
+                xmlns:o="omnifaces">
+
+
+    <div class="grid form-builder">
+
+        <div class="col-12">
+
+            <div class="doc-form-builder">
+
+                <div class="form-builder-header">
+                    #{labels['ccFormBuilder.standardFields']}
+                </div>
+
+                <div class="form-builder-tablewrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th style="width: 25px;">
+                                    <span>#</span>
+                                </th>
+                                <th style="width: 250px;">
+                                    <p:outputLabel value="#{labels['ccFormBuilder.fieldType']}" />
+                                </th>
+                                <th>
+                                    <p:outputLabel value="#{labels['ccFormBuilder.fieldTitle']}" />
+                                </th>
+                                <th style="width: 250px;">
+                                    <p:outputLabel value="#{labels['general.tags']}" />
+                                </th>
+                                <th style="width: 180px;">
+                                    <p:outputLabel value="#{labels['ccFormBuilder.other']}" />
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody >
+                            <tr class="">
+                                <td class="fieldIndex">
+                                    #1
+                                </td>
+                                <td class="fieldType">
+                                    <p:selectOneMenu disabled="true" style="width: 100%;">
+                                        <f:selectItem itemValue="string" itemLabel="#{labels['ccFormBuilder_field.string']}" />
+                                    </p:selectOneMenu>
+                                    <br/>
+                                    <span class="muted" title="#{labels['ccFormBuilder.fieldTemplateId']}">{{eldoc:sf:docnum}}</span>
+                                </td>
+                                <td class="fieldName">
+                                    <c:forEach items="#{configContext.langsEnabled}" var="lang">
+                                        <div class="p-inputgroup flex-grow-1 flex flex-nowrap mb-1">
+                                            <span class="p-inputgroup-addon" style="width: 6em; padding:3px 5px;">#{labels['general.lang.'.concat(lang)]}</span>
+                                            <p:inputText value="#{localeContext.getLabel('general.docs.number', lang)}" disabled="true" class="flex-grow-1" />
+                                        </div>
+                                    </c:forEach>
+                                </td>
+                                <td class="fieldTags">
+                                    <div jsf:id="docNumTagsArea" class="p-fluid">
+                                        <p:inputText id="docNumTags" value="#{formDefController.currentFD.sfDef.num.tags}" label="#{labels['general.tags']}"
+                                                     converter="stringToSetConverter" autocomplete="off" placeholder="#{labels['general.tags']}" maxlength="100"
+                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.num.enabled}" />
+                                    </div>
+                                </td>
+                                <td class="fieldExt">
+                                    <div jsf:id="docNumSettings">
+                                        <div>
+                                            <p:selectBooleanCheckbox id="docNumCbEnbld" value="#{formDefController.currentFD.sfDef.num.enabled}" label="#{labels['ccFormBuilder.field.enabled']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.field.enabled']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead or formDefController.currentFD.sfDef.num.autoReg}">
+                                                <p:ajax event="change" process="docNumSettings" update="docNumSettings docNumTagsArea" />
+                                            </p:selectBooleanCheckbox>
+                                        </div>
+                                        <div>
+                                            <p:selectBooleanCheckbox id="docNumCbRqrd" value="#{formDefController.currentFD.sfDef.num.required}" label="#{labels['ccFormBuilder.required']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.required']}" converter="jakarta.faces.Boolean" class="mr-1"
+                                                                     disabled="#{formDefController.modeRead or formDefController.currentFD.sfDef.num.autoReg or !formDefController.currentFD.sfDef.num.enabled}" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="">
+                                <td class="fieldIndex">
+                                    #2
+                                </td>
+                                <td class="fieldType p-fluid">
+                                    <p:selectOneMenu disabled="true">
+                                        <f:selectItem itemValue="string" itemLabel="#{labels['ccFormBuilder_field.string']}" />
+                                    </p:selectOneMenu>
+                                    <br/>
+                                    <span class="muted" title="#{labels['ccFormBuilder.fieldTemplateId']}">{{eldoc:sf:doctopic}}</span>
+                                </td>
+                                <td class="fieldName">
+                                    <c:forEach items="#{configContext.langsEnabled}" var="lang">
+                                        <div class="p-inputgroup flex-grow-1 flex flex-nowrap mb-1">
+                                            <span class="p-inputgroup-addon" style="width: 6em; padding:3px 5px;">#{labels['general.lang.'.concat(lang)]}</span>
+                                            <p:inputText value="#{localeContext.getLabel('general.docs.subject', lang)}" disabled="true" class="flex-grow-1" />
+                                        </div>
+                                    </c:forEach>
+                                </td>
+                                <td class="fieldTags">
+                                    <div jsf:id="docTopicTagsArea" class="p-fluid">
+                                        <p:inputText id="docTopicTags" value="#{formDefController.currentFD.sfDef.topic.tags}" label="#{labels['general.tags']}"
+                                                     converter="stringToSetConverter" autocomplete="off" placeholder="#{labels['general.tags']}" maxlength="100"
+                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.topic.enabled}" />
+                                    </div>
+                                </td>
+                                <td class="fieldExt">
+                                    <div jsf:id="docTopicSettings">
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.topic.enabled}" label="#{labels['ccFormBuilder.field.enabled']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.field.enabled']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead}" >
+                                                <p:ajax event="change" process="docTopicSettings" update="docTopicSettings docTopicTagsArea" />
+                                            </p:selectBooleanCheckbox>
+                                        </div>
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.topic.required}" label="#{labels['ccFormBuilder.required']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.required']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.topic.enabled}" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="">
+                                <td class="fieldIndex">
+                                    #3
+                                </td>
+                                <td class="fieldType">
+                                    <p:selectOneMenu disabled="true" style="width: 100%;">
+                                        <f:selectItem itemValue="string" itemLabel="#{labels['ccFormBuilder_field.dateTime']}" />
+                                    </p:selectOneMenu>
+                                    <br/>
+                                    <span class="muted" title="#{labels['ccFormBuilder.fieldTemplateId']}">{{eldoc:sf:datecreated}}</span>
+                                </td>
+                                <td class="fieldName">
+                                    <c:forEach items="#{configContext.langsEnabled}" var="lang">
+                                        <div class="p-inputgroup flex-grow-1 flex flex-nowrap mb-1">
+                                            <span class="p-inputgroup-addon" style="width: 6em; padding:3px 5px;">#{labels['general.lang.'.concat(lang)]}</span>
+                                            <p:inputText value="#{localeContext.getLabel('general.docs.dateCreated', lang)}" disabled="true" class="flex-grow-1" />
+                                        </div>
+                                    </c:forEach>
+                                </td>
+                                <td class="fieldTags">
+                                    <div jsf:id="dateCreatedTagsArea" class="p-fluid">
+                                        <p:inputText id="dateCreatedTags" value="#{formDefController.currentFD.sfDef.dateCreated.tags}" label="#{labels['general.tags']}"
+                                                     converter="stringToSetConverter" autocomplete="off" placeholder="#{labels['general.tags']}" maxlength="100"
+                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.dateCreated.enabled}" />
+                                    </div>
+                                </td>
+                                <td class="fieldExt">
+                                    <div jsf:id="dateCreatedSettings">
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.dateCreated.enabled}" label="#{labels['ccFormBuilder.field.enabled']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.field.enabled']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead}" >
+                                                <p:ajax event="change" process="dateCreatedSettings" update="dateCreatedSettings dateCreatedTagsArea" />
+                                            </p:selectBooleanCheckbox>
+                                        </div>
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.dateCreated.editable}" label="#{labels['ccFormBuilder.editable']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.editable']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.dateCreated.enabled}" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="">
+                                <td class="fieldIndex">
+                                    #4
+                                </td>
+                                <td class="fieldType">
+                                    <p:selectOneMenu disabled="true" style="width: 100%;">
+                                        <f:selectItem itemValue="dateTime" itemLabel="#{labels['ccFormBuilder_field.dateTime']}" />
+                                    </p:selectOneMenu>
+                                    <br/>
+                                    <span class="muted" title="#{labels['ccFormBuilder.fieldTemplateId']}">{{eldoc:sf:datedue}}</span>
+                                </td>
+                                <td class="fieldName">
+                                    <c:forEach items="#{configContext.langsEnabled}" var="lang">
+                                        <div class="p-inputgroup flex-grow-1 flex flex-nowrap mb-1">
+                                            <span class="p-inputgroup-addon" style="width: 6em; padding:3px 5px;">#{labels['general.lang.'.concat(lang)]}</span>
+                                            <p:inputText value="#{localeContext.getLabel('general.docs.dateDue', lang)}" disabled="true" class="flex-grow-1" />
+                                        </div>
+                                    </c:forEach>
+                                </td>
+                                <td class="fieldTags">
+                                    <div jsf:id="dateDueTagsArea" class="p-fluid">
+                                        <p:inputText id="dateDueTags" value="#{formDefController.currentFD.sfDef.dateDue.tags}" label="#{labels['general.tags']}"
+                                                     converter="stringToSetConverter" autocomplete="off" placeholder="#{labels['general.tags']}" maxlength="100"
+                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.dateDue.enabled}" />
+                                    </div>
+                                </td>
+                                <td class="fieldExt">
+                                    <div jsf:id="dateDueSettings">
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.dateDue.enabled}" label="#{labels['ccFormBuilder.field.enabled']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.field.enabled']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead}" >
+                                                <p:ajax event="change" process="dateDueSettings" update="dateDueSettings dateDueTagsArea" />
+                                            </p:selectBooleanCheckbox>
+                                        </div>
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.dateDue.required}" label="#{labels['ccFormBuilder.required']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.required']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.dateDue.enabled}" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="">
+                                <td class="fieldIndex">
+                                    #5
+                                </td>
+                                <td class="fieldType">
+                                    <p:selectOneMenu disabled="true" style="width: 100%;">
+                                        <f:selectItem itemValue="string" itemLabel="#{labels['ccFormBuilder_field.string']}" />
+                                    </p:selectOneMenu>
+                                    <br/>
+                                    <span class="muted" title="#{labels['ccFormBuilder.fieldTemplateId']}">{{eldoc:sf:description}}</span>
+                                </td>
+                                <td class="fieldName">
+                                    <div jsf:id="descrFieldNames">
+                                        <c:forEach items="#{configContext.langsEnabled}" var="lang">
+                                            <div class="p-inputgroup flex-grow-1 flex flex-nowrap mb-1">
+                                                <span class="p-inputgroup-addon" style="width: 6em; padding:3px 5px;">#{labels['general.lang.'.concat(lang)]}</span>
+                                                <p:inputText value="#{formDefController.currentFD.sfDef.description.name[lang]}" autocomplete="off" maxlength="100"
+                                                             converter="stringTrimConverter" disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.description.enabled}" class="flex-grow-1" />
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+                                </td>
+                                <td class="fieldTags">
+                                    <div jsf:id="descrTagsArea" class="p-fluid">
+                                        <p:inputText id="descrTags" value="#{formDefController.currentFD.sfDef.description.tags}" label="#{labels['general.tags']}"
+                                                     converter="stringToSetConverter" autocomplete="off" placeholder="#{labels['general.tags']}" maxlength="100"
+                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.description.enabled}" />
+                                    </div>
+                                </td>
+                                <td class="fieldExt">
+                                    <div jsf:id="descrSettings">
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.description.enabled}" label="#{labels['ccFormBuilder.field.enabled']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.field.enabled']}"
+                                                                     converter="jakarta.faces.Boolean" disabled="#{formDefController.modeRead}">
+                                                <p:ajax event="change" process="descrSettings descrFieldNames" update="descrSettings descrTagsArea descrFieldNames" />
+                                            </p:selectBooleanCheckbox>
+                                        </div>
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.description.required}" label="#{labels['ccFormBuilder.required']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.required']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.description.enabled}" />
+                                        </div>
+                                        <div>
+                                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.sfDef.description.useRTeditor}" label="#{labels['ccFormBuilder.useRTeditor']}"
+                                                                     itemLabel="#{labels['ccFormBuilder.useRTeditor']}" converter="jakarta.faces.Boolean"
+                                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.sfDef.description.enabled}"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-12">
+
+            <p:dataTable id="cfDt" value="#{formDefController.currentFD.cfDef}" var="rowData" rowIndexVar="rowIndex" rows="1000"
+                         paginator="true" paginatorPosition="top" paginatorAlwaysVisible="false"
+                         reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" filterDelay="800" styleClass="doc-form-builder">
+
+                <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                <f:facet name="header">
+                    #{labels['ccFormBuilder.otherFields']}
+                </f:facet>
+
+
+                <!-- Column: Field Idx -->
+                <p:column headerText="#" styleClass="fieldIndex" width="25">
+                    <p:outputLabel value="##{rowIndex+6}" />
+                </p:column>
+
+
+                <!-- Column: Field Type -->
+                <p:column headerText="#{labels['ccFormBuilder.fieldType']}" styleClass="fieldType" width="250">
+                    <p:selectOneMenu id="fType" value="#{formDefController.currentFD.cfDef[rowIndex].type}" disabled="#{formDefController.modeRead or !formDefController.currentFD.cfDef[rowIndex].enabled}" style="width: 100%;">
+                        <f:selectItems value="#{formDefController.customFieldTypesSI}" />
+                        <p:ajax event="change" process=":f1:tabs:formBuilder:cfDt" partialSubmit="true" update=":f1:tabs:formBuilder:cfDt" />
+                    </p:selectOneMenu>
+                    <br/>
+                    <span class="muted" title="#{labels['ccFormBuilder.fieldTemplateId']}">{{eldoc:cf:#{rowIndex}}}</span>
+                </p:column>
+
+
+                <!-- Column: Field Name -->
+                <p:column headerText="#{labels['ccFormBuilder.fieldTitle']}" styleClass="fieldName">
+                    <c:forEach items="#{configContext.langsEnabled}" var="lang">
+                        <div class="p-inputgroup flex-grow-1 flex flex-nowrap mb-1">
+                            <span class="p-inputgroup-addon" style="width: 6em; padding:3px 5px;">#{labels['general.lang.'.concat(lang)]}</span>
+                            <p:inputText value="#{formDefController.currentFD.cfDef[rowIndex].name[lang]}" autocomplete="off" converter="stringTrimConverter" maxlength="100"
+                                         disabled="#{formDefController.modeRead or !formDefController.currentFD.cfDef[rowIndex].enabled}"
+                                         placeholder="#{pageController.getFormattedMessage(labels['ccFormBuilder.fieldTitle.placeHolder'])} (#{labels['general.lang.'.concat(lang)]})" class="flex-grow-1" />
+                        </div>
+                    </c:forEach>
+
+                    <!-- Table Columns for the CustomField of type Table -->
+                    <div jsf:id="tblDef" jsf:rendered="#{formDefController.currentFD.cfDef[rowIndex].typeTable}" class="mt-1">
+                        <h3 class="area-title text-center">
+                            <span class="mr-1">#{labels['ccFormBuilder_field.table.columns']} (#{formDefController.currentFD.cfDef[rowIndex].fields.size()})</span>
+                            <p:commandButton action="#{formDefController.currentFD.cfDef[rowIndex].addField()}" value="${labels['general.btn.add']}"
+                                             process=":f1:tabs:formBuilder:cfDt" update=":f1:tabs:formBuilder:cfDt" oncomplete="closePreview()"
+                                             rendered="#{formDefController.modeEdit}" icon="fa-solid fa-fw fa-plus" styleClass="btn-sm p-button-secondary p-button-outlined"
+                                             disabled="#{!formDefController.currentFD.cfDef[rowIndex].enabled}">
+                                <o:skipValidators />
+                            </p:commandButton>
+                        </h3>
+                        <div class="grid grid-nogutter">
+                            <ui:repeat id="fieldsArea" value="#{formDefController.currentFD.cfDef[rowIndex].fields}" var="field" varStatus="fieldStatus">
+                                <div class="p-1 col-#{formDefController.currentFD.cfDef[rowIndex].fields.size() le 4 ? (12 / formDefController.currentFD.cfDef[rowIndex].fields.size()).shortValue() : '3'}">
+                                    <h3 class="area-title text-center">
+                                        <span class="mr-1">#{labels['ccFormBuilder_field.table.column']} #{fieldStatus.index + 1}</span>
+                                        <p:commandButton action="#{formDefController.currentFD.cfDef[rowIndex].deleteField(fieldStatus.index)}" value="${labels['general.btn.delete']}"
+                                                         process=":f1:tabs:formBuilder:cfDt" update=":f1:tabs:formBuilder:cfDt" oncomplete="closePreview()"
+                                                         rendered="#{formDefController.modeEdit}" icon="fa-solid fa-fw fa-trash" styleClass="btn-sm p-button-secondary p-button-outlined"
+                                                         disabled="#{!formDefController.currentFD.cfDef[rowIndex].enabled}">
+                                            <o:skipValidators />
+                                        </p:commandButton>
+                                    </h3>
+                                    <div class="p-fluid">
+                                        <c:forEach items="#{configContext.langsEnabled}" var="lang">
+                                            <p:inputText value="#{field.name[lang]}" autocomplete="off" converter="stringTrimConverter" maxlength="100"
+                                                         disabled="#{formDefController.modeRead or !formDefController.currentFD.cfDef[rowIndex].enabled}"
+                                                         placeholder="#{pageController.getFormattedMessage(labels['ccFormBuilder.columnTitle.placeHolder'])} (#{labels['general.lang.'.concat(lang)]})" />
+                                        </c:forEach>
+                                        <p:inputText id="tags" value="#{field.tags}" label="#{labels['general.tags']}"
+                                                     converter="stringToSetConverter" autocomplete="off" placeholder="#{labels['general.tags']}"
+                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.cfDef[rowIndex].enabled}" />
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </p:column>
+
+
+                <!-- Column: Field Tags -->
+                <p:column headerText="#{labels['general.tags']}" styleClass="fieldTags" width="250">
+                    <div class="p-fluid">
+                        <p:inputText id="tags" value="#{formDefController.currentFD.cfDef[rowIndex].tags}" label="#{labels['general.tags']}"
+                                     converter="stringToSetConverter" autocomplete="off" placeholder="#{labels['general.tags']}"
+                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.cfDef[rowIndex].enabled}"/>
+                    </div>
+                </p:column>
+
+
+                <!-- Column: Field Settings -->
+                <p:column headerText="#{labels['ccFormBuilder.other']}" styleClass="fieldExt" width="180">
+                    <div class="flex align-items-center justify-content-between">
+                        <div jsf:id="checkBoxDiv">
+                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.cfDef[rowIndex].enabled}" label="#{labels['ccFormBuilder.field.enabled']}"
+                                                     itemLabel="#{labels['ccFormBuilder.field.enabled']}"
+                                                     converter="jakarta.faces.Boolean" disabled="#{formDefController.modeRead}" class="mr-1">
+                                <p:ajax event="change" process=":f1:tabs:formBuilder:cfDt" update=":f1:tabs:formBuilder:cfDt" />
+                            </p:selectBooleanCheckbox>
+                            <br/>
+                            <p:selectBooleanCheckbox value="#{formDefController.currentFD.cfDef[rowIndex].required}" label="#{labels['ccFormBuilder.required']}"
+                                                     itemLabel="#{labels['ccFormBuilder.required']}" converter="jakarta.faces.Boolean" class="mr-1"
+                                                     disabled="#{formDefController.modeRead or !formDefController.currentFD.cfDef[rowIndex].enabled}"
+                                                     rendered="#{not (formDefController.currentFD.cfDef[rowIndex].typeCheckBox or formDefController.currentFD.cfDef[rowIndex].typeTable)}" />
+                        </div>
+
+                        <p:commandButton action="#{formDefController.currentFD.cfDelete(rowIndex)}" process="@this" update=":f1:tabs:formBuilder:cfDt" oncomplete="closePreview()"
+                                         rendered="#{formDefController.modeEdit}" icon="fa-solid fa-fw fa-trash" styleClass="p-button-secondary p-button-outlined" />
+                    </div>
+                </p:column>
+
+
+                <f:facet name="footer">
+                    <div class="buttons-right">
+                        <p:commandButton id="btnAddField" actionListener="#{formDefController.currentFD.cfCreateAndAdd}" value="#{labels['ccFormBuilder.btn.addField']}" icon="fa-solid fa-fw fa-plus" oncomplete="closePreview()"
+                                         process=":f1:tabs:formBuilder:cfDt" update=":f1:tabs:formBuilder:cfDt" disabled="#{formDefController.modeRead}" class="p-button-secondary p-button-outlined" />
+                        <p:commandButton id="btnTogglePreview" actionListener="#{formDefController.btnTogglePreview}" process="@form" update=":formPreview"
+                                         icon="fa-regular fa-fw fa-eye" value="#{labels['ccFormBuilder.btn.showWorkflowPreview']}" class="p-button-secondary p-button-outlined" >
+                                <o:skipValidators />
+                        </p:commandButton>
+                    </div>
+                </f:facet>
+
+            </p:dataTable>
+
+        </div>
+
+    </div>
+
+</ui:composition>

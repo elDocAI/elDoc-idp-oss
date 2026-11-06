@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExportableFileTemplateSettings">
+    <internal_templates>
+      <template name="facelets_jakarta_8.xhtml" reformat="true" live-template-enabled="true" />
+      <template name="Jsp File.jsp" reformat="true" live-template-enabled="true" />
+      <template name="Jspx File.jspx" reformat="true" live-template-enabled="true" />
+    </internal_templates>
+  </component>
+</project>

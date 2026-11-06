@@ -1,0 +1,67 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:o="omnifaces"
+                xmlns:p="primefaces"
+                xmlns:pt="jakarta.faces.passthrough"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="id" value="#{workflowController.viewParamId}" />
+            <f:viewParam name="v" value="#{workflowController.viewParamV}" />
+            <f:viewAction action="#{workflowController.load}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <o:form id="f1" styleClass="#{workflowController.modeEdit ? 'modeEdit' : 'modeRead'}" >
+
+            <ui:include src="#{workflowController.formTypeIncludePath}">
+                <ui:param name="dataSource" value="#{workflowController.currentWF}" />
+                <ui:param name="modeRead" value="#{workflowController.modeRead}" />
+                <ui:param name="modeEdit" value="#{workflowController.modeEdit}" />
+            </ui:include>
+
+            <p:growl globalOnly="false" life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                <p:autoUpdate />
+            </p:growl>
+
+        </o:form>
+
+    </ui:define>
+
+    <ui:define name="pageBottom">
+        <h:outputStylesheet name="viewer.min.css" library="viewerjs" />
+        <h:outputScript name="viewer.min.js" library="viewerjs" pt:defer="true" />
+
+        <!-- These scripts are required on the RecoDocs only -->
+        <ui:fragment rendered="#{workflowController.currentWF.isRecoWF()}">
+            <h:outputScript name="js/geom.js" library="eldoc" pt:defer="true" />
+            <h:outputScript name="js/recoFormEditor.js" library="eldoc" pt:defer="true" rendered="#{not pageController.isIe(request)}" />
+            <h:outputScript name="js/recoDocViewer.js" library="eldoc" pt:defer="true" />
+        </ui:fragment>
+    </ui:define>
+
+</ui:composition>

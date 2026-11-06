@@ -1,0 +1,78 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:faces="jakarta.faces">
+
+    <div class="grid form-templates">
+
+        <div class="col-12">
+
+            <p:dataTable id="docTmplts" value="#{formDefController.currentFD.templates}" var="templateRef" rowIndexVar="rowIndex" rows="30"
+                         paginator="true" paginatorPosition="top" paginatorAlwaysVisible="false"
+                         reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" styleClass="doc-form-templates">
+
+                <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                <f:facet name="header">
+                    #{labels['pAdminForm.tabDocTemplates']}
+                </f:facet>
+
+                <p:column headerText="#" width="50">
+                    <p:outputLabel value="# #{rowIndex+1}"/>
+                </p:column>
+
+                <p:column headerText="#{labels['general.docs.attachments']}">
+                    <p:link value="#{workflowFilesController.getFileNameSizeLabel(templateRef.dbFileRef)}" href="#{workflowFilesController.getFileHref(templateRef.dbFileRef)}" target="_blank"/>
+                </p:column>
+
+                <p:column headerText="#{labels['pAdminForm.templateSettings']}">
+                    <p:selectBooleanCheckbox value="#{templateRef.computeFormFields}" label="#{labels['pAdminForm.template.computeFormFields']}" itemLabel="#{labels['pAdminForm.template.computeFormFields']}"
+                                             converter="jakarta.faces.Boolean" disabled="#{formDefController.modeRead or !workflowFilesController.isComputeFormFieldsSupported(templateRef)}"/>
+                </p:column>
+
+                <p:column headerText="#{labels['general.actions']}" width="150">
+                    <div class="buttons-left">
+                        <p:commandButton id="btnDel" action="#{formDefController.deleteTemplate(rowIndex)}" title="#{labels['general.btn.delete']}"
+                                         icon="fa-solid fa-fw fa-trash" styleClass="p-button-secondary p-button-outlined" process="@this" update="@parent:@parent"
+                                         disabled="#{formDefController.modeRead}" onclick="return confirm('#{labels['confirm.delete.fileCompletely']}');"/>
+                    </div>
+                </p:column>
+
+            </p:dataTable>
+
+        </div>
+
+        <div class="col-12 muted">
+            <p:outputLabel value="* #{labels['pAdminForm.template.computeFormFieldsSupport']}: "/>
+            <br/>
+            <p:outputLabel value="#{labels['pAdminForm.template.supportedTmplIds']}: "/> <span>{{eldoc:sf:author}}</span>
+        </div>
+
+        <div class="col-12" faces:rendered="#{formDefController.modeEdit}">
+            <p:fileUpload listener="#{formDefController.handleFileUpload}" mode="advanced" dragDrop="false" update="docTmplts" sequential="true" multiple="true"
+                          label="#{labels['fileUpload.label']}" uploadLabel="#{labels['fileUpload.uploadLabel']}" cancelLabel="#{labels['fileUpload.cancelLabel']}" auto="true"/>
+        </div>
+
+    </div>
+
+</ui:composition>

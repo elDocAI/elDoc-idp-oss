@@ -1,0 +1,35 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets">
+
+
+    <!-- RecoForm post-processing hint -->
+
+    Scripting hints:<br/>
+    Extracted recognition data (recoData) for the document is passed as the "recoData" variable, with the following properties:<br/>
+    * recoData.fields - (List&lt;Field&gt;) Describes recoData fields: name, type, tags, value, etc.<br/>
+    * recoData.pageIdxStart - (Integer) The index of the page in the source document where the current recognition data (recoData) starts<br/>
+    * recoData.pageIdxEnd - (Integer) The index of the page in the source document where the current recognition data (recoData) ends<br/>
+    * recoData.validated - (Boolean) A flag indicating whether recoData was automatically validated<br/>
+    The global script scope (Map&lt;String, Object&gt;) can be accessed via the "scope" variable. This scope is shared between script invocations.<br/>
+    Hint: You may modify the provided recoData value as needed and use "return recoData;" at the end of the script code.
+
+</ui:composition>

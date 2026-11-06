@@ -1,0 +1,160 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:pt="jakarta.faces.passthrough"
+                xmlns:o="omnifaces"
+                xmlns:cc="jakarta.faces.composite/elcomp"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="id" value="#{recoFormController.id}" />
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+            <f:viewAction action="#{recoFormController.load}" />
+        </f:metadata>
+        <p:importConstants type="ai.eldoc.model.reco.RecoForm" />
+        <p:importConstants type="ai.eldoc.model.reco.RecoFieldDataType" />
+    </ui:define>
+
+    <ui:define name="head">
+        <!-- CodeEditor -->
+        <h:outputStylesheet library="codemirror" name="/lib/codemirror.css" />
+        <h:outputScript library="codemirror" name="/lib/codemirror.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/mode/javascript/javascript.js" pt:defer="true" />
+        <!-- CodeMirror editor addons -->
+        <h:outputStylesheet library="codemirror" name="/addon/dialog/dialog.css" />
+        <h:outputScript library="codemirror" name="/addon/edit/closebrackets.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/edit/matchbrackets.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/dialog/dialog.js" pt:defer="true" />
+        <!-- CodeMirror scrollbar addons -->
+        <h:outputScript library="codemirror" name="/addon/scroll/annotatescrollbar.js" pt:defer="true" />
+        <!-- CodeMirror search system -->
+        <h:outputStylesheet library="codemirror" name="/addon/search/matchesonscrollbar.css" />
+        <h:outputScript library="codemirror" name="/addon/search/search.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/searchcursor.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/matchesonscrollbar.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/match-highlighter.js" pt:defer="true" />
+        <!-- CodeMirror comments system -->
+        <h:outputScript library="codemirror" name="/addon/comment/comment.js" pt:defer="true" />
+        <!-- CodeMirror folding system -->
+        <h:outputScript library="codemirror" name="/addon/fold/foldcode.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/fold/brace-fold.js" pt:defer="true" />
+        <!-- CodeMirror hint system -->
+        <h:outputStylesheet library="codemirror" name="/addon/hint/show-hint.css" />
+        <h:outputScript library="codemirror" name="/addon/hint/show-hint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/hint/javascript-hint.js" pt:defer="true" />
+        <!-- CodeMirror lint system -->
+        <h:outputStylesheet library="codemirror" name="/addon/lint/lint.css" />
+        <h:outputScript library="codemirror" name="/addon/lint/lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/javascript-lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/json-lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/coffeescript-lint.js" pt:defer="true" />
+
+        <h:outputScript name="js/geom.js" library="eldoc" pt:defer="true" />
+        <h:outputScript library="eldoc" name="js/recoFormEditor.js" pt:defer="true" />
+        <h:outputScript library="eldoc" name="js/codeEditor.js" pt:defer="true" />
+    </ui:define>
+
+    <ui:define name="content">
+        <o:form id="f1" class="#{recoFormController.modeEdit ? 'modeEdit' : 'modeRead'}" >
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header flex gap-1 align-items-center">
+                        <h1>#{labels['pRecoForm.header']}: #{recoFormController.recoForm.name}</h1>
+                        <h:outputText value="#{recoFormController.recoForm.status}" title="#{labels['pRecoForm.status']}"
+                                      class="status-badge #{recoFormController.recoForm.statusActive ? 'is-active' : 'is-suspended'}">
+                            <f:converter converterId="recoFormStatusConverter" />
+                        </h:outputText>
+                    </div>
+                </div>
+            </div>
+
+            <ui:fragment rendered="#{userContext.adminDocRW}">
+                <div class="grid">
+                    <div class="col-12">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="btnEdit" value="${labels['general.btn.edit']}" action="#{recoFormController.setModeEdit}" process="@this" update="@form"
+                                                 icon="fa-regular fa-fw fa-pen-to-square" rendered="#{recoFormController.modeRead}" />
+                                <p:commandButton id="btnActivate" value="${labels['general.btn.activate']}" action="#{recoFormController.btnActivate}"
+                                                 process="@this" update="@form" icon="fa-solid fa-fw fa-check" class="p-button-secondary p-button-outlined"
+                                                 disabled="#{recoFormController.recoForm.statusActive}" rendered="#{recoFormController.modeRead}"/>
+                                <p:commandButton id="btnSuspend" value="${labels['general.btn.suspend']}" action="#{recoFormController.btnSuspend}"
+                                                 process="@this" update="@form" icon="fa-solid fa-fw fa-ban" class="p-button-secondary p-button-outlined"
+                                                 disabled="#{not recoFormController.recoForm.statusActive}" rendered="#{recoFormController.modeRead}" />
+                                <p:commandButton id="btnSave" value="${labels['general.btn.save']}" action="#{recoFormController.btnSave}" process="@form" update="@form"
+                                                 icon="fa-solid fa-fw fa-check" rendered="#{recoFormController.modeEdit}"/>
+                                <p:commandButton id="btnSaveActivate" value="${labels['general.btn.saveAndActivate']}" action="#{recoFormController.btnSaveAndActivate}"
+                                                 process="@form" update="@form" icon="fa-solid fa-fw fa-check" rendered="#{recoFormController.modeEdit}"/>
+                                <p:commandButton id="btnCancel" value="${labels['general.btn.cancel']}" action="#{recoFormController.btnCancel}" process="@this" immediate="true"
+                                                 icon="fa-solid fa-fw fa-share" class="p-button-secondary p-button-outlined" rendered="#{recoFormController.modeEdit}"/>
+                                <p:commandButton id="btnRemoveAttachments" value="#{labels['recoForm.btn.removeAttachment']}" action="#{recoFormController.btnRemoveAttachments}" process="@form" update="@form"
+                                                 icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined" rendered="#{not empty recoFormController.recoForm.sourceFile and recoFormController.modeEdit}">
+                                    <o:skipValidators />
+                                </p:commandButton>
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+            </ui:fragment>
+
+            <div class="grid">
+                <div class="col-12">
+                    <p:panel id="rfCfg" header="#{labels['pRecoForm.settings']}" collapsed="false">
+                        <div class="grid">
+                            <ui:include src="/WEB-INF/includes/admin/recoForm.xhtml"/>
+                        </div>
+                    </p:panel>
+                </div>
+            </div>
+
+            <div class="grid">
+
+                <div class="col-12 xl:col-6">
+                    <p:panel id="rfCfgPostProc" header="#{labels['pRecoForm.postProc']}" collapsed="false">
+                        <div class="grid">
+                            <ui:include src="/WEB-INF/includes/admin/recoForm/postProcArea.xhtml"/>
+                        </div>
+                    </p:panel>
+                </div>
+
+                <div class="col-12 xl:col-6">
+                    <p:panel id="rfCfgAdvProp" header="#{labels['recoFormUI.advancedSettings']}" collapsed="false">
+                        <cc:propertyTable id="rfCfgAdvPropTbl" propAwareModel="#{recoFormController.recoForm}" propPrefix="idp_" disabled="#{recoFormController.modeRead}" rendered="#{not empty recoFormController.recoForm}" />
+                    </p:panel>
+                </div>
+
+            </div>
+
+
+            <p:growl life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                <p:autoUpdate />
+            </p:growl>
+
+        </o:form>
+
+    </ui:define>
+
+</ui:composition>

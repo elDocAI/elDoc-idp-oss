@@ -1,0 +1,51 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        xmlns:composite="jakarta.faces.composite"
+        xmlns:p="primefaces">
+
+    <composite:interface>
+        <composite:attribute name="dataSource" type="java.lang.Object" required="true" shortDescription="Document data source"/>
+        <composite:attribute name="fieldName" type="java.lang.String" required="true" shortDescription="Field name"/>
+        <composite:attribute name="label" type="java.lang.String" required="false" shortDescription="Field UI label"/>
+        <composite:attribute name="required" type="java.lang.Boolean" required="false" shortDescription="Required flag"/>
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag"/>
+    </composite:interface>
+
+    <composite:implementation>
+
+        <div class="col-12 lg:col-4">
+            <p:outputLabel id="l1" value="#{cc.attrs.label}"/>
+        </div>
+
+        <div class="col-12 lg:col-8 p-fluid">
+            <p:datePicker id="i1" value="#{cc.attrs.dataSource[cc.attrs.fieldName]}" autocomplete="off" disabled="#{cc.attrs.disabled}" required="#{cc.attrs.required}" label="#{cc.attrs.label}"
+                          timeZone="#{userContext.timezone}" pattern="#{userContext.dateFormat}" showTime="true" hourFormat="#{userContext.hourFormat}"
+                          showIcon="true" showOnFocus="false" monthNavigator="true" yearNavigator="true" showWeek="false" showOtherMonths="true" selectOtherMonths="true" defaultHour="12" >
+                <f:convertDateTime type="date" pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+            </p:datePicker>
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

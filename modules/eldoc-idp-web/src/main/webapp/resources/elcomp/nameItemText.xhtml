@@ -1,0 +1,48 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:jsf="jakarta.faces"
+    xmlns:c="jakarta.tags.core"
+    xmlns:composite="jakarta.faces.composite">
+
+    <composite:interface componentType="nameItem">
+        <composite:attribute name="value" type="java.lang.Object" shortDescription="String representing systemId or Object of DirectoryItem class, or any successor: Person, Group, OrgUnit, etc." />
+        <composite:attribute name="addStyleClass" type="java.lang.String" rendered="true" shortDescription="Custom css style" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <c:set var="dirItemUrl" value="#{cc.getItemUrl(cc.valueData)}" />
+
+        <p:link id="lnk" href="#{dirItemUrl}" title="#{cc.titleUI}" target="_blank" styleClass="userLink userLinkText white-space-nowrap #{cc.attrs.addStyleClass}" rendered="#{not empty dirItemUrl}" >
+            <h:outputText value="#{cc.valueData}" converter="directoryItemNameConverter" />
+        </p:link>
+
+        <div jsf:id="blk" class="userLink userLinkText white-space-nowrap #{cc.attrs.addStyleClass}" jsf:rendered="#{empty dirItemUrl}">
+            <h:outputText value="#{cc.valueData}" title="#{cc.titleUI}" converter="directoryItemNameConverter" />
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

@@ -1,0 +1,63 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="title">${labels['menuUI.adminLogs']} | #{pageController.pageTitleSuffix}</ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="f1">
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header">
+                        <h1>#{labels['menuUI.adminLogs']}</h1>
+                    </div>
+                </div>
+            </div>
+
+            <f:subview id="logsView">
+                <ui:decorate template="/WEB-INF/includes/ccLogs.xhtml">
+                    <ui:define name="buttonsRight">
+                        <p:commandButton id="btnRefresh" title="#{labels['general.btn.refresh']}" process="@none" update="f1:logsView:logsTbl" styleClass="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-arrows-rotate" />
+                    </ui:define>
+                </ui:decorate>
+            </f:subview>
+
+        </h:form>
+
+        <p:growl life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+            <p:autoUpdate />
+        </p:growl>
+
+    </ui:define>
+
+</ui:composition>

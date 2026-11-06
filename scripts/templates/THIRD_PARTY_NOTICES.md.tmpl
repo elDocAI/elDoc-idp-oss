@@ -1,0 +1,33 @@
+# Third-party software notices — elDoc IDP OSS
+
+Prepared {{DATE}} for the supplied POMs (elDoc revision {{REVISION}}).
+
+elDoc IDP OSS uses third-party software. Copyright and license rights remain with the respective authors. Original license texts, copyright statements and upstream notices are reproduced in `licenses/`. These terms apply to the corresponding third-party components; this document does not replace elDoc's own license.
+
+## Scope
+
+This inventory identifies the application dependencies resolved for `eldoc-idp-web` from the supplied parent/core/web POMs. The fourth POM, `eldoc-base-api`, declares only provided dependencies. Test/build-only dependencies, unused dependency-management entries and elDoc's own artifacts are excluded from the third-party runtime inventory. A dependency is included if Maven resolves it at compile/runtime scope, even if another declaration uses a different scope.
+
+The inventory is based on POM resolution, not inspection of your final custom Uber JAR/container. See README.md for the remaining release checks. Original combined upstream notices are preserved intact and can mention optional, test or build components; such mentions are not assertions that those components ship with elDoc.
+
+## Payara Micro Community {{PAYARA_VERSION}}
+
+The exact Maven Central `fish.payara.extras:payara-micro:{{PAYARA_VERSION}}` distribution's `MICRO-INF/legal/OPEN-SOURCE-LICENSE.txt` and `3RD-PARTY-LICENSE.txt` are included in [licenses/payara](licenses/payara/). They contain Payara's CDDL/GPLv2 licensing, the applicable Classpath Exception, and third-party terms. Follow those component-specific terms. Source: https://github.com/payara/Payara — release {{PAYARA_VERSION}}. No assertion is made here about whether your custom Payara distribution is modified.
+
+## Native components supplied separately
+
+The provided declarations specify Bytedeco OpenCV `4.11.0-1.5.12` and Tesseract `5.5.1-1.5.12`. Release-specific reference license texts for JavaCPP 1.5.12, JavaCPP Presets 1.5.12, OpenCV 4.11.0 and Tesseract 5.5.1 are supplied under `licenses/upstream/*-reference/`. They must be matched to your actual custom sources and build configuration. They do not establish coverage of Leptonica, OpenBLAS, image codecs, statically linked code or other native libraries.
+
+ONNX Runtime and WebP ImageIO are separately present in the Maven runtime tree. Their collected notices are included. WebP's libwebp COPYING/PATENTS/AUTHORS were obtained from the exact submodule revision pinned by WebP ImageIO v0.1.6. Graal's shaded ICU 78.2 and XZ for Java 1.12 references were identified from the Graal release build manifest; their texts are included alongside the Graal module licenses. Model weights and runtime-downloaded assets require their own inventory if redistributed.
+
+## Application dependency license index
+
+License names below describe the principal upstream terms; component-specific files also contain embedded third-party terms. Multiple names are not automatically a choice of license. Preserve all the referenced material and consult the original grant. Original notices are reproduced without rewriting them.
+
+The CSV inventory gives every legal file path, artifact download URL and SHA-256. It records provenance for each copied file. `pom` entries are dependency aggregators, not shipped JARs.
+
+{{DEPENDENCY_TABLE}}
+
+## Container and JRE
+
+The supplied POMs do not identify the exact Rocky Linux image digest, RPM inventory, JRE distribution or added container packages. Retain their original license files and obtain any required corresponding source/source-access information for what is actually distributed. They are outside this POM-based inventory.

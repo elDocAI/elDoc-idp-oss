@@ -1,0 +1,52 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:composite="jakarta.faces.composite"
+    xmlns:f="jakarta.faces.core">
+
+    <composite:interface componentType="propertyField">
+        <composite:attribute name="value" type="java.lang.Object" required="true" shortDescription="Binding" />
+        <composite:attribute name="name" type="java.lang.String" required="true" shortDescription="Property label" />
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <div class="p-fluid">
+            <p:inputText id="i1" value="#{cc.attrs.value}" label="#{cc.attrs.name}" autocomplete="off" required="true" converter="stringTrimConverter"
+                         disabled="#{cc.attrs.disabled}" rendered="#{cc.isPropTypeString(cc.attrs.name)}"/>
+
+            <p:inputText id="i2" value="#{cc.attrs.value}" label="#{cc.attrs.name}" autocomplete="off" required="true" converter="jakarta.faces.Integer"
+                         disabled="#{cc.attrs.disabled}" rendered="#{cc.isPropTypeInt(cc.attrs.name)}"
+                         validator="#{cc.propIntValidator}"/>
+
+            <p:selectOneMenu id="i3" value="#{cc.attrs.value}" label="#{cc.attrs.name}" required="true" converter="jakarta.faces.Boolean"
+                             disabled="#{cc.attrs.disabled}" rendered="#{cc.isPropTypeBoolean(cc.attrs.name)}">
+                <f:selectItem itemLabel="true" itemValue="true" />
+                <f:selectItem itemLabel="false" itemValue="false" />
+            </p:selectOneMenu>
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

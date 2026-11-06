@@ -1,0 +1,74 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core"
+    xmlns:p="primefaces"
+    xmlns:composite="jakarta.faces.composite"
+    xmlns:h="jakarta.faces.html"
+    xmlns:pt="jakarta.faces.passthrough">
+
+    <composite:interface>
+        <composite:attribute name="dataSource" type="java.lang.Object" required="true" shortDescription="Document data source" />
+        <composite:attribute name="fieldName" type="java.lang.String" required="true" shortDescription="Field name" />
+        <composite:attribute name="label" type="java.lang.String" required="false" shortDescription="Field UI label" />
+        <composite:attribute name="required" type="java.lang.Boolean" required="false" shortDescription="Required flag" />
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag" />
+        <composite:attribute name="fieldDef" type="ai.eldoc.model.CustomField" required="true" shortDescription="Custom Field definition" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <ui:fragment rendered="#{recoDocController.showAllFields or recoDocController.isFieldOnPage(cc.attrs.fieldDef)}">
+            <div class="col-12 lg:col-4">
+                <p:outputLabel id="l1" value="#{cc.attrs.label}" />
+            </div>
+
+            <div class="col-12 lg:col-8">
+                <p:dataTable id="cfRcOmrTbl" value="#{cc.attrs.dataSource[cc.attrs.fieldName]}" var="row" rowIndexVar="rowIndex"
+                             class="table-sm table-no-header" size="small" style="border-bottom: 1px solid var(--p-content-border-color);"
+                             paginator="true" rows="5" paginatorAlwaysVisible="false" pageLinks="0" rowsPerPageTemplate="5,25,50,100"
+                             paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             emptyMessage="#{labels['general.dataTable.noRecordsFound']}"
+                             pt:data-field-id="#{recoDocController.getFieldOnPageIdx(cc.attrs.fieldDef)}" pt:data-focus-enabled="#{recoDocController.isFieldFocusEnabled(cc.attrs.fieldDef)}">
+
+                    <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                    <p:column id="opMark">
+                        <p:selectBooleanCheckbox value="#{cc.attrs.dataSource[cc.attrs.fieldName][rowIndex]}" itemLabel="#{cc.attrs.fieldDef.fields[rowIndex].name[localeContext.langSystemCode]}"
+                                                 required="#{cc.attrs.required}" disabled="#{cc.attrs.disabled}" converter="jakarta.faces.Boolean" />
+
+                        <h:inputHidden id="coords" value="#{cc.attrs.fieldDef.recoProp.confidenceOmr[rowIndex]}">
+                            <f:attribute name="readonly" value="true" />
+                        </h:inputHidden>
+                    </p:column>
+
+                    <p:column id="opMarkCL" width="35" class="text-center surface-200" style="#{recoDocController.getConfidenceOpMarkStyle(cc.attrs.fieldDef, rowIndex)};" >
+                        #{cc.attrs.fieldDef.recoProp.confidenceOmr[rowIndex]}
+                    </p:column>
+
+                </p:dataTable>
+            </div>
+        </ui:fragment>
+
+    </composite:implementation>
+
+</ui:component>

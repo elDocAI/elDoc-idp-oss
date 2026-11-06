@@ -1,0 +1,6 @@
+
+Lists of 4 third-party dependencies.
+     (Apache-2.0) Apache Commons IO (commons-io:commons-io:2.15.1 - https://commons.apache.org/proper/commons-io/)
+     (Public Domain) JSON in Java (org.json:json:20260814 - https://github.com/douglascrockford/JSON-java)
+     (The BSD 3-Clause License) Java Encoder (org.owasp.encoder:encoder:1.6.0 - https://owasp.org/projects/java-encoder)
+     (MIT License) PrimeFaces CDK API (org.primefaces:primefaces-cdk-api:17.0.0-SNAPSHOT - https://www.primefaces.org/primefaces-cdk/primefaces-cdk-api)

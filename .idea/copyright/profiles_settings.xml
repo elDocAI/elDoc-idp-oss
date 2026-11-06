@@ -1,0 +1,7 @@
+<component name="CopyrightManager">
+  <settings default="elDoc">
+    <module2copyright>
+      <element module="elDocScope" copyright="elDoc" />
+    </module2copyright>
+  </settings>
+</component>

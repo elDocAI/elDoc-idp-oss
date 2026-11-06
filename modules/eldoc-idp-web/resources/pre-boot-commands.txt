@@ -1,0 +1,8 @@
+# Set reverse-proxy related configurations and other network configs
+set configs.config.server-config.network-config.protocols.protocol.http-listener.http.scheme-mapping=X-Forwarded-Proto
+set configs.config.server-config.network-config.protocols.protocol.http-listener.http.auth-pass-through-enabled=true
+set configs.config.server-config.network-config.protocols.protocol.http-listener.http.server-header=false
+set configs.config.server-config.network-config.protocols.protocol.http-listener.http.file-cache.enabled=true
+set configs.config.server-config.network-config.protocols.protocol.http-listener.http.file-cache.max-age-seconds=3600
+set configs.config.server-config.network-config.protocols.protocol.http-listener.http.compression=off
+set configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=150

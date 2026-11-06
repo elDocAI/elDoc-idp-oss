@@ -1,0 +1,106 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:cc="jakarta.faces.composite/elcomp"
+                xmlns:c="jakarta.tags.core"
+                xmlns:f="jakarta.faces.core">
+
+    <!--@elvariable id="dataSource" type="java.util.Map<java.lang.String, java.lang.Object>"-->
+    <!--@elvariable id="cfAwareModel" type="ai.eldoc.model.CustomFieldAwareModel"-->
+    <!--@elvariable id="fieldsDef" type="java.util.ArrayList<ai.eldoc.model.CustomField>"-->
+    <!--@elvariable id="modeRead" type="java.lang.Boolean"-->
+    <!--@elvariable id="modeEdit" type="java.lang.Boolean"-->
+
+    <f:subview id="cf_flds">
+
+        <c:forEach items="#{fieldsDef}" var="field" varStatus="itemStatus">
+
+            <f:subview id="cf_#{itemStatus.index}">
+
+                <c:if test="#{field.enabled and field.type == 'string'}">
+                    <cc:cfString id="cf_st" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'numberInteger'}">
+                    <cc:cfNumberInteger id="cf_nbi" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'number'}">
+                    <cc:cfNumberFractional id="cf_nbf" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'checkbox'}">
+                    <cc:cfCheckBox id="cf_cb" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'date'}">
+                    <cc:cfDate id="cf_dt" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'dateTime'}">
+                    <cc:cfDateTime id="cf_dttm" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'listValue'}">
+                    <cc:cfListValue id="cf_lv" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" idKf="#{field.subType}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'docRef'}">
+                    <cc:cfDocRef id="cf_dr" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'table'}">
+                    <cc:cfTable id="cf_tbl" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"
+                                fieldIndex="#{itemStatus.index}" fieldDef="#{field}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'reco'}">
+                    <cc:cfReco id="cf_rcTxt" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}" fieldDef="#{field}" cfAwareModel="#{cfAwareModel}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'recoImage'}">
+                    <cc:cfRecoImage id="cf_rcImg" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"
+                                    fieldIndex="#{itemStatus.index}" fieldDef="#{field}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'recoOmr'}">
+                    <cc:cfRecoOmr id="cf_rcOmr" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" disabled="#{modeRead}" fieldDef="#{field}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'recoTable'}">
+                    <cc:cfRecoTable id="cf_rcTbl" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" disabled="#{modeRead}" fieldDef="#{field}" cfAwareModel="#{cfAwareModel}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'sign'}">
+                    <cc:cfSign id="cf_sgn" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+                <c:if test="#{field.enabled and field.type == 'link'}">
+                    <cc:cfLink id="cf_dt" dataSource="#{dataSource}" fieldName="#{field.getDSFieldName(itemStatus.index)}" label="#{field.name[localeContext.langSystemCode]}" required="#{field.required}" disabled="#{modeRead}"/>
+                </c:if>
+
+            </f:subview>
+
+        </c:forEach>
+
+    </f:subview>
+
+</ui:composition>

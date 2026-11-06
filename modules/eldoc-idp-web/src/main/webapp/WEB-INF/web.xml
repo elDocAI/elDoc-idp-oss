@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (C) 2022-2026 elDoc Limited
+  ~  *
+  ~  * This file is part of elDoc IDP OSS.
+  ~  *
+  ~  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  ~  * it under the terms of the GNU Affero General Public License as published
+  ~  * by the Free Software Foundation, version 3.
+  ~  *
+  ~  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  ~  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  ~  * General Public License for more details.
+  ~  *
+  ~  * SPDX-License-Identifier: AGPL-3.0-only
+  ~  */
+  -->
+
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+         version="6.1">
+
+    <!-- Application Servlet Context listeners. Order is important -->
+    <listener>
+        <display-name>ImageIO service provider loader/unloader</display-name>
+        <listener-class>com.twelvemonkeys.servlet.image.IIOProviderContextListener</listener-class>
+    </listener>
+
+    <listener>
+        <display-name>elDoc Start-up/Destroy listener</display-name>
+        <listener-class>ai.eldoc.listener.ServletContextListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>ai.eldoc.security.SessionCookiePolicyListener</listener-class>
+    </listener>
+
+
+    <servlet>
+        <servlet-name>elDocFacesServlet</servlet-name>
+        <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>elDocFacesServlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+        <url-pattern>/jakarta.faces.resource/*</url-pattern>
+        <url-pattern>/openapi/*</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>360</session-timeout>
+        <cookie-config>
+            <name>ELDOCIDPOSSSID</name>
+        </cookie-config>
+    </session-config>
+
+
+    <!-- Filters order is important! Do not change! -->
+
+    <!-- Shiro Filter -->
+    <!-- NOTE: Shiro Jakarta EE filter forces request encoding to UTF-8. -->
+    <filter-mapping>
+        <filter-name>ShiroFilter</filter-name>
+        <url-pattern />
+    </filter-mapping>
+
+    <!-- Prevents browser from caching JSF's (Form-based) pages -->
+    <filter>
+        <filter-name>NoCacheFilter</filter-name>
+        <filter-class>org.omnifaces.filter.CacheControlFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>NoCacheFilter</filter-name>
+        <url-pattern>*.xhtml</url-pattern>
+        <!--<servlet-name>elDocFacesServlet</servlet-name>-->
+    </filter-mapping>
+
+
+    <!-- Context Params section -->
+
+    <!-- Local HTTP only: disable for HTTPS deployments.
+         SessionCookiePolicyListener works around Shiro 3.0.1 ignoring this flag
+         in Faces Production mode. -->
+    <context-param>
+        <param-name>org.apache.shiro.ee.secure-session-cookie.disabled</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <!-- Faces response rendering buffer -->
+    <context-param>
+        <param-name>jakarta.faces.FACELETS_BUFFER_SIZE</param-name>
+        <param-value>131072</param-value> <!-- 128KB -->
+    </context-param>
+
+    <!-- Maximum Mojarra logical views retained per session -->
+    <context-param>
+        <param-name>com.sun.faces.numberOfLogicalViews</param-name>
+        <param-value>50</param-value>
+    </context-param>
+
+    <!-- Maximum OmniFaces @ViewScoped scopes retained per session -->
+    <context-param>
+        <param-name>org.omnifaces.VIEW_SCOPE_MANAGER_MAX_ACTIVE_VIEW_SCOPES</param-name>
+        <param-value>50</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+        <!--<param-value>client</param-value>-->
+    </context-param>
+
+    <!-- Set the project stage to "Development", "UnitTest", "SystemTest", or "Production" -->
+    <context-param>
+        <param-name>jakarta.faces.PROJECT_STAGE</param-name>
+        <param-value>Production</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.FACELETS_SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.CSP</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.CSP_POLICY</param-name>
+        <!-- 'unsafe-eval' required by FileManager component (even if located in separate project, but imported on xhtml pages) -->
+        <!-- Issue can be reproduced by removing this block and navigating to FileManager page in Firefox (corresponding error messages will be printed in console, may not work in all browser versions) -->
+        <!-- Also it required for correct work of Indexing functionality in FileManager, as example binding DataGrid column that's use template to show values -->
+        <param-value>script-src 'self' 'unsafe-eval'</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>aura</param-value>
+    </context-param>
+
+    <context-param>
+        <!-- Potentially can have not obvious effects on command buttons, etc. Use with care (pay attention on 'process' attribute)! -->
+        <param-name>primefaces.SUBMIT</param-name>
+        <param-value>partial</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.CLIENT_SIDE_LOCALISATION</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <welcome-file-list>
+        <welcome-file>idp/start.xhtml</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
+        <location>/error.xhtml?error=viewExpired</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>org.apache.shiro.authz.AuthorizationException</exception-type>
+        <location>/access.xhtml</location>
+    </error-page>
+
+    <error-page>
+        <error-code>401</error-code>
+        <location>/access.xhtml</location>
+    </error-page>
+
+    <error-page>
+        <error-code>403</error-code>
+        <location>/access.xhtml</location>
+    </error-page>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/404.xhtml</location>
+    </error-page>
+
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.xhtml</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>org.jboss.weld.contexts.BusyConversationException</exception-type>
+        <location>/error.xhtml?error=busyConversation</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>org.jboss.weld.contexts.NonexistentConversationException</exception-type>
+        <location>/error.xhtml?error=nonexistentConversation</location>
+    </error-page>
+
+    <!-- Mappings -->
+    <mime-mapping>
+        <extension>webp</extension>
+        <mime-type>image/webp</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ttf</extension>
+        <mime-type>font/ttf</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff</extension>
+        <mime-type>font/woff</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff2</extension>
+        <mime-type>font/woff2</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>eot</extension>
+        <mime-type>application/vnd.ms-fontobject</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>svg</extension>
+        <mime-type>image/svg+xml</mime-type>
+    </mime-mapping>
+
+</web-app>

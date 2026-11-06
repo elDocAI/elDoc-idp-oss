@@ -1,0 +1,102 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:cc="jakarta.faces.composite/elcomp"
+    xmlns:pt="jakarta.faces.passthrough"
+    xmlns:p="primefaces">
+
+    <div class="grid">
+        <div class="col buttons-left">
+            <ui:insert name="buttonsLeft"/>
+        </div>
+        <div class="col buttons-right">
+            <ui:insert name="buttonsRight"/>
+        </div>
+    </div>
+
+    <!--@elvariable id="wfId" type="java.lang.String"-->
+
+    <div class="grid">
+        <div class="col-12">
+            <p:dataTable id="logsTbl" value="#{logsController.getLogsLazyDS(wfId)}" var="rowData" rows="50" reflow="true" lazy="true"
+                         paginator="true" paginatorPosition="both" rowsPerPageTemplate="50,100,250"  paginatorAlwaysVisible="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         styleClass="logsTable" rowStyleClass="#{rowData.severityText}" widgetVar="logsTblWV">
+
+                <p:column field="ts" headerText="#{labels['log.logtime']}" sortOrder="#{empty wfId ? 'desc' : 'asc'}" width="160">
+                    <f:facet name="filter">
+                        <p:datePicker id="logTmFltr" selectionMode="range" value="#{logsController.logsLazyDS.filters.ts}" timeZone="#{userContext.timezone}" styleClass="custom-filter"
+                                      showButtonBar="true" showIcon="false" showOtherMonths="true" selectOtherMonths="true" monthNavigator="true" yearNavigator="select" autocomplete="off" pattern="#{userContext.dateFormat}">
+                            <f:convertDateTime type="date" pattern="#{userContext.dateFormat}" timeZone="#{userContext.timezone}" />
+                            <p:ajax event="valueChange" process="@this" update="@none" oncomplete="PF('logsTblWV').filter()" />
+                        </p:datePicker>
+                    </f:facet>
+                    <h:outputText value="#{rowData.timeStamp}" class="#{logsController.getSeverityClass(rowData.severity)}"
+                                  pt:data-id="#{not empty logsController.getSeverityClass(rowData.severity) ? rowData.id : ''}">
+                        <f:convertDateTime pattern="#{userContext.dateTimeLongFormat}" timeZone="#{userContext.timezone}" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column field="sid" headerText="#{labels['log.account']}" width="15%">
+                    <cc:nameItemText id="nameItem" value="#{rowData.logAccount}" addStyleClass="userLinkFontStd"/>
+                </p:column>
+
+                <p:column field="sev" headerText="#{labels['log.type']}" width="10%">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu value="#{logsController.getLogsLazyDS(wfId).filters['sev']}" label="#{labels['log.type']}"
+                                              converter="jakarta.faces.Integer" panelStyle="width: 350px" scrollHeight="250px" styleClass="custom-filter">
+                            <p:ajax event="change" process="@this" oncomplete="PF('logsTblWV').filter();" delay="300" />
+                            <p:ajax event="toggleSelect" process="@this" oncomplete="PF('logsTblWV').filter();" delay="300" />
+                            <f:selectItems value="#{logsController.logLevelSI}" />
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <h:outputText id="svty" value="#{rowData.severityText}" class="#{logsController.getSeverityClass(rowData.severity)}"
+                                  pt:data-id="#{not empty logsController.getSeverityClass(rowData.severity) ? rowData.id : ''}" />
+                </p:column>
+
+                <p:column field="evtId" headerText="#{labels['log.eventId']}" width="10%">
+                    <h:outputText value="#{rowData.eventId}" />
+                </p:column>
+
+                <p:column field="evt" headerText="#{labels['log.action']}" sortable="false">
+                    <h:outputText value="#{logsController.getLogText(rowData)}" />
+
+                    <h:outputText value=": #{rowData.properties.pth}#{rowData.properties.nm}" rendered="#{(rowData.entityType eq 'fl' or rowData.entityType eq 'dr' or rowData.entityType eq 'df') and not empty rowData.properties.nm}"/>
+
+                    <h:outputText value="| Share owner: #{directoryController.getDirectoryItem(rowData.properties.sidBy).itemNameUI}" class="ml-1"
+                                  rendered="#{not empty rowData.properties.sidBy and (rowData.entityType eq 'fl' or rowData.entityType eq 'dr' or rowData.entityType eq 'shr')}"/>
+
+                    <h:outputText value="| Executed by: #{directoryController.getDirectoryItem(rowData.properties.sidBy).itemNameUI}" class="ml-1"
+                                  rendered="#{not empty rowData.properties.sidBy and not (rowData.entityType eq 'fl' or rowData.entityType eq 'dr' or rowData.entityType eq 'shr')}"/>
+
+                    <p:link outcome="#{logsController.getLink(rowData)}" target="_blank" class="ml-1" rendered="#{empty wfId and not empty logsController.getLink(rowData)}">
+                        <i class="fa-solid fa-arrow-up-right-from-square" />
+                    </p:link>
+                </p:column>
+
+            </p:dataTable>
+        </div>
+    </div>
+
+</ui:composition>

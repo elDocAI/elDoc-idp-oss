@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="elDocScope" pattern="(file:*.java||file:*.xhtml||file:*.js||file:*.properties)&amp;&amp;!file[eldoc-converter]:*/" />
+</component>

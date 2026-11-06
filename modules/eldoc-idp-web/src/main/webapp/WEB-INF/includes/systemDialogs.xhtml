@@ -1,0 +1,343 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:cc="jakarta.faces.composite/elcomp"
+    xmlns:faces="jakarta.faces">
+
+    <p:importConstants type="ai.eldoc.bpm.BpmAclConstants" />
+
+    <div id="sd-area">
+
+        <!-- Name Picker Dialog -->
+        <h:form id="npf" rendered="#{viewScope.uiNamePicker_rendered eq true}" class="w-full">
+
+            <p:dialog id="npd" widgetVar="__elDoc_np" header="#{labels['ccNamePicker.header.title']}" modal="true" closeOnEscape="true"
+                      resizable="false" fitViewport="true" responsive="true" position="center" dynamic="true" class="sys-dialog np-dialog">
+
+                <div class="grid">
+                    <div class="col-12 lg:col-5 p-fluid">
+                        <p:inputText id="searchFT" widgetVar="searchFTVW" value="#{uiNamePicker.searchFT}" converter="stringTrimConverter" autocomplete="off" placeholder="#{labels['general.search.extendedSearch']}">
+                            <p:ajax event="keydown" process="@this" update="diPkrTbl" delay="800" onstart="resetInputOnEsc(event, PF('searchFTVW').jq);" />
+                        </p:inputText>
+                    </div>
+                </div>
+
+                <ui:include src="#{uiNamePicker.namePikerContentSrc}" />
+
+                <f:facet name="footer">
+                    <div class="buttons-right">
+                        <p:commandButton id="btnOk" action="#{uiNamePicker.btnOk}" oncomplete="PF('__elDoc_np').hide();" process="npf:diPkrTbl npf:btnOk" update="#{uiNamePicker.refreshId}" value="#{labels['ccNamePicker.btn.ok']}" icon="fa-solid fa-fw fa-check"/>
+                    </div>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+
+
+        <!-- Exec Builder Dialog -->
+        <h:form id="exbf" rendered="#{viewScope.uiExecBuilder_rendered eq true}">
+
+            <p:dialog id="exbd" widgetVar="__elDoc_exb" header="#{labels['resolution.editDialogTitle']}" modal="true" closeOnEscape="true"
+                      resizable="false" fitViewport="true" responsive="true" position="center" dynamic="true" class="sys-dialog exb-dialog">
+
+                <div faces:id="execArea" class="execArea">
+
+                    <p:messages>
+                        <p:autoUpdate />
+                    </p:messages>
+
+                    <div class="grid">
+                        <div class="col-12 md:col-4 lg:col-3">
+                            <p:outputLabel value="#{labels['execution.executor']}" for="executorInput" />
+                        </div>
+                        <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                            <div faces:id="executorDiv" class="inline-block">
+                                <h:inputHidden id="execValidator" validator="#{execBuilderBean.resolToValidator}" />
+                                <cc:nameItem value="#{execBuilderBean.wfTaskDS.taskTo}" rendered="#{not empty execBuilderBean.wfTaskDS.taskTo}"/>
+                                <cc:namePicker id="executorInput" value="#{execBuilderBean.wfTaskDS.taskTo}" refreshId=":exbf:executorDiv"
+                                               singleName="true" units="true" groups="true" bpmNames="#{execBuilderBean.viewProcess}" apiNames="#{execBuilderBean.viewProcess}"
+                                               excludeNames="#{execBuilderBean.excludeNames}" />
+                            </div>
+                        </div>
+
+                        <div class="col-12 md:col-4 lg:col-3">
+                            <p:outputLabel for="resolTextCB" value="#{labels['execution.resolution']}" />
+                        </div>
+                        <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                            <p:selectOneMenu id="resolTextCB" value="#{execBuilderBean.wfTaskDS.taskKFId}" disabled="#{execBuilderBean.recoSysProcess}" >
+                                <f:selectItems value="#{lvController.resolutionListValuesSI}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <ui:fragment rendered="#{execBuilderBean.viewDocument}">
+                            <div class="col-12 md:col-4 lg:col-3">
+                                <p:outputLabel for="dateDue" value="#{labels['execution.dateDue']}" />
+                            </div>
+                            <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                                <p:datePicker id="dateDue" value="#{execBuilderBean.wfTaskDS.dateDue}" autocomplete="off" disabled="#{execBuilderBean.recoSysProcess}"
+                                              timeZone="#{userContext.timezone}" pattern="#{userContext.dateFormat}" showTime="true" hourFormat="#{userContext.hourFormat}"
+                                              showIcon="true" showOnFocus="false" monthNavigator="true" yearNavigator="true" showWeek="false" showOtherMonths="true" selectOtherMonths="true" defaultHour="12"/>
+                            </div>
+                        </ui:fragment>
+
+
+                        <div class="col-12 md:col-4 lg:col-3">
+                            <p:outputLabel for="procStep" value="#{labels['general.workflow.step']}" />
+                        </div>
+                        <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                            <p:selectOneMenu id="procStep" value="#{execBuilderBean.wfTaskDS.step}" converter="jakarta.faces.Integer" disabled="#{execBuilderBean.recoSysProcess}">
+                                <f:selectItems value="#{execBuilderBean.execStepSI}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <ui:fragment rendered="#{execBuilderBean.viewProcess}">
+                            <div class="col-12 md:col-4 lg:col-3">
+                                <p:outputLabel for="dateDueDelta" value="#{labels['execution.dateDueDelta']}" />
+                            </div>
+                            <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                                <p:inputText id="dateDueDelta" value="#{execBuilderBean.wfTaskDS.dateDue}" converter="numberToDurationConverter"
+                                             autocomplete="off" disabled="#{execBuilderBean.recoSysProcess}" />
+                                <p:slider for="dateDueDelta" minValue="0" maxValue="365" disabled="#{execBuilderBean.recoSysProcess}" />
+                            </div>
+                        </ui:fragment>
+
+                        <div class="col-12 md:col-4 lg:col-3">
+                            <p:outputLabel for="comment" value="#{labels['execution.comment']}" />
+                        </div>
+                        <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                            <p:inputTextarea id="comment" value="#{execBuilderBean.wfTaskDS.note}" disabled="#{execBuilderBean.recoSysProcess}" style="max-height: 200px;" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <f:facet name="footer">
+                    <div class="buttons-right">
+                        <p:commandButton id="btnCancel" type="button" onclick="PF('__elDoc_exb').hide();"
+                                         value="#{labels['general.btn.cancel']}" icon="fa-solid fa-fw fa-share" class="p-button-secondary p-button-outlined" />
+                        <p:commandButton id="btnOk" action="#{execBuilderBean.btnOk}"
+                                         process="exbf:exbd" update="exbf:execArea @(.table-executors-list)"
+                                         oncomplete="if (args &amp;&amp; !args.validationFailed){PF('__elDoc_exb').hide();}"
+                                         value="#{labels['general.btn.save']}" icon="fa-solid fa-fw fa-check" />
+                    </div>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+
+
+        <!-- Reminder Dialog -->
+        <h:form id="rmf" rendered="#{viewScope.uiReminderControl_rendered eq true}">
+            <p:dialog id="rmd" widgetVar="__elDoc_rm" header="#{labels['reminderUI.title']}" modal="true" closeOnEscape="true"
+                      resizable="false" fitViewport="true" responsive="true" position="center" dynamic="true" class="sys-dialog rm-dialog">
+
+                <ui:fragment rendered="#{not empty reminderController.groupReminders}">
+                    <div class="grid">
+
+                        <div class="col-12">
+                            <h3 class="area-title">#{labels['reminderUI.itemReminders']}</h3>
+                        </div>
+
+                        <div class="col-12">
+                            <p:dataTable id="remindersTable" value="#{reminderController.groupReminders}" var="rowData" rowIndexVar="rowIndex" paginator="true"
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rows="10"
+                                         rowsPerPageTemplate="10" paginatorPosition="top" paginatorAlwaysVisible="false" reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" filterDelay="800"
+                                         class="table-sm" size="small">
+
+                                <p:column headerText="#{labels['reminderUI.remDate']}" width="135">
+                                    <h:outputText value="#{rowData.at}">
+                                        <f:convertDateTime pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="#{labels['reminderUI.note']}">
+                                    <p:outputLabel value="#{rowData.note}" />
+                                </p:column>
+
+                                <p:column headerText="#{labels['reminderUI.author']}" width="150">
+                                    <cc:nameItemText value="#{rowData.author}" />
+                                </p:column>
+
+                            </p:dataTable>
+                        </div>
+
+                        <div class="col-12 grid-nogutter" style="padding: .5em .5em 0;">
+                            <h3 class="area-title">#{labels['reminderUI.reminderParamsTitle']}</h3>
+                        </div>
+
+                    </div>
+                </ui:fragment>
+
+                <div faces:id="remForm" class="grid">
+
+                    <div class="col-12 p-3">
+                        <p:messages id="rmdMsgs" closable="true">
+                            <p:autoUpdate />
+                        </p:messages>
+                    </div>
+
+                    <div class="col-12 md:col-4 lg:col-3">
+                        <p:outputLabel value="#{labels['reminderUI.remDate']}" for="remDate" />
+                    </div>
+                    <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                        <p:datePicker id="remDate" value="#{reminderController.reminderDS.at}" autocomplete="off"
+                                      timeZone="#{userContext.timezone}" pattern="#{userContext.dateFormat}" showTime="true" hourFormat="#{userContext.hourFormat}"
+                                      showIcon="true" showOnFocus="false" monthNavigator="true" yearNavigator="true" showWeek="false" showOtherMonths="true" selectOtherMonths="true" defaultHour="12" />
+                    </div>
+
+                    <div class="col-12 md:col-4 lg:col-3">
+                        <p:outputLabel value="#{labels['reminderUI.recepients']}" for="remTo" />
+                    </div>
+                    <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                        <div faces:id="remToArea">
+                            <h:inputHidden id="remTo" validator="#{reminderController.validatorRemTo}">
+                                <f:attribute name="label" value="#{labels['reminderUI.recepients']}" />
+                            </h:inputHidden>
+                            <cc:nameList id="nList" value="#{reminderController.reminderDS.recipients}" />
+                            <cc:namePicker id="remRcptsPckr" bindTo="#{reminderController.reminderDS.recipients}" groups="true" units="true" singleName="false" refreshId=":rmf:remToArea" />
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-4 lg:col-3">
+                        <p:outputLabel value="#{labels['reminderUI.note']}" />
+                    </div>
+                    <div class="col-12 md:col-8 lg:col-9 p-fluid">
+                        <p:inputTextarea value="#{reminderController.reminderDS.note}" style="max-height: 200px;" />
+                    </div>
+
+                </div>
+
+                <f:facet name="footer">
+                    <div class="flex flex-row flex-nowrap justify-content-end gap-1">
+                        <p:commandButton id="btnCancel" type="button" onclick="PF('__elDoc_rm').hide();"
+                                         value="#{labels['general.btn.cancel']}" icon="fa-solid fa-fw fa-share" class="p-button-secondary p-button-outlined" />
+
+                        <p:commandButton id="btnDelete" action="#{reminderController.btnReminderDialogDelete}"
+                                         process="rmf:rmd" update="rmf:remForm #{reminderController.btnId}" oncomplete="if (args &amp;&amp; !args.validationFailed){PF('__elDoc_rm').hide();}"
+                                         rendered="#{!reminderController.reminderDS.isNew()}"
+                                         value="#{labels['general.btn.delete']}" icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined" />
+
+                        <p:commandButton id="btnSave" action="#{reminderController.btnOk()}"
+                                         process="rmf:rmd" update="rmf:remForm #{reminderController.btnId}" oncomplete="if (args &amp;&amp; !args.validationFailed){PF('__elDoc_rm').hide();}"
+                                         value="#{labels['general.btn.save']}" icon="fa-solid fa-fw fa-check" />
+                    </div>
+                </f:facet>
+
+            </p:dialog>
+        </h:form>
+
+
+        <!-- Reaction Dialog -->
+        <h:form id="rctf" rendered="#{viewScope.uiReactionControl_rendered}">
+            <p:dialog id="rctd" widgetVar="__elDoc_rct" header="#{labels['reactionUI.dialog.title']}" modal="true" closeOnEscape="true"
+                      resizable="false" fitViewport="true" responsive="true" position="center" dynamic="true" class="sys-dialog">
+
+                <div faces:rendered="#{empty reactionController.reactionOperation}" >
+                    Action not allowed
+                </div>
+
+                <div class="grid" faces:rendered="#{reactionController.reactionOperation eq 'ADD'}">
+                    <div class="col-12">
+                        <p:outputLabel value="#{labels['reactionUI.addMsg']}" />
+                    </div>
+                    <div class="col-12 p-fluid">
+                        <p:outputLabel value="#{labels['reactionUI.comment']}" class="block mb-1" />
+                        <p:inputTextarea value="#{reactionController.reaction.message}" autoResize="true" style="max-height: 200px;"/>
+                    </div>
+                </div>
+
+                <div class="grid" faces:rendered="#{reactionController.reactionOperation eq 'DELETE'}">
+                    <div class="col-12">
+                        <p:outputLabel value="#{labels['reactionUI.deleleMsg']}" />
+                    </div>
+                </div>
+
+                <div class="grid" faces:rendered="#{reactionController.reactionOperation eq 'LIST'}">
+                    <div class="col-12">
+                        <p:dataTable id="rctTbl" value="#{reactionController.reactionsList}" var="rowData" rowIndexVar="rowIndex" paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rows="10"
+                                     rowsPerPageTemplate="10,25,100" paginatorPosition="top" paginatorAlwaysVisible="false" reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" filterDelay="800"
+                                     class="table-sm" size="small">
+
+                            <p:column headerText="#{labels['general.author']}" width="200">
+                                <cc:nameItem value="#{rowData.author}" />
+                            </p:column>
+
+                            <p:column headerText="#{labels['general.message']}">
+                                <p:outputLabel value="#{rowData.note}" />
+                            </p:column>
+
+                        </p:dataTable>
+                    </div>
+                </div>
+
+                <f:facet name="footer">
+                    <div class="flex flex-row flex-nowrap justify-content-end gap-1">
+                        <p:commandButton id="btnCancel" type="button" onclick="PF('__elDoc_rct').hide();"
+                                         value="#{labels['general.btn.cancel']}" icon="fa-solid fa-fw fa-share" class="p-button-secondary p-button-outlined" />
+
+                        <p:commandButton id="btnDelRct" action="#{reactionController.deleteReaction}" oncomplete="if (args &amp;&amp; !args.validationFailed){PF('__elDoc_rct').hide();}"
+                                         process="rctf:rctd" update=":#{reactionController.refreshId}"
+                                         value="#{labels['general.btn.delete']}"
+                                         rendered="#{reactionController.reactionOperation eq 'DELETE'}"
+                                         icon="fa-solid fa-fw fa-trash" class="p-button-danger" />
+
+                        <p:commandButton id="btnSaveRct" action="#{reactionController.saveReaction}"
+                                         process="rctf:rctd" update=":#{reactionController.refreshId}" oncomplete="if (args &amp;&amp; !args.validationFailed){PF('__elDoc_rct').hide();}"
+                                         value="#{labels['general.btn.ok']}"
+                                         rendered="#{reactionController.reactionOperation eq 'ADD'}"
+                                         icon="fa-solid fa-fw fa-check" />
+                    </div>
+                </f:facet>
+
+            </p:dialog>
+        </h:form>
+
+
+        <!-- Ref WF Picker Dialog -->
+        <h:form id="rfwf" rendered="#{viewScope.uiRefWFPicker_rendered eq true}">
+            <!--@elvariable id="uiRefWFPicker" type="ai.eldoc.ui.component.RefWFPickerBean"-->
+
+            <p:dialog id="rfdd" widgetVar="__elDoc_rfwf" header="#{labels['ccRefDocsPicker.header.title']}" modal="true" closeOnEscape="true" dynamic="true"
+                      resizable="false" fitViewport="true" responsive="true" position="center" class="sys-dialog ref-docs-area">
+
+                <div faces:id="refDocArea" class="grid">
+                    <div class="col-12">
+                        <ui:include src="#{uiRefWFPicker.includeSrc}" />
+                    </div>
+                </div>
+
+                <f:facet name="footer">
+                    <div class="buttons-right">
+                        <p:commandButton id="btnOk" value="#{labels['general.btn.ok']}" action="#{uiRefWFPicker.btnOk}" oncomplete="PF('__elDoc_rfwf').hide();"
+                                         process="rfwf:rfdd" update="#{uiRefWFPicker.refreshId}" icon="fa-solid fa-fw fa-check"/>
+                    </div>
+                </f:facet>
+
+            </p:dialog>
+
+        </h:form>
+
+    </div>
+
+</ui:composition>

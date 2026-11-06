@@ -1,0 +1,75 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        xmlns:p="primefaces"
+        xmlns:composite="jakarta.faces.composite"
+        xmlns:h="jakarta.faces.html"
+        xmlns:jsf="jakarta.faces"
+>
+
+    <composite:interface>
+        <composite:attribute name="dataSource" type="java.lang.Object" required="true" shortDescription="Document data source" />
+        <composite:attribute name="fieldName" type="java.lang.String" required="true" shortDescription="Field name" />
+        <composite:attribute name="cfAwareModel" type="ai.eldoc.model.CustomFieldAwareModel" required="true" shortDescription="CustomFieldAwareModel object, required for RecoData (but not required for Workflow)" />
+        <composite:attribute name="label" type="java.lang.String" required="false" shortDescription="Field UI label" />
+        <composite:attribute name="required" type="java.lang.Boolean" required="false" shortDescription="Required flag" />
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag" />
+        <composite:attribute name="fieldDef" type="ai.eldoc.model.CustomField" required="true" shortDescription="Custom Field definition" />
+    </composite:interface>
+
+    <composite:implementation>
+        <ui:fragment rendered="#{recoDocController.showAllFields or recoDocController.isFieldOnPage(cc.attrs.fieldDef)}">
+            <div class="col-12 lg:col-4">
+                <p:outputLabel id="l1" value="#{cc.attrs.label}" />
+            </div>
+
+            <div class="col-12 lg:col-8 p-fluid">
+
+                <div class="p-inputgroup cf-field cf-reco-field cf-reco-text-field" data-page-id="#{cc.attrs.fieldDef.recoProp.pageIdx}" data-confidence-threshold="#{cc.attrs.fieldDef.recoProp.confThreshold}"
+                     data-field-id="#{recoDocController.getFieldOnPageIdx(cc.attrs.fieldDef)}" data-focus-enabled="#{recoDocController.isFieldFocusEnabled(cc.attrs.fieldDef)}">
+
+                    <div jsf:id="ed1" contenteditable="#{!cc.attrs.disabled}" class="#{cc.attrs.disabled ? 'is-disabled' : recoDocController.isFieldNotValid(cc.attrs.cfAwareModel.cfDef.indexOf(cc.attrs.fieldDef), -1, -1) ? 'is-invalid' : ''} reco-field-input">
+                        #{cc.attrs.dataSource[cc.attrs.fieldName]}
+                    </div>
+
+                    <h:inputHidden id="coords" value="#{cc.attrs.fieldDef.recoProp.confidenceText}">
+                        <f:attribute name="readonly" value="true" />
+                    </h:inputHidden>
+
+                    <!-- Hidden field with actual field value, without markup -->
+                    <h:inputText id="i1" value="#{cc.attrs.dataSource[cc.attrs.fieldName]}" converter="stringTrimConverter" type="hidden">
+                        <f:attribute name="label" value="#{cc.attrs.label}" />
+                        <p:ajax event="change" process="i1" />
+                    </h:inputText>
+
+                    <span class="p-inputgroup-addon" style="#{recoDocController.getConfidenceFieldStyle(cc.attrs.fieldDef)}">
+                        #{cc.attrs.fieldDef.recoProp.confidenceMin}
+                    </span>
+                </div>
+
+            </div>
+        </ui:fragment>
+
+    </composite:implementation>
+
+</ui:component>

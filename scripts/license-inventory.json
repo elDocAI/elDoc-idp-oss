@@ -1,0 +1,1533 @@
+{
+  "schemaVersion": 1,
+  "generatedOn": "2026-11-06",
+  "maven": {
+    "command": "./mvnw",
+    "module": "modules/eldoc-idp-web",
+    "repository": "https://repo.maven.apache.org/maven2",
+    "snapshotRepository": {
+      "id": "sonatype-snapshots",
+      "url": "https://central.sonatype.com/repository/maven-snapshots/"
+    },
+    "dependencyPluginVersion": "3.10.0"
+  },
+  "outputs": {
+    "inventory": "docs/RUNTIME_INVENTORY.csv",
+    "notices": "THIRD_PARTY_NOTICES.md",
+    "noticesTemplate": "scripts/templates/THIRD_PARTY_NOTICES.md.tmpl",
+    "licenses": "licenses"
+  },
+  "extraArtifacts": [
+    {
+      "groupId": "fish.payara.extras",
+      "artifactId": "payara-micro",
+      "versionExpression": "payara.version",
+      "type": "jar",
+      "scope": "runtime",
+      "licenseDir": "licenses/payara/fish.payara.extras.payara-micro/{version}/artifact",
+      "extractPrefixes": [
+        "MICRO-INF/legal/"
+      ],
+      "licenseSummary": "CDDL + GPLv2 with classpath exception",
+      "status": "original exact-version distribution legal files extracted; custom build comparison pending",
+      "upstreamSource": "scm:git:git@github.com:payara/payara.git"
+    }
+  ],
+  "upstreamBundles": {
+    "licenses/upstream/base62/{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/seruco/base62/{version}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/djl/v{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/deepjavalibrary/djl/v{version}",
+      "files": [
+        "LICENSE",
+        "NOTICE"
+      ]
+    },
+    "licenses/upstream/errorprone/v{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/google/error-prone/v{version}",
+      "files": [
+        "COPYING"
+      ]
+    },
+    "licenses/upstream/eventstream/{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/awslabs/aws-eventstream-java/{version}",
+      "files": [
+        "SOURCE-COPYRIGHT.txt"
+      ]
+    },
+    "licenses/upstream/graal-icu/release-78.2": {
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/graal-xz/v1.12": {
+      "files": [
+        "COPYING"
+      ]
+    },
+    "licenses/upstream/graal/vm-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/oracle/graal/vm-{version}",
+      "files": [
+        "THIRD_PARTY_LICENSE.txt",
+        "regex/LICENSE.md",
+        "sdk/LICENSE.md",
+        "truffle/LICENSE.md"
+      ]
+    },
+    "licenses/upstream/graaljs/vm-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/oracle/graaljs/vm-{version}",
+      "files": [
+        "3rd_party_licenses.txt",
+        "LICENSE",
+        "graal-js/LICENSE_GRAALJS",
+        "graal-js/THIRD_PARTY_LICENSE_GRAALJS.txt"
+      ]
+    },
+    "licenses/upstream/gson/gson-parent-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/google/gson/gson-parent-{version}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/icu/release-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/unicode-org/icu/release-{version}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/jcommander/{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/cbeust/jcommander/{version}",
+      "files": [
+        "license.txt",
+        "notice.md"
+      ]
+    },
+    "licenses/upstream/jose4j/{version}": {
+      "files": [
+        "SOURCE-COPYRIGHT.txt"
+      ]
+    },
+    "licenses/upstream/jspecify/v{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/jspecify/jspecify/v{version}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/jtokkit/{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/knuddelsgmbh/jtokkit/{version}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/langchain4j/{baseVersion}": {
+      "baseUrl": "https://raw.githubusercontent.com/langchain4j/langchain4j/{baseVersion}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/langchain4j/{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/langchain4j/langchain4j/{baseVersion}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/mongodb/r{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/mongodb/mongo-java-driver/r{version}",
+      "files": [
+        "LICENSE.txt",
+        "THIRD-PARTY-NOTICES"
+      ]
+    },
+    "licenses/upstream/mutiny-zero/{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/smallrye/smallrye-mutiny-zero/{version}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/netty/netty-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/netty/netty/netty-{version}",
+      "files": [
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "license/LICENSE.aalto-xml.txt",
+        "license/LICENSE.base64.txt",
+        "license/LICENSE.bouncycastle.txt",
+        "license/LICENSE.brotli4j.txt",
+        "license/LICENSE.caliper.txt",
+        "license/LICENSE.commons-lang.txt",
+        "license/LICENSE.commons-logging.txt",
+        "license/LICENSE.compress-lzf.txt",
+        "license/LICENSE.dnsinfo.txt",
+        "license/LICENSE.harmony.txt",
+        "license/LICENSE.hpack.txt",
+        "license/LICENSE.hyper-hpack.txt",
+        "license/LICENSE.jboss-marshalling.txt",
+        "license/LICENSE.jbzip2.txt",
+        "license/LICENSE.jctools.txt",
+        "license/LICENSE.jfastlz.txt",
+        "license/LICENSE.jsr166y.txt",
+        "license/LICENSE.jzlib.txt",
+        "license/LICENSE.libdivsufsort.txt",
+        "license/LICENSE.log4j.txt",
+        "license/LICENSE.lz4.txt",
+        "license/LICENSE.lzma-java.txt",
+        "license/LICENSE.mvn-wrapper.txt",
+        "license/LICENSE.nghttp2-hpack.txt",
+        "license/LICENSE.protobuf.txt",
+        "license/LICENSE.slf4j.txt",
+        "license/LICENSE.snappy.txt",
+        "license/LICENSE.webbit.txt",
+        "license/LICENSE.zstd-jni.txt",
+        "license/NOTICE.harmony.txt"
+      ]
+    },
+    "licenses/upstream/noggit/noggit-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/yonik/noggit/noggit-{version}",
+      "files": [
+        "LICENSE.txt"
+      ]
+    },
+    "licenses/upstream/omnifaces/{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/omnifaces/omnifaces/{version}",
+      "files": [
+        "LICENSE.txt"
+      ]
+    },
+    "licenses/upstream/onnxruntime/v{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/microsoft/onnxruntime/v{version}",
+      "files": [
+        "LICENSE",
+        "ThirdPartyNotices.txt"
+      ]
+    },
+    "licenses/upstream/reactive-streams/v{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/reactive-streams/reactive-streams/v{version}",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "licenses/upstream/sanitizer/release-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/OWASP/java-html-sanitizer/release-{version}",
+      "files": [
+        "COPYING"
+      ]
+    },
+    "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/haraldk/TwelveMonkeys/twelvemonkeys-{version}",
+      "files": [
+        "LICENSE.txt",
+        "imageio/imageio-batik/license.txt",
+        "imageio/imageio-core/license.txt",
+        "imageio/imageio-hdr/license.txt",
+        "imageio/imageio-jpeg/license.txt",
+        "imageio/imageio-metadata/license.txt",
+        "imageio/imageio-pnm/license.txt",
+        "imageio/imageio-psd/license.txt",
+        "imageio/imageio-sgi/license.txt",
+        "imageio/imageio-tga/license.txt",
+        "imageio/imageio-tiff/license.txt",
+        "imageio/imageio-xwd/license.txt",
+        "servlet/license.txt"
+      ]
+    },
+    "licenses/upstream/webp/v{version}": {
+      "files": [
+        "LICENSE",
+        "NOTICE",
+        "libwebp/AUTHORS",
+        "libwebp/COPYING",
+        "libwebp/PATENTS"
+      ]
+    },
+    "licenses/upstream/zxing/zxing-{version}": {
+      "baseUrl": "https://raw.githubusercontent.com/zxing/zxing/zxing-{version}",
+      "files": [
+        "LICENSE",
+        "NOTICE"
+      ]
+    }
+  },
+  "components": {
+    "ai.djl.huggingface:tokenizers": {
+      "licenseSummary": "The Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/deepjavalibrary/djl",
+      "upstream": [
+        "licenses/upstream/djl/v{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "ai.djl:api": {
+      "licenseSummary": "The Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/deepjavalibrary/djl",
+      "upstream": [
+        "licenses/upstream/djl/v{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "com.fasterxml.jackson.core:jackson-annotations": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/FasterXML/jackson-annotations",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "com.fasterxml.jackson.core:jackson-core": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/FasterXML/jackson-core",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "com.github.jai-imageio:jai-imageio-core": {
+      "licenseSummary": "BSD 3-clause License w/nuclear disclaimer",
+      "upstreamSource": "https://github.com/jai-imageio/jai-imageio-core/"
+    },
+    "com.google.code.gson:gson": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/google/gson/",
+      "upstream": [
+        "licenses/upstream/gson/gson-parent-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "com.google.errorprone:error_prone_annotations": {
+      "licenseSummary": "Apache 2.0",
+      "upstreamSource": "https://github.com/google/error-prone",
+      "upstream": [
+        "licenses/upstream/errorprone/v{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "com.google.zxing:core": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/zxing/zxing",
+      "upstream": [
+        "licenses/upstream/zxing/zxing-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "com.google.zxing:javase": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/zxing/zxing",
+      "upstream": [
+        "licenses/upstream/zxing/zxing-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer": {
+      "licenseSummary": "Apache-2.0 OR BSD-2-Clause; bundled third-party terms in COPYING",
+      "upstreamSource": "https://github.com/OWASP/java-html-sanitizer",
+      "upstream": [
+        "licenses/upstream/sanitizer/release-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "com.ibm.icu:icu4j": {
+      "licenseSummary": "Unicode-3.0",
+      "upstreamSource": "https://github.com/unicode-org/icu",
+      "upstream": [
+        "licenses/upstream/icu/release-{version}"
+      ]
+    },
+    "com.knuddels:jtokkit": {
+      "licenseSummary": "MIT License",
+      "upstreamSource": "https://github.com/knuddelsgmbh/jtokkit",
+      "upstream": [
+        "licenses/upstream/jtokkit/{version}"
+      ]
+    },
+    "com.microsoft.onnxruntime:onnxruntime": {
+      "licenseSummary": "MIT License",
+      "upstreamSource": "https://github.com/microsoft/onnxruntime",
+      "upstream": [
+        "licenses/upstream/onnxruntime/v{version}"
+      ]
+    },
+    "com.twelvemonkeys.common:common-image": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.common:common-io": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.common:common-lang": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-batik": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-core": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-hdr": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-jpeg": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-metadata": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-pnm": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-psd": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-sgi": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-tga": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-tiff": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.imageio:imageio-xwd": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys/tree/master/imageio",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "com.twelvemonkeys.servlet:servlet": {
+      "licenseSummary": "The BSD License",
+      "upstreamSource": "https://github.com/haraldk/TwelveMonkeys",
+      "upstream": [
+        "licenses/upstream/twelvemonkeys/twelvemonkeys-{version}"
+      ]
+    },
+    "commons-beanutils:commons-beanutils": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://gitbox.apache.org/repos/asf?p=commons-beanutils.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "commons-codec:commons-codec": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/commons-codec",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "commons-collections:commons-collections": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "http://svn.apache.org/viewvc/commons/proper/collections/trunk",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "commons-io:commons-io": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://commons.apache.org/proper/commons-io/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "commons-logging:commons-logging": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://gitbox.apache.org/repos/asf/commons-logging",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "de.taimos:totp": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "status": "Apache-2.0 declared by exact Maven POM; no separate upstream LICENSE/NOTICE found",
+      "upstreamSource": "scm:git:git@github.com:taimos/totp.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j",
+      "upstream": [
+        "licenses/upstream/langchain4j/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-agentic": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-agentic",
+      "upstream": [
+        "licenses/upstream/langchain4j/{baseVersion}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-bedrock": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-bedrock",
+      "upstream": [
+        "licenses/upstream/langchain4j/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-core": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-core",
+      "upstream": [
+        "licenses/upstream/langchain4j/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-embeddings": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-embeddings",
+      "upstream": [
+        "licenses/upstream/langchain4j/{baseVersion}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-http-client": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-http-client",
+      "upstream": [
+        "licenses/upstream/langchain4j/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-http-client-jdk": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-http-client-jdk",
+      "upstream": [
+        "licenses/upstream/langchain4j/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-jina": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-jina",
+      "upstream": [
+        "licenses/upstream/langchain4j/{baseVersion}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-onnx-scoring": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-onnx-scoring",
+      "upstream": [
+        "licenses/upstream/langchain4j/{baseVersion}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-open-ai": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-open-ai",
+      "upstream": [
+        "licenses/upstream/langchain4j/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "dev.langchain4j:langchain4j-reactive-streaming": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/langchain4j/langchain4j/tree/main/langchain4j-reactive-streaming",
+      "upstream": [
+        "licenses/upstream/langchain4j/{baseVersion}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-buffer": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-codec": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-codec-http": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-codec-http2": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-common": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-handler": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-resolver": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-transport": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-transport-classes-epoll": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.netty:netty-transport-native-unix-common": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/netty/netty",
+      "upstream": [
+        "licenses/upstream/netty/netty-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "io.seruco.encoding:base62": {
+      "licenseSummary": "MIT",
+      "upstreamSource": "https://github.com/seruco/base62.git",
+      "upstream": [
+        "licenses/upstream/base62/{version}"
+      ]
+    },
+    "io.smallrye.reactive:mutiny-zero": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/smallrye/smallrye-mutiny-zero",
+      "upstream": [
+        "licenses/upstream/mutiny-zero/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "net.java.dev.jna:jna": {
+      "licenseSummary": "LGPL-2.1-or-later; Apache-2.0",
+      "upstreamSource": "https://github.com/java-native-access/jna",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.commons:commons-collections4": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://gitbox.apache.org/repos/asf?p=commons-collections.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.commons:commons-compress": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://gitbox.apache.org/repos/asf?p=commons-compress.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.commons:commons-configuration2": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://gitbox.apache.org/repos/asf?p=commons-configuration.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.commons:commons-csv": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://gitbox.apache.org/repos/asf?p=commons-csv.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.commons:commons-lang3": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://gitbox.apache.org/repos/asf/commons-lang.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.commons:commons-math3": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://git-wip-us.apache.org/repos/asf?p=commons-math.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.commons:commons-text": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://gitbox.apache.org/repos/asf?p=commons-text.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.httpcomponents:httpclient": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "http://hc.apache.org/httpcomponents-client",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.httpcomponents:httpcore": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "http://hc.apache.org/httpcomponents-core-ga",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.opennlp:opennlp-tools": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/opennlp.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.pdfbox:fontbox": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://svn.apache.org/viewvc/pdfbox/tags/3.0.8/fontbox",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.pdfbox:jbig2-imageio": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://git-wip-us.apache.org/repos/asf?p=pdfbox-jbig2.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.pdfbox:pdfbox": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://svn.apache.org/viewvc/pdfbox/tags/3.0.8/pdfbox",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.pdfbox:pdfbox-io": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://svn.apache.org/viewvc/pdfbox/tags/3.0.8/io",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.pdfbox:xmpbox": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://svn.apache.org/viewvc/pdfbox/tags/3.0.8/xmpbox",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro.crypto:shiro-hashes-argon2": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-crypto/shiro-crypto-support/hashes/shiro-hashes-argon2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro.crypto:shiro-hashes-bcrypt": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-crypto/shiro-crypto-support/hashes/shiro-hashes-bcrypt",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-cache": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-cache",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-cdi": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-support/shiro-cdi",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-config-core": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-config/shiro-config-core",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-config-ogdl": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-config/shiro-config-ogdl",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-core": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-core",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-crypto-cipher": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-crypto/shiro-crypto-cipher",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-crypto-core": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-crypto/shiro-crypto-core",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-crypto-hash": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-crypto/shiro-crypto-hash",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-event": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-event",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-jakarta-ee": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-support/shiro-jakarta-ee",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-jaxrs": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-support/shiro-jaxrs",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-lang": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-lang",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.shiro:shiro-web": {
+      "licenseSummary": "Apache-2.0",
+      "upstreamSource": "https://github.com/apache/shiro/tree/shiro-root-3.0.1/shiro-web",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-anim": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-awt-util": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-bridge": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-constants": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-css": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-dom": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-ext": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-gvt": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-i18n": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-parser": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-script": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-shared-resources": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-svg-dom": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-svggen": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-transcoder": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-util": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:batik-xml": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.apache.xmlgraphics:xmlgraphics-commons": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "scm:git:https://gitbox.apache.org/repos/asf/xmlgraphics-commons.git",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.bitbucket.b_c:jose4j": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://bitbucket.org/b_c/jose4j",
+      "upstream": [
+        "licenses/upstream/jose4j/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.bouncycastle:bcprov-jdk18on": {
+      "licenseSummary": "MIT (verified in artifact LICENSE.md)"
+    },
+    "org.graalvm.js:js": {
+      "licenseSummary": "Universal Permissive License, Version 1.0; MIT License",
+      "status": "metadata-only aggregator; not a shipped binary",
+      "upstreamSource": "https://github.com/oracle/graaljs",
+      "upstream": [
+        "licenses/upstream/graaljs/vm-{version}"
+      ]
+    },
+    "org.graalvm.js:js-community": {
+      "licenseSummary": "MIT License; Universal Permissive License, Version 1.0",
+      "status": "metadata-only aggregator; not a shipped binary",
+      "upstreamSource": "https://github.com/oracle/graal",
+      "upstream": [
+        "licenses/upstream/graaljs/vm-{version}"
+      ]
+    },
+    "org.graalvm.js:js-language": {
+      "licenseSummary": "Universal Permissive License, Version 1.0; MIT License",
+      "upstreamSource": "https://github.com/oracle/graaljs",
+      "upstream": [
+        "licenses/upstream/graaljs/vm-{version}"
+      ]
+    },
+    "org.graalvm.js:js-scriptengine": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graaljs",
+      "upstream": [
+        "licenses/upstream/graaljs/vm-{version}"
+      ]
+    },
+    "org.graalvm.polyglot:polyglot": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.graalvm.regex:regex": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.graalvm.sdk:collections": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.graalvm.sdk:jniutils": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.graalvm.sdk:nativeimage": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.graalvm.sdk:word": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.graalvm.shadowed:icu4j": {
+      "licenseSummary": "Unicode/ICU License",
+      "upstreamSource": "https://github.com/oracle/graal/tree/master/truffle",
+      "upstream": [
+        "licenses/upstream/graal-icu/release-78.2",
+        "licenses/upstream/graal/vm-{version}",
+        "licenses/upstream/graaljs/vm-{version}"
+      ]
+    },
+    "org.graalvm.shadowed:xz": {
+      "licenseSummary": "UPL-1.0 (Graal module POM); embedded XZ 1.12: 0BSD",
+      "upstreamSource": "https://github.com/oracle/graal/tree/master/truffle",
+      "upstream": [
+        "licenses/upstream/graal-xz/v1.12",
+        "licenses/upstream/graal/vm-{version}",
+        "licenses/upstream/graaljs/vm-{version}"
+      ]
+    },
+    "org.graalvm.truffle:truffle-api": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal/tree/master/truffle",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.graalvm.truffle:truffle-compiler": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal/tree/master/truffle",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.graalvm.truffle:truffle-runtime": {
+      "licenseSummary": "Universal Permissive License, Version 1.0",
+      "upstreamSource": "https://github.com/oracle/graal/tree/master/truffle",
+      "upstream": [
+        "licenses/upstream/graal/vm-{version}"
+      ]
+    },
+    "org.jcommander:jcommander": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/cbeust/jcommander",
+      "upstream": [
+        "licenses/upstream/jcommander/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.jsoup:jsoup": {
+      "licenseSummary": "The MIT License",
+      "upstreamSource": "https://github.com/jhy/jsoup"
+    },
+    "org.jspecify:jspecify": {
+      "licenseSummary": "The Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/jspecify/jspecify/",
+      "upstream": [
+        "licenses/upstream/jspecify/v{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.mongodb:bson": {
+      "licenseSummary": "The Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/mongodb/mongo-java-driver",
+      "upstream": [
+        "licenses/upstream/mongodb/r{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.mongodb:bson-record-codec": {
+      "licenseSummary": "The Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/mongodb/mongo-java-driver",
+      "upstream": [
+        "licenses/upstream/mongodb/r{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.mongodb:mongodb-driver-core": {
+      "licenseSummary": "The Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/mongodb/mongo-java-driver",
+      "upstream": [
+        "licenses/upstream/mongodb/r{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.mongodb:mongodb-driver-sync": {
+      "licenseSummary": "The Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/mongodb/mongo-java-driver",
+      "upstream": [
+        "licenses/upstream/mongodb/r{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.noggit:noggit": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "git@github.com:yonik/noggit.git",
+      "upstream": [
+        "licenses/upstream/noggit/noggit-{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.omnifaces:omnifaces": {
+      "licenseSummary": "The Apache Software License, Version 2.0",
+      "upstreamSource": "https://github.com/omnifaces/omnifaces",
+      "upstream": [
+        "licenses/upstream/omnifaces/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.owasp.encoder:encoder": {
+      "licenseSummary": "The BSD 3-Clause License",
+      "upstreamSource": "https://github.com/owasp/owasp-java-encoder"
+    },
+    "org.primefaces:primefaces": {
+      "licenseSummary": "MIT License",
+      "upstreamSource": "https://github.com/primefaces/primefaces"
+    },
+    "org.reactivestreams:reactive-streams": {
+      "licenseSummary": "MIT-0",
+      "upstreamSource": "git@github.com:reactive-streams/reactive-streams.git",
+      "upstream": [
+        "licenses/upstream/reactive-streams/v{version}"
+      ]
+    },
+    "org.sejda.imageio:webp-imageio": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "scm:git:git@github.com:sejda-pdf/webp-imageio.git",
+      "upstream": [
+        "licenses/upstream/webp/v{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "org.slf4j:slf4j-api": {
+      "licenseSummary": "MIT",
+      "upstreamSource": "http://www.slf4j.org"
+    },
+    "org.slf4j:slf4j-jdk14": {
+      "licenseSummary": "MIT",
+      "upstreamSource": "http://www.slf4j.org"
+    },
+    "org.webjars.npm:primeflex": {
+      "licenseSummary": "MIT License",
+      "upstreamSource": "https://github.com/primefaces/primeflex"
+    },
+    "software.amazon.awssdk:annotations": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:apache-client": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:auth": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:aws-core": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:aws-json-protocol": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:bedrockruntime": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:checksums": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:checksums-spi": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:endpoints-spi": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:http-auth": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:http-auth-aws": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:http-auth-aws-eventstream": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:http-auth-spi": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:http-client-spi": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:identity-spi": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:json-utils": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:metrics-spi": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:netty-nio-client": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:profiles": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:protocol-core": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:regions": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:retries": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:retries-spi": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:sdk-core": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:third-party-jackson-core": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:utils": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.awssdk:utils-lite": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/aws/aws-sdk-java-v2",
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "software.amazon.eventstream:eventstream": {
+      "licenseSummary": "Apache License, Version 2.0",
+      "upstreamSource": "https://github.com/awslabs/aws-eventstream-java",
+      "upstream": [
+        "licenses/upstream/eventstream/{version}"
+      ],
+      "licensePaths": [
+        "licenses/common/Apache-2.0.txt"
+      ]
+    },
+    "xml-apis:xml-apis": {
+      "licenseSummary": "Apache-2.0; W3C software/document terms; SAX public-domain dedication"
+    },
+    "xml-apis:xml-apis-ext": {
+      "licenseSummary": "Apache-2.0; W3C software/document/SAC terms"
+    }
+  }
+}

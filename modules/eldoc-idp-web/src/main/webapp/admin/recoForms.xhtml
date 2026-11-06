@@ -1,0 +1,199 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:jsf="jakarta.faces"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+        </f:metadata>
+    </ui:define>
+
+    <p:importConstants type="ai.eldoc.constants.Pages" />
+
+    <ui:define name="title">${labels['menuUI.adminRecoRules']} | #{pageController.pageTitleSuffix}</ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="f1">
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header">
+                        <h1>#{labels['menuUI.adminRecoRules']}</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid" jsf:rendered="#{userContext.adminDocRW}">
+                <div class="col-12">
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:button id="btnAdd" value="#{labels['general.btn.add']}" outcome="#{Pages.PAGE_ADMIN_RECOFORM}" icon="fa-solid fa-plus" />
+                            <p:button id="btnDiag" value="#{labels['pRecoForms.btn.diag']}" outcome="#{Pages.PAGE_ADMIN_RECODIAG}" class="p-button-secondary p-button-outlined" icon="fa-solid fa-stethoscope"/>
+                            <p:button id="btnTester" value="#{labels['pRecoForms.btn.tester']}" outcome="#{Pages.PAGE_ADMIN_RECOTESTER}" class="p-button-secondary p-button-outlined" icon="fa-solid fa-object-group"/>
+                            <p:button id="btnCodeRepo" value="#{labels['pRecoForms.btn.codeRepo']}" outcome="#{Pages.PAGE_ADMIN_RECOCODEREPO}" class="p-button-secondary p-button-outlined" icon="fa-regular fa-file-code"/>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:commandButton id="btnActivate" title="#{labels['general.btn.activate']}"
+                                             action="#{recoFormController.btnActivateBatch(recoFormController.selectedForms)}" process="formsTbl @this" update="formsTbl"
+                                             class="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-check"
+                                             onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['general.btn.activate'])}'))
+                                                         return false;"/>
+                            <p:commandButton id="btnSuspend" title="#{labels['general.btn.suspend']}"
+                                             action="#{recoFormController.btnSuspendBatch(recoFormController.selectedForms)}" process="formsTbl @this" update="formsTbl"
+                                             class="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-ban"
+                                             onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['general.btn.suspend'])}'))
+                                                         return false;"/>
+                            <p:commandButton id="btnDelete" title="#{labels['general.btn.delete']}"
+                                             action="#{recoFormController.btnDeleteBatch(recoFormController.selectedForms)}" process="formsTbl @this" update="formsTbl"
+                                             class="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-trash"
+                                             onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['general.btn.delete'])}'))
+                                                         return false;" />
+                            <span class="toolbar-separator">
+                                <span class="fa-solid fa-ellipsis-vertical" />
+                            </span>
+                            <p:commandButton id="btnExport" title="#{labels['general.btn.export.forms']}"
+                                             action="#{recoFormController.btnExportBatch(recoFormController.selectedForms)}" process="formsTbl @this" update="formsTbl"
+                                             class="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-download" oncomplete="doExportDownload(args.exportUrl);"
+                                             onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['general.btn.export.forms'])}'))
+                                                         return false;"/>
+                            <p:button id="btnImport" title="#{labels['general.btn.import.forms']}" class="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-upload"
+                                      onclick="return btnFileUploadClick('recoFormImportFile')" />
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+            </div>
+
+
+            <div class="grid">
+                <div class="col-12">
+                    <!-- IMPORTANT: 'formsTbl' id used in JS -->
+                    <p:dataTable id="formsTbl" value="#{recoFormController.dataProvider}" var="rowData" rowIndexVar="rowIndex" paginator="true" lazy="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rows="50"
+                                 rowsPerPageTemplate="50,100,250" paginatorPosition="top" paginatorAlwaysVisible="true" reflow="true"
+                                 emptyMessage="#{labels['general.dataTable.noRecordsFound']}" filterDelay="800" resizableColumns="true"
+                                 selection="#{recoFormController.selectedForms}" selectionRowMode="add" selectionMode="multiple" sortBy="#{name}" widgetVar="formsTblWV">
+
+                        <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                        <p:ajax event="filter" update="@none" oncomplete="formsTblFtrLblUpdate();" />
+
+                        <p:column selectionBox="true" width="20"/>
+
+                        <p:column headerText="#" width="30">
+                            <h:outputText value="#{rowIndex + 1}" />
+                        </p:column>
+
+                        <p:column field="name" headerText="#{labels['pRecoForm.name']}" sortOrder="asc">
+                            <p:link href="#{Pages.PAGE_ADMIN_RECOFORM}?id=#{rowData.id}">#{rowData.name}</p:link>
+                        </p:column>
+
+                        <p:column headerText="#{labels['recoForm.form']}">
+                            <p:link id="docTitle" href="#{Pages.PAGE_ADMIN_FORM}?id=#{rowData.form}" rendered="#{not empty rowData.form}">
+                                <h:outputText value="#{recoFormController.getTargetFormDefinition(rowData.form).name[localeContext.langSystemCode]} (#{rowData.form})" />
+                            </p:link>
+                        </p:column>
+
+                        <p:column headerText="#{labels['pRecoForm.keywords']}" sortBy="#{model.pages.kwrds}" filterBy="#{model.pages.kwrds}" filterMatchMode="contains">
+                            <p:outputLabel value="#{rowData.keywords}" converter="stringToListConverter" />
+                        </p:column>
+
+                        <p:column field="tags" headerText="#{labels['general.tags']}" filterMatchMode="contains">
+                            <p:outputLabel value="#{rowData.tags}" converter="stringToListConverter" />
+                        </p:column>
+
+                        <p:column field="status" headerText="#{labels['pRecoForm.status']}" width="100">
+                            <f:facet name="filter">
+                                <p:selectCheckboxMenu id="stFltr" value="#{recoFormController.dataProvider.filters['status']}" label="#{labels['general.docs.status']}"
+                                                      converter="jakarta.faces.Integer" class="custom-filter">
+                                    <p:ajax event="change" process="@this" oncomplete="PF('formsTblWV').filter();" delay="300" />
+                                    <p:ajax event="toggleSelect" process="@this" oncomplete="PF('formsTblWV').filter();" delay="300" />
+                                    <f:selectItems value="#{recoFormController.recoFormStatusSI}" />
+                                </p:selectCheckboxMenu>
+                            </f:facet>
+                            <h:outputText value="#{rowData.status}" >
+                                <f:converter converterId="recoFormStatusConverter" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="#{labels['general.docs.dateCreated']}" sortBy="#{model._meta._created}" width="120">
+                            <p:outputLabel value="#{rowData.meta.created}" class="muted">
+                                <f:convertDateTime pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="#{labels['general.lastModified']}" sortBy="#{model._meta._lastmodified}" width="120">
+                            <p:outputLabel value="#{rowData.meta.lastModified}" class="muted">
+                                <f:convertDateTime pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="#{labels['general.actions']}" width="120">
+                            <div class="buttons-left">
+                                <p:commandButton id="btnDuplicate" action="#{recoFormController.btnDuplicate(rowData)}" update="@form"
+                                                 title="#{labels['general.btn.duplicate']}" icon="fa-regular fa-copy" class="p-button-secondary p-button-outlined"
+                                                 rendered="#{userContext.adminDocRW}"
+                                                 onclick="if (!confirm('${pageController.getFormattedMessage(labels['confirm.action.template'], labels['general.btn.duplicate'])}'))
+                                                         return false;" />
+                                <p:commandButton id="btnSuspend" action="#{recoFormController.btnSuspend(rowData)}" update="@form"
+                                                 title="#{labels['general.btn.suspend']}" icon="fa-solid fa-ban" class="p-button-secondary p-button-outlined"
+                                                 rendered="#{userContext.adminDocRW and rowData.statusActive}"
+                                                 onclick="if (!confirm('${pageController.getFormattedMessage(labels['confirm.action.template'], labels['general.btn.suspend'])}'))
+                                                         return false;" />
+                                <p:commandButton id="btnActivate" action="#{recoFormController.btnActivate(rowData)}" update="@form"
+                                                 title="#{labels['general.btn.activate']}" icon="fa-solid fa-check" class="p-button-secondary p-button-outlined"
+                                                 rendered="#{userContext.adminDocRW and !rowData.statusActive}"
+                                                 onclick="if (!confirm('${pageController.getFormattedMessage(labels['confirm.action.template'], labels['general.btn.activate'])}'))
+                                                         return false;" />
+                                <p:commandButton id="btnDelete" action="#{recoFormController.btnDelete(rowData)}" update="@form"
+                                                 title="#{labels['general.btn.delete']}"  icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined"
+                                                 rendered="#{userContext.adminDocRW}"
+                                                 onclick="if (!confirm('${pageController.getFormattedMessage(labels['confirm.action.template'], labels['general.btn.delete'])}'))
+                                                         return false;" />
+                            </div>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <h:outputLabel id="formsTblFtrLbl" value="#{pageController.getFormattedMessage(labels['general.recoForm.list.footerText'], recoFormController.dataProvider.rowCount)}" />
+                            <p:remoteCommand name="formsTblFtrLblUpdate" update="formsTblFtrLbl" />
+                        </f:facet>
+
+                    </p:dataTable>
+                </div>
+            </div>
+
+            <p:growl id="growl" life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                <p:autoUpdate />
+            </p:growl>
+
+        </h:form>
+
+        <!-- RecoForm import related code -->
+        <input id="recoFormImportFile" type="file" hidden="hidden" accept=".rfs" />
+
+    </ui:define>
+
+</ui:composition>

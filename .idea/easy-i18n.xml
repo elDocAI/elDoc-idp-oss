@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectConfigService">
+    <option name="keyComment" value="false" />
+    <option name="sorting" value="true" />
+    <option name="previewLocale" value="en" />
+    <option name="modules">
+      <map>
+        <entry key="labels">
+          <value>
+            <ProjectConfigModuleState>
+              <option name="id" value="labels" />
+              <option name="pathTemplate" value="$PROJECT_DIR$/modules/eldoc-idp-web/src/main/resources/labels_{locale}.properties" />
+              <option name="fileCodec" value="PROPERTIES" />
+              <option name="fileTemplate" value="[{fileKey:.}]" />
+              <option name="keyTemplate" value="{fileKey:.}" />
+              <option name="rootDirectory" value="$PROJECT_DIR$/src/main" />
+              <option name="defaultKeyPrefixes">
+                <set />
+              </option>
+              <option name="editorFlavorTemplate" value="messageSource.getMessage('{i18nKey}&quot;, null, locale)" />
+              <option name="editorRules">
+                <list>
+                  <EditorRuleState>
+                    <option name="id" value="spring-getMessage" />
+                    <option name="languages">
+                      <set>
+                        <option value="JAVA" />
+                        <option value="KOTLIN" />
+                      </set>
+                    </option>
+                    <option name="triggerKind" value="CALL_ARGUMENT" />
+                    <option name="priority" value="10" />
+                    <option name="excludeRule" value="false" />
+                    <option name="constraints">
+                      <list>
+                        <EditorRuleConstraintState>
+                          <option name="type" value="CALLABLE_NAME" />
+                          <option name="value" value="getMessage" />
+                          <option name="matchMode" value="EXACT" />
+                          <option name="negated" value="false" />
+                        </EditorRuleConstraintState>
+                        <EditorRuleConstraintState>
+                          <option name="type" value="ARGUMENT_INDEX" />
+                          <option name="value" value="0" />
+                          <option name="matchMode" value="EXACT" />
+                          <option name="negated" value="false" />
+                        </EditorRuleConstraintState>
+                      </list>
+                    </option>
+                  </EditorRuleState>
+                  <EditorRuleState>
+                    <option name="id" value="spring-getString" />
+                    <option name="languages">
+                      <set>
+                        <option value="JAVA" />
+                        <option value="KOTLIN" />
+                      </set>
+                    </option>
+                    <option name="triggerKind" value="CALL_ARGUMENT" />
+                    <option name="priority" value="0" />
+                    <option name="excludeRule" value="false" />
+                    <option name="constraints">
+                      <list>
+                        <EditorRuleConstraintState>
+                          <option name="type" value="CALLABLE_NAME" />
+                          <option name="value" value="getString" />
+                          <option name="matchMode" value="EXACT" />
+                          <option name="negated" value="false" />
+                        </EditorRuleConstraintState>
+                        <EditorRuleConstraintState>
+                          <option name="type" value="ARGUMENT_INDEX" />
+                          <option name="value" value="0" />
+                          <option name="matchMode" value="EXACT" />
+                          <option name="negated" value="false" />
+                        </EditorRuleConstraintState>
+                      </list>
+                    </option>
+                  </EditorRuleState>
+                </list>
+              </option>
+            </ProjectConfigModuleState>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

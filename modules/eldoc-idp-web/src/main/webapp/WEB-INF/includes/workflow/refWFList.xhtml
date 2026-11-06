@@ -1,0 +1,35 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:cc="jakarta.faces.composite/elcomp">
+
+    <!--@elvariable id="value" type="java.util.ArrayList<ai.eldoc.model.Workflow>"-->
+
+    <ul class="m-0 ml-4 p-0 text-600">
+        <ui:repeat value="#{value}" var="refItem" varStatus="itemStatus">
+            <li>
+                <cc:refItem value="#{refItem}" />
+            </li>
+        </ui:repeat>
+    </ul>
+
+</ui:composition>

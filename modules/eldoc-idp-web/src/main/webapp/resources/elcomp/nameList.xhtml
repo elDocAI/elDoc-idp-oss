@@ -1,0 +1,38 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:composite="jakarta.faces.composite"
+    xmlns:cc="jakarta.faces.composite/elcomp">
+
+    <composite:interface>
+        <composite:attribute name="value" type="java.util.Collection" required="true" shortDescription="Collection or single value with nameItem systemId" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <ui:repeat id="nlInner" value="#{cc.attrs.value}" var="systemId">
+            <cc:nameItem id="ni" value="#{systemId}" />
+        </ui:repeat>
+
+    </composite:implementation>
+
+</ui:component>

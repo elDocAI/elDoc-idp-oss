@@ -1,0 +1,101 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces"
+        xmlns:composite="jakarta.faces.composite"
+        xmlns:jsf="jakarta.faces">
+
+    <!--{labels['ccNamePicker.searchDirectory']}-->
+    <!--{labels['general.search.btnSearch']}-->
+    <!--{labels['ccNamePicker.departmentJobTitle']}-->
+    <!--{labels['ccNamePicker.btn.removeSelected']}-->
+    <!--{labels['ccNamePicker.btn.removeSelected.title']}-->
+    <!--{labels['ccNamePicker.btn.removeAll']}-->
+    <!--{labels['ccNamePicker.btn.removeAll.title']}-->
+
+
+    <composite:interface componentType="namePickerV2">
+        <composite:attribute name="value" type="java.util.List" shortDescription="List or single value with nameItem systemId" />
+        <composite:attribute name="setAsList" type="java.lang.Boolean" shortDescription="if TRUE will always set value as List for the target DSfield, othervise - in case resulting list contains no elements it sets empty string, in case one element - sets that string, and only in case of >1 elements - sets as List" default="false" />
+        <composite:attribute name="excludeNames" type="Object" shortDescription="Single name or List of names (systemIds) to be excluded" />
+        <composite:attribute name="singleName" type="java.lang.Boolean" shortDescription="Allows to choose only one single name item" default="false" />
+        <composite:attribute name="persons" type="java.lang.Boolean" shortDescription="Make persons available for selection" default="true" />
+        <composite:attribute name="groups" type="java.lang.Boolean" shortDescription="Make groups available for selection" default="false" />
+        <composite:attribute name="units" type="java.lang.Boolean" shortDescription="Make orgUnits available for selection" default="false" />
+        <composite:attribute name="bpmNames" type="java.lang.Boolean" shortDescription="Make BPM names available for selection" default="false" />
+        <composite:attribute name="integrations" type="java.lang.Boolean" shortDescription="Make Integrations available for selection" default="false" />
+        <composite:attribute name="apiNames" type="java.lang.Boolean" shortDescription="Make API accounts available for selection" default="false" />
+        <composite:attribute name="refreshId" type="java.lang.String" shortDescription="Id of the component to be refreshed on close" default="@none"/>
+        <composite:attribute name="disabled" type="java.lang.Boolean" shortDescription="Set Desabled state" default="false" />
+        <!--<composite:attribute name="objectBean" type="java.lang.Object" shortDescription="Any object can be passed as elObjectBean, and depending on its class - corresponding logic will be executed"/>-->
+        <!--<composite:attribute name="forInput" type="java.lang.String" shortDescription="Used with textInput" />-->
+        <!--<composite:attribute name="bindTo" type="java.util.List" shortDescription="Binds ccNamePiker directly to java.util.List - List of directory item names (systemId)" />-->
+    </composite:interface>
+
+    <composite:implementation>
+
+        <div id="#{cc.clientId}" style="display: inline-block;">
+
+
+            <!-- Name Picker Icon -->
+            <div jsf:id="od" style="display: inline-block; cursor: not-allowed" jsf:rendered="#{cc.attrs.disabled}">
+                <i class="fa-solid fa-user-group muted" aria-hidden="true"></i>
+            </div>
+            <p:commandLink id="oe" onclick="PF('#{cc.clientId}_npDlg').show();" rendered="#{!cc.attrs.disabled}" >
+                <i class="fa-solid fa-user-group" aria-hidden="true"></i>
+            </p:commandLink>
+
+
+            <!-- Name Picker Dialog -->
+            <p:dialog id="npDlg" binding="#{cc.uiDialog}" widgetVar="#{cc.clientId}_npDlg" header="#{labels['ccNamePicker.header.title']}" modal="true" closeOnEscape="true"
+                      resizable="false" fitViewport="true" responsive="true" position="center" styleClass="np-dialog">
+
+                <p:ajax event="close" listener="#{cc.handleDialogClose}" update=":#{cc.clientId}:npDlgCnt"/>
+
+                <div jsf:id="npDlgCnt" style="margin-bottom: 10px;">
+
+                    <p:pickList id="nPick" binding="#{cc.dataUI}" widgetVar="#{cc.clientId}_nPick" value="{cc.pickerData}" showSourceFilter="true" showTargetFilter="true" responsive="true"
+                                var="rowData" itemLabel="#{rowData.getItemNameUI()}" itemValue="#{rowData}" converter="systemIdToDirectoryItemConverter"
+                                showCheckbox="#{!cc.attrs.singleName}" filterMatchMode="contains" styleClass="np-area">
+                        <p:ajax event="transfer" listener="#{cc.handlePickListTransfer}" process="@this" update="@this" rendered="#{cc.attrs.singleName}" />
+                        <p:ajax event="transfer" process="@this" rendered="#{!cc.attrs.singleName}" />
+                    </p:pickList>
+
+                </div>
+
+                <f:facet name="footer">
+                    <div class="buttons-right">
+                        <p:commandButton id="btnOk" value="#{labels['ccNamePicker.btn.ok']}" action="#{cc.btnOk()}" update="#{cc.attrs.refreshId}"
+                                         icon="fa-solid fa-fw fa-check" style="width:80px;">
+                            <f:param name="cc_namePiker_action_btnOk" value="true" />
+                        </p:commandButton>
+                    </div>
+                </f:facet>
+
+            </p:dialog>
+
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

@@ -1,0 +1,52 @@
+/*
+ *
+ *  * Copyright (C) 2022-2026 elDoc Limited
+ *  *
+ *  * This file is part of elDoc IDP OSS.
+ *  *
+ *  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+ *  * it under the terms of the GNU Affero General Public License as published
+ *  * by the Free Software Foundation, version 3.
+ *  *
+ *  * elDoc IDP OSS is distributed in the hope that it will be useful,
+ *  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+ *  * General Public License for more details.
+ *  *
+ *  * SPDX-License-Identifier: AGPL-3.0-only
+ *
+ */
+
+/* elDoc: Indigo Focus / Soft Neutral — PrimeFaces 17 Aura inputs and custom shell roles.
+ * Merge into the existing SCSS pipeline and emit ONCE as unlayered application CSS.
+ * Requires the installed build to expose --p-primary-base (see implementation-guidelines.md).
+ * Do not import the standalone reference HTML's private mockup variables.
+ */
+:root {
+  color-scheme: light;
+  --p-primary-base: var(--p-indigo-600); /* #4F46E5; Aura derives states and contrast. */
+  --p-typography-font-family: Inter, Roboto, Arial, ui-sans-serif, system-ui, sans-serif;
+
+  /* App-owned shell: these areas are not the Aura component surface. */
+  --eldoc-header-background: #292B52;
+  --eldoc-navigation-background: #F0F1F8;
+  --eldoc-workspace-background: #F5F6F8;
+}
+
+/* App-owned shell roles: consume only inside these existing layout containers.
+ * Exact shell colors are intentional; do not replace them with Aura-generated
+ * highlight colors or promote them to global PrimeFaces component overrides.
+ */
+.eldoc-theme .topbar {
+  --eldoc-topbar-text-color: var(--p-surface-0);
+  --eldoc-topbar-avatar-background: #414369;
+}
+
+.eldoc-theme .layout-menu-container {
+  --eldoc-menu-text-color: #454965;
+  --eldoc-menu-muted-color: #626782;
+  --eldoc-menu-border-color: #DBDEEC;
+  --eldoc-menu-selected-background: #E0E3F7;
+  --eldoc-menu-selected-color: var(--p-indigo-800); /* #3730A3 */
+  --eldoc-menu-badge-background: #DEE1F1;
+}

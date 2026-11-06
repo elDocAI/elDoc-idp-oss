@@ -1,0 +1,35 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets">
+
+    <div id="filemanager-area" class="grid grid-nogutter h-full">
+
+        <div id="filemanager-main-area" class="col-12 h-full">
+            <ui:insert name="filemanager-main-area-insert"/>
+        </div>
+
+        <div id="filemanager-splitter"></div>
+
+        <div id="filemanager-prop-area" class="e-filemanager col-12 h-full" style="display: none;">
+        </div>
+    </div>
+
+</ui:composition>

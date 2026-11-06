@@ -1,0 +1,135 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:jsf="jakarta.faces"
+        xmlns:f="jakarta.faces.core"
+        xmlns:h="jakarta.faces.html"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:pt="jakarta.faces.passthrough"
+        xmlns:composite="jakarta.faces.composite"
+        xmlns:p="primefaces"
+>
+
+    <composite:interface componentType="cfRecoTable">
+        <composite:attribute name="dataSource" type="java.lang.Object" required="true" shortDescription="Document data source" />
+        <composite:attribute name="fieldName" type="java.lang.String" required="true" shortDescription="Field name" />
+        <composite:attribute name="cfAwareModel" type="ai.eldoc.model.CustomFieldAwareModel" required="true" shortDescription="CustomFieldAwareModel object, required for RecoData (but not required for Workflow)" />
+        <composite:attribute name="label" type="java.lang.String" required="false" shortDescription="Field UI label" />
+        <composite:attribute name="required" type="java.lang.Boolean" required="false" shortDescription="Required flag" />
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag" />
+        <composite:attribute name="fieldDef" type="ai.eldoc.model.CustomField" required="true" shortDescription="Custom Field definition" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <div class="col-12" jsf:rendered="#{recoDocController.showAllFields or recoDocController.isFieldOnPage(cc.attrs.fieldDef)}">
+
+            <p:dataTable id="cfRcTbl" value="#{cc.attrs.dataSource[cc.attrs.fieldName]}" var="rowData" rowIndexVar="rowIndex" class="table-sm cf-field cf-table cf-reco-field cf-reco-table" size="small"
+                         paginator="true" rows="10" paginatorAlwaysVisible="false" pageLinks="3" rowsPerPageTemplate="5,10,15,25,50,100" paginatorPosition="bottom" cellNavigation="false"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         emptyMessage="#{labels['general.dataTable.noRecordsFound']}" rowStyleClass="recoTableRow" widgetVar="cfRcTbl_#{cc.attrs.fieldName}"
+                         pt:data-field-id="#{recoDocController.getFieldOnPageIdx(cc.attrs.fieldDef)}" pt:data-focus-enabled="#{recoDocController.isFieldFocusEnabled(cc.attrs.fieldDef)}">
+
+                <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                <f:facet name="header">
+                    <p:outputLabel id="hdrLbl" value="#{cc.attrs.label} (#{cc.attrs.fieldDef.recoProp.confidenceMin})" for="cfRcTbl" class="mr-1" />
+                    <p:commandButton id="btnRowAdd" value="Add row" action="#{cc.addRowToRecoTable(cc.attrs.fieldDef, cc.attrs.dataSource, cc.attrs.fieldName)}" process="cfRcTbl" update="cfRcTbl"
+                                     rendered="#{!cc.attrs.disabled}" icon="fa-solid fa-fw fa-plus" class="btn-sm p-button-secondary p-button-outlined" style="margin-top: -5px; margin-bottom: -5px;">
+                    </p:commandButton>
+                </f:facet>
+
+                <p:columns id="cell" value="#{cc.attrs.fieldDef.fields}" var="column" columnIndexVar="cellIndex"  headerText="#{column.name[localeContext.langSystemCode]}" class="p-fluid" rendered="#{!column.recoProp.ignored}">
+
+                    <!--@elvariable id="cellIndex" type="java.lang.Integer"-->
+
+                    <div class="p-inputgroup recoTableCellField" data-confidence-threshold="#{cc.attrs.fieldDef.fields[cellIndex].recoProp.confThreshold}" jsf:rendered="#{cc.attrs.fieldDef.fields[cellIndex].type != 'recoImage'}">
+                        <div jsf:id="ed1" contenteditable="#{!cc.attrs.disabled}" class="#{cc.attrs.disabled ? 'is-disabled' : recoDocController.isFieldNotValid(cc.attrs.cfAwareModel.cfDef.indexOf(cc.attrs.fieldDef), rowIndex, cellIndex) ? 'is-invalid' : ''} reco-field-input reco-table-cell-field">
+                            #{rowData[cellIndex]}
+                        </div>
+
+                        <h:inputHidden id="coords" value="#{cc.attrs.fieldDef.recoProp.confidenceTable[rowIndex][cellIndex]}">
+                            <f:attribute name="readonly" value="true" />
+                        </h:inputHidden>
+
+                        <!-- Hidden field with actual field value, without markup -->
+                        <h:inputText id="i1" type="hidden" value="#{rowData[cellIndex]}" converter="stringTrimConverter" >
+                            <f:attribute name="label" value="#{cc.attrs.label}[#{column.name[localeContext.langSystemCode]}][#{rowIndex+1}]" />
+                            <p:ajax event="change" process="i1" />
+                        </h:inputText>
+
+                        <div class="p-inputgroup-addon" style="#{recoDocController.getConfidenceCellStyle(cc.attrs.fieldDef, rowIndex, cellIndex)}">
+                            #{cc.attrs.fieldDef.recoProp.confidenceTable[rowIndex][cellIndex].stream().min().orElse(0)}
+                        </div>
+                    </div>
+
+                    <div jsf:id='cfRcImg' class="overflow-y-auto max-h-15rem border-round border-1 border-solid border-300 p-inputgroup" jsf:rendered="#{cc.attrs.fieldDef.fields[cellIndex].type == 'recoImage'}">
+
+                        <p:graphicImage id="i1img" value="/api/preview?id=#{recoDocController.getCellImageUrlPreviewId(cc.attrs.fieldDef, rowIndex, cellIndex)}&amp;p=#{pageIdx}"
+                                        pt:contenteditable="false" class="w-full m-auto" style="max-width: calc(100% - 45px);" rendered="#{not empty rowData[cellIndex] and not recoDocController.isTableCellEditMode(cc.attrs.fieldDef, rowIndex, cellIndex)}" />
+                        <p:graphicImage id="i1_preview" value="#{recoDocController.fieldImagePreviewOnEdit}" stream="false" class="w-full m-auto" style="max-width: calc(100% - 45px);" rendered="#{recoDocController.isTableCellEditMode(cc.attrs.fieldDef, rowIndex, cellIndex)}"/>
+
+                        <p:inputText id="fieldCoords" value="#{recoDocController.selectedCFArea}" widgetVar="fieldCoordsWV" rendered="#{recoDocController.isTableCellEditMode(cc.attrs.fieldDef, rowIndex, cellIndex)}">
+                            <f:converter converterId="rectangleToStringConverter"/>
+                            <f:attribute name="type" value="hidden" />
+                            <p:ajax event="change" process="@this" update="cfRcImg" />
+                        </p:inputText>
+
+                        <span class="p-inputgroup-addon p-1" style="width: 45px;" jsf:rendered="#{recoDocController.modeEdit}">
+                            <p:commandButton id="btnImgAdd" title="#{labels['general.btn.edit']}" action="#{recoDocController.btnAddFieldCellImage(cc.attrs.fieldDef, rowIndex, cellIndex)}" process="@this" update="@([id$='cfRcImg'])"
+                                             oncomplete="recoFormEditor.selectFieldAndSetDefaultValueRect(#{recoDocController.getPageIndex()}, #{recoDocController.getFieldOnPageIdx(cc.attrs.fieldDef, rowIndex, cellIndex)}, #{recoDocController.getTableImageCellRowIdxOnPage(cc.attrs.fieldDef, rowIndex, cellIndex)}, #{cellIndex})"
+                                             rendered="#{empty rowData[cellIndex] and not recoDocController.isTableCellEditMode(cc.attrs.fieldDef, rowIndex, cellIndex)}"
+                                             icon="fa-solid fa-fw fa-plus" class="p-button-secondary p-button-outlined" />
+                            <p:commandButton id="btnImgEdit" title="#{labels['general.btn.edit']}" action="#{recoDocController.btnEditFieldCell(cc.attrs.fieldDef, rowIndex, cellIndex)}" process="@this" update="@([id$='cfRcImg'])"
+                                             oncomplete="recoFormEditor.selectField(#{recoDocController.getTableImageCellPage(cc.attrs.fieldDef, rowIndex, cellIndex)}, #{recoDocController.getFieldOnPageIdx(cc.attrs.fieldDef, rowIndex, cellIndex)}, #{recoDocController.getTableImageCellRowIdxOnPage(cc.attrs.fieldDef, rowIndex, cellIndex)}, #{cellIndex})"
+                                             disabled="#{not recoDocController.isTableCellEditable(cc.attrs.fieldDef, rowIndex, cellIndex)}"
+                                             rendered="#{not empty rowData[cellIndex] and not recoDocController.isTableCellEditMode(cc.attrs.fieldDef, rowIndex, cellIndex)}"
+                                             icon="fa-regular fa-fw fa-pen-to-square" class="p-button-secondary p-button-outlined" />
+                            <p:commandButton id="btnImgSave" title="#{labels['general.btn.save']}" process="@this" update="@([id$='cfRcImg'])" action="#{recoDocController.btnSaveFieldEdit}"
+                                             onsuccess="recoFormEditor.clearSelection();"
+                                             disabled="#{not recoDocController.modeEdit}" rendered="#{not empty cc.attrs.dataSource[cc.attrs.fieldName] and recoDocController.isTableCellEditMode(cc.attrs.fieldDef, rowIndex, cellIndex)}"
+                                             icon="fa-regular fa-fw fa-floppy-disk" class="p-button-secondary p-button-outlined" />
+                            <p:commandButton id="btnImgCancel" title="#{labels['general.btn.cancel']}" process="@this" update="@([id$='cfRcImg'])" action="#{recoDocController.btnCancelFieldEdit}"
+                                             onsuccess="recoFormEditor.clearSelection();"
+                                             disabled="#{not recoDocController.modeEdit}" rendered="#{not empty cc.attrs.dataSource[cc.attrs.fieldName] and recoDocController.isTableCellEditMode(cc.attrs.fieldDef, rowIndex, cellIndex)}"
+                                             icon="fa-solid fa-fw fa-ban" class="p-button-secondary p-button-outlined" />
+                            <p:commandButton id="btnImgDelete" action="#{recoDocController.btnRemoveImage(cc.attrs.fieldDef, rowIndex, cellIndex)}" process="@this" update="@([id$='cfRcImg'])"
+                                             disabled="#{empty cc.attrs.dataSource[cc.attrs.fieldName]}" icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined"
+                                             rendered="#{not empty rowData[cellIndex] and not recoDocController.isTableCellEditMode(cc.attrs.fieldDef, rowIndex, cellIndex)}" />
+                        </span>
+                    </div>
+
+                </p:columns>
+
+                <p:column headerText="" width="32" rendered="#{!cc.attrs.disabled}">
+                    <p:commandButton id="btnRowRemove" action="#{cc.removeRowFromRecoTable(cc.attrs.fieldDef, cc.attrs.dataSource, cc.attrs.fieldName, rowIndex)}"
+                                     process="cfRcTbl" update="cfRcTbl" rendered="#{!cc.attrs.disabled}" title="#{labels['general.btn.delete']}"
+                                     icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined">
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

@@ -1,0 +1,6 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="notice" value="/*&#10; * Copyright (C) 2022-2026 elDoc Limited&#10; *&#10; * This file is part of elDoc IDP OSS.&#10; *&#10; * elDoc IDP OSS is free software: you can redistribute it and/or modify&#10; * it under the terms of the GNU Affero General Public License as published&#10; * by the Free Software Foundation, version 3.&#10; *&#10; * elDoc IDP OSS is distributed in the hope that it will be useful,&#10; * but WITHOUT ANY WARRANTY; without even the implied warranty of&#10; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero&#10; * General Public License for more details.&#10; *&#10; * SPDX-License-Identifier: AGPL-3.0-only&#10; */" />
+    <option name="myName" value="elDoc" />
+  </copyright>
+</component>

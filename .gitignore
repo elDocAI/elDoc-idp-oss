@@ -1,1 +1,49 @@
-# Empty
+# Build output
+target/
+nbproject/
+node_modules/
+out/
+
+# Downloaded artifacts and metadata for the license inventory generator
+.cache/
+__pycache__/
+
+# eldoc-base-api jar is produced by the reactor and copied into libs/
+libs/**/*.jar
+
+# OS / misc
+.DS_Store
+*.log
+
+# Playwright MCP generated artifacts and temporary files
+.playwright-mcp/tmp/
+.playwright-mcp/page-*.yml
+.playwright-mcp/test-results/
+.playwright-mcp/screenshots/
+
+# Keep reusable automation scripts
+# .playwright-mcp/driver/ is intentionally tracked
+
+# Keep curated test evidence
+# .playwright-mcp/screenshots/ is intentionally tracked
+
+# Serena MCP local/generated state
+.serena/*
+
+# Keep curated project memories in Git
+!.serena/memories/
+!.serena/memories/**
+
+# Keep project configuration only if you want it shared/reproducible
+!.serena/project.yml
+
+# Local AI agent tasks
+# The directory itself is tracked via .gitkeep; its contents are local-only.
+# Contains:
+# .agent-tasks/current-task.md  - Exact implementation requirements, including phases and acceptance criteria
+# .agent-tasks/task-progress.md - Completed work, commits, remaining tasks
+.agent-tasks/*
+!.agent-tasks/.gitkeep
+
+# JetBrains IDEA
+.junie/plans/

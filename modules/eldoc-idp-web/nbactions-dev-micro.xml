@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <packagings>
+            <packaging>war</packaging>
+        </packagings>
+        <goals>
+            <goal>package</goal>
+            <!--<goal>payara-micro:stop</goal>-->
+            <goal>payara-micro:start</goal>
+        </goals>
+        <properties>
+            <javacpp.platform.custom>true</javacpp.platform.custom>
+            <javacpp.platform.host>true</javacpp.platform.host>
+            <javacpp.platform.linux-x86_64>linux-x86_64</javacpp.platform.linux-x86_64>
+            <javacpp.platform.windows-x86_64>windows-x86_64</javacpp.platform.windows-x86_64>
+        </properties>        
+    </action>
+    <action>
+        <actionName>clean</actionName>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <!--<goal>payara-micro:stop</goal>-->
+            <goal>clean</goal>
+        </goals>
+    </action>
+    <action>
+            <actionName>build</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>package</goal>
+            </goals>
+            <properties>
+                <javacpp.platform.custom>true</javacpp.platform.custom>
+                <javacpp.platform.host>true</javacpp.platform.host>
+                <javacpp.platform.linux-x86_64>linux-x86_64</javacpp.platform.linux-x86_64>
+                <javacpp.platform.windows-x86_64>windows-x86_64</javacpp.platform.windows-x86_64>
+            </properties>
+        </action>    
+</actions>

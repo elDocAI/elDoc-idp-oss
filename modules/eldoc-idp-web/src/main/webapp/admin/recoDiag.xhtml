@@ -1,0 +1,308 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:jsf="jakarta.faces"
+                xmlns:pt="jakarta.faces.passthrough"
+                xmlns:o="omnifaces"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <h:outputScript name="js/recoFormEditor.js" library="eldoc" pt:defer="true" />
+    </ui:define>
+
+    <ui:define name="content">
+
+        <o:form id="f1" styleClass="#{recoDiagController.modeEdit ? 'modeEdit' : 'modeRead'}" >
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header">
+                        <h1>#{labels['pRecoDiag.header']}</h1>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="grid">
+
+                <!-- Column 1 -->
+                <div class="col-5">
+                    <div class="grid">
+
+                        <div class="col-12" jsf:rendered="#{not empty recoDiagController.recoMetaDoc}">
+                            <p:panel id="diagSettings" header="#{labels['pRecoDiag.logs.header']}">
+                                <div class="grid">
+                                    <div jsf:id="rcDbgView" class="col-12">
+                                        <div class="grid">
+
+                                            <div class="col-6 p-fluid">
+                                                <p:selectOneMenu id="rdSI" value="#{recoDiagController.logIdx}" label="Doc fragment" required="true">
+                                                    <f:selectItems value="#{recoDiagController.recoDebuggerListSI}" />
+                                                    <p:ajax event="change" process="@this" update="rcDbgView previewImageArea frdData"/>
+                                                </p:selectOneMenu>
+                                            </div>
+
+                                            <div class="col-6 p-fluid">
+                                                <p:selectCheckboxMenu id="formsLogSI" value="#{recoDiagController.selectedDiagForms}" label="#{labels['pRecoDiag.settings.recoForms']}"
+                                                                      filter="true" filterMatchMode="contains" panelStyle="width: 350px" scrollHeight="250px">
+                                                    <p:ajax event="change" process="@this" update="rcDbgView previewImageArea frdData"  delay="1500"
+                                                            onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.formFilterApplyStart']}', 'severity':'info'});"
+                                                            oncomplete="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.filtersApplied']}', 'severity':'info'});" />
+                                                    <p:ajax event="toggleSelect" process="@this" update="rcDbgView previewImageArea frdData"  delay="1500"
+                                                            onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.formFilterApplyStart']}', 'severity':'info'});"
+                                                            oncomplete="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.filtersApplied']}', 'severity':'info'});" />
+                                                    <f:attribute name="collectionType" value="java.util.ArrayList" />
+                                                    <f:selectItems value="#{recoDiagController.recoFormsSI}"/>
+                                                </p:selectCheckboxMenu>
+                                            </div>
+
+                                            <div class="col-12" jsf:rendered="#{not empty recoDiagController.recoFormsSI}">
+                                                <div class="grid">
+
+                                                    <div class="col-4 p-fluid">
+                                                        <p:selectCheckboxMenu id="logTypeSI" value="#{recoDiagController.selectedLogTypes}" label="#{labels['pRecoDiag.logs.logTypes']}"
+                                                                              filter="true" filterMatchMode="contains" panelStyle="width: 350px" scrollHeight="250px">
+                                                            <p:ajax event="change" process="@this" update=":f1:logEntryDt rdSI"
+                                                                    onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.logTypeFilterApplyStart']}', 'severity':'info'});"
+                                                                    oncomplete="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.filtersApplied']}', 'severity':'info'});" />
+                                                            <p:ajax event="toggleSelect" process="@this" update=":f1:logEntryDt rdSI"
+                                                                    onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.logTypeFilterApplyStart']}', 'severity':'info'});"
+                                                                    oncomplete="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.filtersApplied']}', 'severity':'info'});"/>
+                                                            <f:attribute name="collectionType" value="java.util.ArrayList" />
+                                                            <f:selectItems value="#{recoDiagController.logTypeSI}"/>
+                                                        </p:selectCheckboxMenu>
+                                                    </div>
+
+                                                    <div class="col-4 p-fluid">
+                                                        <p:selectCheckboxMenu id="fieldsSI" value="#{recoDiagController.selectedFields}" label="#{labels['general.fields']}"
+                                                                              filter="true" filterMatchMode="contains" panelStyle="width: 350px" scrollHeight="250px">
+                                                            <p:ajax event="change" process="@this" update=":f1:logEntryDt :f1:previewImageArea"  delay="1500"
+                                                                    onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.fieldsFilterApplyStart']}', 'severity':'info'});"
+                                                                    oncomplete="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.filtersApplied']}', 'severity':'info'});" />
+                                                            <p:ajax event="toggleSelect" process="@this" update=":f1:logEntryDt :f1:previewImageArea"  delay="1500"
+                                                                    onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.fieldsFilterApplyStart']}', 'severity':'info'});"
+                                                                    oncomplete="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.filtersApplied']}', 'severity':'info'});" />
+                                                            <f:attribute name="collectionType" value="java.util.ArrayList" />
+                                                            <f:selectItems value="#{recoDiagController.recoFieldsSI}"/>
+                                                        </p:selectCheckboxMenu>
+                                                    </div>
+
+                                                    <div class="col-4 p-fluid">
+                                                        <p:selectCheckboxMenu id="previewSI" value="#{recoDiagController.selectedPreviewTypes}" label="#{labels['pRecoDiag.logs.previewTypes']}"
+                                                                              filter="true" filterMatchMode="contains" panelStyle="width: 350px" scrollHeight="250px">
+                                                            <p:ajax event="change" process="@this" update=":f1:logEntryDt :f1:previewImageArea"  delay="1500"
+                                                                    onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.previewFilterApplyStart']}', 'severity':'info'});"
+                                                                    oncomplete="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.filtersApplied']}', 'severity':'info'});" />
+                                                            <p:ajax event="toggleSelect" process="@this" update=":f1:logEntryDt :f1:previewImageArea"  delay="1500"
+                                                                    onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.previewFilterApplyStart']}', 'severity':'info'});"
+                                                                    oncomplete="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.filtersApplied']}', 'severity':'info'});" />
+                                                            <f:attribute name="collectionType" value="java.util.ArrayList" />
+                                                            <f:selectItems value="#{recoDiagController.previewTypeSI}"/>
+                                                        </p:selectCheckboxMenu>
+                                                    </div>
+
+                                                    <div class="col-12 p-0">
+                                                        <p:dataTable id="logEntryDt" class="col-12" value="#{recoDiagController.logEntryListUI}" var="logEntry"
+                                                                     rowIndexVar="rowIndex" reflow="true" emptyMessage="#{labels['general.dataTable.noRecordsFound']}"
+                                                                     scrollable="true" scrollHeight="1000">
+                                                            <p:column headerText="#{labels['pRecoDiag.logs.messageRef']}" width="120">
+                                                                #{logEntry.pageIdx + 1}: #{logEntry.field.name}
+                                                            </p:column>
+                                                            <p:column headerText="#{labels['pRecoDiag.logs.message']}">
+                                                                #{logEntry.message}<br/>
+                                                                <h:outputText id="value" class="muted" value="#{logEntry.value}" converter="recoLogValueTrimConverter" />
+                                                                <p:tooltip id="valueTt" for="value" value="#{logEntry.value}" position="top"
+                                                                           rendered="#{logEntry.value.length() > 303}" hideDelay="1000" escape="false" />
+                                                            </p:column>
+                                                        </p:dataTable>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </p:panel>
+                        </div>
+
+                        <div class="col-12">
+                            <p:panel id="matchSettings" header="#{labels['pRecoDiag.settings.header']}" >
+                                <div class="grid">
+                                    <div class="col-12 p-fluid">
+                                        <p:selectCheckboxMenu id="enabledFormsSI" value="#{recoDiagController.selectedForms}" label="#{labels['pRecoDiag.settings.recoForms']}"
+                                                              filter="true" filterMatchMode="contains" panelStyle="width: 350px" scrollHeight="250px">
+                                            <p:ajax event="change" process="@this"/>
+                                            <p:ajax event="toggleSelect" process="@this"/>
+                                            <f:attribute name="collectionType" value="java.util.ArrayList" />
+                                            <f:selectItems value="#{recoFormController.recoFormListSI}"/>
+                                        </p:selectCheckboxMenu>
+                                    </div>
+
+                                    <ui:fragment rendered="#{recoQueueController.classificationAvailable}">
+                                        <div class="col-6">
+                                            <p:outputLabel value="${labels['recoQueue.autoClassification']}" for="autoClassification" />
+                                            <br/>
+                                            <span class="muted">${labels['recoQueue.autoClassification.desc']}</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <p:toggleSwitch id="autoClassification" value="#{recoQueueController.autoClassification}" converter="jakarta.faces.Boolean" onIcon="pi pi-times" offIcon="pi pi-check">
+                                                <p:ajax process="@this" update="@none" />
+                                            </p:toggleSwitch>
+                                        </div>
+                                    </ui:fragment>
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="${labels['recoQueue.forcePrProp']}" for="frcPrProc" title="${labels['recoQueue.forcePrProp.title']}"/>
+                                        <br/>
+                                        <span class="muted">${labels['recoQueue.forcePrProp.desc']}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <p:toggleSwitch id="frcPrProc" value="#{recoQueueController.forcePreprocessing}" converter="jakarta.faces.Boolean"
+                                                        onIcon="pi pi-times" offIcon="pi pi-check" disabled="#{ not empty recoDiagController.dataSource}">
+                                            <p:ajax process="@this" update="@none" />
+                                        </p:toggleSwitch>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="${labels['recoQueue.langs']}" title="${labels['recoQueue.langs.title']}" />
+                                    </div>
+                                    <div class="col-6 p-fluid">
+                                        <p:autoComplete id="langs" value="#{recoQueueController.langs}" multiple="true" selectLimit="5" unique="true" autoSelection="true"
+                                                        completeMethod="#{ocrLangController.completeLangCode}" forceSelection="true"
+                                                        var="ocrLang" itemValue="#{ocrLang}" itemLabel="#{ocrLangController.getOcrLangUiLabelByCode(ocrLang)}"
+                                                        disabled="#{not empty recoDiagController.dataSource}"
+                                                        label="${labels['recoQueue.langs']}" cache="true" dropdown="true" maxResults="15" moreText="...">
+                                            <f:attribute name="collectionType" value="java.util.ArrayList" />
+                                            <p:ajax event="itemSelect" process="@this" update="@none" />
+                                            <p:ajax event="itemUnselect" process="@this" update="@none" />
+                                        </p:autoComplete>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="#{labels['pRecoDiag.keepPrProp']}" for="keepRawImg" title="#{labels['pRecoDiag.keepPrProp.title']}" />
+                                        <br/>
+                                        <span class="muted">#{labels['pRecoDiag.keepPrProp.title']}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <p:toggleSwitch id="keepRawImg" value="#{recoDiagController.embedPreprocessedImages}" converter="jakarta.faces.Boolean"
+                                                        onIcon="pi pi-times" offIcon="pi pi-check" disabled="#{ not empty recoDiagController.dataSource}">
+                                            <p:ajax process="@this" update="@none" />
+                                        </p:toggleSwitch>
+                                    </div>
+
+                                    <div class="col-12 buttons-right" jsf:rendered="#{not empty recoDiagController.recoMetaDoc}">
+                                        <p:commandButton id="btnReDiag" value="#{labels['pRecoDiag.btn.repeat']}" title="#{labels['pRecoDiag.btn.repeat']}"
+                                                         action="#{recoDiagController.performMatching}" process="matchSettings" update="@form"
+                                                         onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.procStart']}', 'severity':'info'});"
+                                                         icon="fa-solid fa-fw fa-stethoscope" styleClass="p-button-secondary p-button-outlined" />
+                                    </div>
+                                </div>
+                            </p:panel>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="col-7">
+
+                    <p:panel id="previewImageArea" header="#{labels['pRecoDiag.preview.header']}">
+
+                        <!-- File upload area -->
+                        <p:fileUpload listener="#{recoDiagController.handleFileUpload}" mode="advanced" dragDrop="false" label="#{labels['fileUpload.label']}" auto="true" update="@form"
+                                      onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.diagStart']}', 'severity':'info'});PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.prPropStart']}', 'severity':'info'});"
+                                      accept=".jpeg,.jpg,.tif,.tiff,.png,.bmp,.pdf" rendered="#{empty recoDiagController.dataSource}">
+                            <p:validateFile fileLimit="1" allowTypes="/(\.|\/)(jpeg|jpg|tiff|tif|bmp|png|pdf)$/" sizeLimit="104857600" contentType="true" />
+                        </p:fileUpload>
+
+                        <!-- Placeholder for matching process -->
+                        <div jsf:id="matchingSpnr" class="loading-area"
+                             jsf:rendered="#{(not empty recoDiagController.dataSource) and (empty recoDiagController.recoMetaDoc)}">
+                            <p:remoteCommand action="#{recoDiagController.performMatching}" autoRun="true" update="@form"
+                                             onstart="PF('growlWV').renderMessage({'summary':'#{labels['pRecoDiag.msg.procStart']}', 'severity':'info'});"/>
+                            <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
+                            <h:outputLabel value="#{labels['pRecoDiag.msg.matchingInProgress']}" styleClass="loading-label"/>
+                        </div>
+
+                        <!-- File preview area -->
+                        <p:dataList id="pagePaginator" value="#{recoDiagController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDiagController.pageIdx}"
+                                    type="none" paginator="true" rows="1" paginatorPosition="top" widgetVar="pagePaginatorWV" lazy="true"
+                                    rendered="#{not empty recoDiagController.recoMetaDoc}">
+
+                            <p:ajax event="page" listener="#{recoDiagController.setPageIdxEvent}"/>
+
+                            <p:graphicImage id="pageImage" value="#{recoDiagController.pageImage}" stream="false" style="display:none" />
+
+                            <div jsf:id="ldSpnr" class="loading-area">
+                                <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
+                                <h:outputLabel value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
+                            </div>
+
+                            <div id="pageViewContainer"
+                                 imgId="#{p:resolveFirstComponentWithId('pageImage', view).clientId}"
+                                 spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}" />
+
+                        </p:dataList>
+
+                        <div jsf:id="fileZone" jsf:rendered="#{not empty recoDiagController.recoMetaDoc}">
+                            <ui:include src="/WEB-INF/includes/workflow/filesList.xhtml">
+                                <ui:param name="dataSource" value="#{recoDiagController.dataSource}" />
+                                <ui:param name="dbFileList" value="#{recoDiagController.files}" />
+                                <ui:param name="allowDownload" value="true" />
+                            </ui:include>
+                        </div>
+
+                        <script charset="UTF-8" type="text/javascript">
+                            $(document).ready(function () {
+                                initRecoFormEditor();
+                            });
+                        </script>
+
+                    </p:panel>
+
+                </div>
+
+            </div>
+
+
+            <h:inputHidden id="frdData" value="#{recoFormController.frdData}">
+                <f:attribute name="readonly" value="true" />
+            </h:inputHidden>
+
+            <p:growl id="growl" life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                <p:autoUpdate />
+            </p:growl>
+
+        </o:form>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,17 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+Apache OpenNLP Tools
+
+
+From: 'QOS.ch' (http://www.qos.ch)
+
+  - SLF4J API Module (http://www.slf4j.org) org.slf4j:slf4j-api:jar:2.0.18
+    License: MIT  (https://opensource.org/license/mit)
+
+
+
+
+

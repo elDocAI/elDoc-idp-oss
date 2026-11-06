@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config
+    xmlns="https://jakarta.ee/xml/ns/jakartaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-facesconfig_4_1.xsd"
+    version="4.1">
+
+    <!--<lifecycle>-->
+    <!--<phase-listener>ai.eldoc.listener.FacesLifecycleListener</phase-listener>-->
+    <!--</lifecycle>-->
+
+    <!--<lifecycle>-->
+    <!--<phase-listener>org.omnifaces.eventlistener.ResetInputAjaxActionListener</phase-listener>-->
+    <!--</lifecycle>-->
+
+    <!-- Added for exception handling in Ajax/non-Ajax requests -->
+    <factory>
+        <exception-handler-factory>ai.eldoc.exceptions.handler.ElDocExceptionHandlerFactory</exception-handler-factory>
+    </factory>
+
+    <application>
+
+        <!-- Added for exception handling in Ajax/non-Ajax requests -->
+        <el-resolver>org.primefaces.application.exceptionhandler.PrimeExceptionHandlerELResolver</el-resolver>
+
+        <message-bundle>customMessages</message-bundle>
+
+        <locale-config>
+            <default-locale>en</default-locale>
+            <supported-locale>en</supported-locale>
+            <supported-locale>uk</supported-locale>
+            <supported-locale>es</supported-locale>
+            <supported-locale>zh_CN</supported-locale> <!-- Simplified Chinese -->
+            <supported-locale>zh_HK</supported-locale> <!-- Traditional Chinese -->
+        </locale-config>
+
+        <resource-bundle>
+            <base-name>labels</base-name>
+            <var>labels</var>
+        </resource-bundle>
+
+        <resource-handler>org.omnifaces.resourcehandler.UnmappedResourceHandler</resource-handler>
+
+        <!-- Application Startup -->
+        <system-event-listener>
+            <system-event-class>jakarta.faces.event.PostConstructApplicationEvent</system-event-class>
+            <system-event-listener-class>ai.eldoc.listener.FacesAppListener</system-event-listener-class>
+        </system-event-listener>
+
+        <!-- Before Application is to shut down -->
+        <system-event-listener>
+            <system-event-class>jakarta.faces.event.PreDestroyApplicationEvent</system-event-class>
+            <system-event-listener-class>ai.eldoc.listener.FacesAppListener</system-event-listener-class>
+        </system-event-listener>
+
+    </application>
+
+</faces-config>

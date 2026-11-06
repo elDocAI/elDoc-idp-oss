@@ -1,0 +1,698 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:o="omnifaces"
+    xmlns:cc="jakarta.faces.composite/elcomp"
+    xmlns:pt="jakarta.faces.passthrough"
+    xmlns:c="jakarta.tags.core"
+    xmlns:jsf="jakarta.faces">
+
+    <!--@elvariable id="dataSource" type="ai.eldoc.model.Workflow"-->
+
+    <p:importConstants type="ai.eldoc.model.reco.RecoFileMeta" var="RecoFileMeta"/>
+    <p:importConstants type="ai.eldoc.bpm.BpmConstants" />
+    <p:importConstants type="ai.eldoc.constants.Pages" />
+
+    <div class="grid">
+        <div class="col-12">
+            <div class="card card-page-header">
+                <h1>#{labels['general.workflow']}: #{workflowController.workflowName}
+                    <h:outputText value="#{workflowController.currentWF.state}" converter="workflowStateConverter" title="#{labels['general.workflow.state']}" class="status-badge">
+                        <f:attribute name="workflow" value="#{workflowController.currentWF}"/>
+                    </h:outputText>
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid no-print">
+        <div class="col-12">
+            <p:toolbar id="topBar">
+                <f:facet name="left">
+
+                    <p:button id="btnReload" value="#{labels['general.btn.reload']}" title="#{labels['general.btn.reload']}"
+                              outcome="#{Pages.PAGE_WORKFLOW}" icon="fa-solid fa-fw fa-arrows-rotate" class="p-button-primary p-button-outlined">
+                        <f:param name="id" value="#{param.id}" />
+                        <f:param name="v" value="#{param.v}" rendered="#{not empty param.v}" />
+                    </p:button>
+
+                    <p:commandButton id="btnSave" value="#{labels['general.btn.save']}" title="#{labels['general.btn.save']}"
+                                     action="#{recoDocController.btnSaveEdit}" process="@form" update="@form"
+                                     icon="fa-regular fa-fw fa-floppy-disk" class="p-button-primary p-button-outlined"
+                                     disabled="#{!recoDocController.lockedByCurrentUser}"
+                                     rendered="#{recoDocController.btnSaveRendered}">
+                        <f:param name="id" value="#{param.id}" />
+                    </p:commandButton>
+
+                    <span class="toolbar-separator">
+                        <span class="fa-solid fa-ellipsis-vertical" />
+                    </span>
+
+                    <!-- Simply sends recognition document to rework by Recognition Bot -->
+                    <p:commandButton id="btnToWrkAgainRecoVld" value="#{labels['ccBtn.inWorkAgain.value']}" title="#{labels['ccBtn.inWorkAgain.title']}"
+                                     action="#{recoDocController.btnToWorkAgain}" process="@this" update="@this" transient="true"
+                                     disabled="#{!recoDocController.lockedByCurrentUser}"
+                                     rendered="#{recoDocController.btnToWrkAgainRecoValidationRendered}" icon="fa-solid fa-fw fa-retweet" class="p-button-primary p-button-outlined">
+                        <f:param name="id" value="#{param.id}" />
+                    </p:commandButton>
+
+                    <p:commandButton id="btnCancel" value="#{labels['idp.btn.cancel']}" title="#{labels['idp.btn.cancel.title']}"
+                                     action="#{recoDocController.btnCancel}" process="@this" update="@this" immediate="true"
+                                     disabled="#{!recoDocController.lockedByCurrentUser}"
+                                     rendered="#{recoDocController.btnCancelRendered}"
+                                     icon="fa-solid fa-fw fa-ban" class="p-button-warning"
+                                     onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['idp.btn.cancel.title'])}'))
+                                                 return false;" />
+
+                    <!-- Validation after Recognition -->
+                    <p:commandButton id="btnValidateReco" value="#{labels['idp.btn.validateRecognition']}" title="#{labels['idp.btn.validateRecognition.title']}"
+                                     action="#{recoDocController.btnValidateReco}" process="@form" update="@form"
+                                     disabled="#{!recoDocController.lockedByCurrentUser}"
+                                     rendered="#{recoDocController.btnValidateRecoRendered}" icon="fa-solid fa-fw fa-check">
+                        <f:param name="id" value="#{param.id}" />
+                    </p:commandButton>
+
+                    <!-- Validation After Conversion -->
+                    <p:commandButton id="btnValidateConv" value="#{labels['idp.btn.validateConversion']}" title="#{labels['idp.btn.validateConversion.title']}"
+                                     action="#{recoDocController.btnValidateConv}" process="@form" update="@form"
+                                     disabled="#{!recoDocController.lockedByCurrentUser}"
+                                     rendered="#{recoDocController.btnValidateConvRendered}" icon="fa-solid fa-fw fa-check">
+                        <f:param name="id" value="#{param.id}" />
+                    </p:commandButton>
+
+                    <ui:fragment rendered="#{!recoDocController.lockedByCurrentUser and not empty recoDocController.lockedBySystemId}" >
+                        <p:outputLabel id="lockName" value="#{labels['pDocument.reco.lockedBy']}" class="mr-1" />
+                        <cc:nameItemText value="#{recoDocController.lockedBySystemId}" />
+                    </ui:fragment>
+
+                </f:facet>
+                <f:facet name="right">
+
+                    <p:commandButton id="btnExportAsPdf" action="#{recoDocController.btnExportAsPdf}" title="#{labels['pDocument.reco.btn.downloadAsPdf']}"
+                                     process="@this" update="@this" oncomplete="doExportDownload(args.exportUrl);"
+                                     icon="fa-regular fa-fw fa-file-pdf" class="p-button-primary p-button-outlined" />
+
+                    <p:commandButton id="btnPrev" value="#{labels['general.btn.prevDoc']}" title="#{labels['general.btn.prevDoc.title']}" action="#{workflowController.btnPrevDoc()}"
+                                     process="@this" update="@none" immediate="true" rendered="#{not empty param.v}"
+                                     icon="fa-solid fa-fw fa-circle-chevron-left" class="p-button-primary p-button-outlined">
+                        <f:param name="id" value="#{param.id}" />
+                        <f:param name="v" value="#{param.v}" />
+                    </p:commandButton>
+
+                    <p:commandButton id="btnNext" value="#{labels['general.btn.nextDoc']}" title="#{labels['general.btn.nextDoc.title']}" action="#{workflowController.btnNextDoc()}"
+                                     process="@this" update="@none" immediate="true" rendered="#{not empty param.v}"
+                                     icon="fa-solid fa-fw fa-circle-chevron-right" iconPos="right" class="p-button-primary p-button-outlined">
+                        <f:param name="id" value="#{param.id}" />
+                        <f:param name="v" value="#{param.v}" />
+                    </p:commandButton>
+
+                </f:facet>
+            </p:toolbar>
+            <p:sticky target="topBar" />
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="col-12">
+            <p:growl globalOnly="false" life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                <p:autoUpdate />
+            </p:growl>
+            <p:messages globalOnly="false" closable="true" redisplay="false">
+                <p:autoUpdate />
+            </p:messages>
+        </div>
+    </div>
+
+    <!-- Document area -->
+    <div class="grid wfForm">
+
+        <!-- Column 1: standard and custom fields, references -->
+        <div class="col-12 xl:col-5">
+            <div class="grid">
+
+                <!-- Document fields area -->
+                <div class="col-12">
+                    <p:panel id="docFields" header="#{labels['docLayout1.docFields']}" class="docFields">
+                        <div class="grid">
+                            <ui:include src="/WEB-INF/includes/fieldsStandard.xhtml">
+                                <ui:param name="fieldsDef" value="#{dataSource.sfDef}" />
+                                <ui:param name="dataSource" value="#{dataSource}" />
+                                <ui:param name="modeRead" value="#{modeRead}" />
+                                <ui:param name="modeEdit" value="#{modeEdit}" />
+                            </ui:include>
+                            <ui:include src="/WEB-INF/includes/fieldsCustom.xhtml">
+                                <ui:param name="fieldsDef" value="#{dataSource.cfDef}" />
+                                <ui:param name="dataSource" value="#{dataSource.cfData}" />
+                                <ui:param name="modeRead" value="#{!recoDocController.recoDataEditable}" />
+                                <ui:param name="modeEdit" value="#{recoDocController.recoDataEditable}" />
+                            </ui:include>
+
+
+                            <div class="col-12 print-w30">
+                                <h3 class="area-title" style="margin-top: 10px;">#{labels['recoData.title']}</h3>
+                            </div>
+
+                            <!-- Recognition data area (shown only when document passed Draft state) -->
+                            <ui:fragment rendered="#{dataSource.state > BpmConstants.STATE_ID_DRAFT}">
+
+                                <div class="col-12 p-fluid print-w70">
+                                    <div class="p-inputgroup">
+                                        <!-- Custom styles are required for handling long names in selectOneMenu -->
+                                        <p:selectOneMenu id="rsltDcsSI" value="#{recoDocController.recoDataIdx}" label="Document" style="max-width: calc(100% - 91px);">
+                                            <f:selectItems value="#{recoDocController.recoDataListSI}" />
+                                            <p:ajax event="change" process="@this" update="docFields pagePaginator frdData" />
+                                            <f:param name="debug" value="#{param.debug}" />
+                                        </p:selectOneMenu>
+                                        <p:commandButton id="btnRcDtEdt" action="#{recoDocController.btnRecoDataEdit}" title="#{labels['idp.btn.recoDataEdit.title']}"
+                                                         process="@this" update="docFields"
+                                                         disabled="#{recoDocController.btnRecoDataEdtDisabled}" icon="fa-solid fa-fw fa-pencil" class="p-button-primary p-button-outlined" style="width:65px;">
+                                            <p:resetInput target="strtPg endPg rfSI" />
+                                        </p:commandButton>
+                                        <p:commandButton id="btnRcDtDel" action="#{recoDocController.btnRecoDataDelete}" title="#{labels['idp.btn.recoDataDel.title']}"
+                                                         process="@this" update="docFields previewArea frdData"
+                                                         disabled="#{recoDocController.btnRecoDataDelDisabled}" icon="fa-solid fa-fw fa-trash" class="p-button-primary p-button-outlined" style="width:65px;"
+                                                         onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['idp.btn.recoDataDel.title'])}'))
+                                                                     return false;">
+                                            <p:resetInput target="strtPg endPg rfSI" />
+                                        </p:commandButton>
+                                        <p:commandButton id="btnRcDtAdd" action="#{recoDocController.btnRecoDataAdd}" title="#{labels['idp.btn.recoDataAdd.title']}"
+                                                         process="@this" update="docFields previewArea frdData"
+                                                         disabled="#{recoDocController.btnRecoDataAddDisabled}" icon="fa-solid fa-fw fa-plus" class="p-button-primary p-button-outlined" style="width:65px;">
+                                            <p:resetInput target="strtPg endPg rfSI" />
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+
+                                <ui:fragment rendered="#{not empty recoDocController.recoData}">
+
+                                    <div jsf:id="autoGeneratedFormNote" class="col-12" jsf:rendered="#{recoDocController.autoGeneratedForm}">
+                                        <div class="info hint-box">
+                                            <span>#{labels['pDocument.reco.autoGeneratedFormHeader']}</span>
+                                            <br/>
+                                            <span>#{labels['pDocument.reco.autoGeneratedFormHint']}</span>
+                                            <ui:fragment rendered="#{userContext.adminDocAny}">
+                                                <strong><h:link value="#{labels['pDocument.reco.autoGeneratedFormRecoRules']}" outcome="#{Pages.PAGE_ADMIN_RECOFORMS}" target="_blank" /></strong>
+                                            </ui:fragment>
+                                            <h:outputText value="#{labels['pDocument.reco.autoGeneratedFormRecoRules']}" rendered="#{!userContext.adminDocAny}" style="margin-left: 5px;"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 lg:col-4">
+                                        <p:outputLabel value="#{labels['pDocument.reco.pageRange']}" />
+                                    </div>
+                                    <div class="col-12 lg:col-8 p-fluid">
+                                        <div class="p-inputgroup">
+                                            <p:outputLabel id="strtPgLbl" for="strtPg" value="#{labels['pDocument.reco.pageRange.start']}" class="p-inputgroup-addon" style="width: 100px;" />
+                                            <p:selectOneMenu id="strtPg" value="#{recoDocController.recoData.pageIdxStart}"
+                                                             converter="recoDataStartEndPageConverter" validator="#{recoDocController.recoDataPagesIdxValidator}"
+                                                             disabled="#{recoDocController.recoDataPageSIDisabled}">
+                                                <f:selectItems value="#{recoDocController.recoDataStartEndPageIdxSI}" />
+                                                <f:attribute name="input_endPage" value="#{input_endPage}" />
+                                            </p:selectOneMenu>
+                                            <p:outputLabel id="endPgLbl" for="endPg" value="#{labels['pDocument.reco.pageRange.end']}" class="p-inputgroup-addon" style="width: 100px;" />
+                                            <p:selectOneMenu id="endPg" value="#{recoDocController.recoData.pageIdxEnd}" binding="#{input_endPage}"
+                                                             converter="recoDataStartEndPageConverter"
+                                                             disabled="#{recoDocController.recoDataPageSIDisabled}">
+                                                <f:selectItems value="#{recoDocController.recoDataStartEndPageIdxSI}" />
+                                            </p:selectOneMenu>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 lg:col-4">
+                                        <p:outputLabel value="#{labels['pRecoForm.header']}" />
+                                    </div>
+                                    <div class="col-12 lg:col-8 p-fluid">
+                                        <div class="p-inputgroup">
+                                            <!-- Custom styles are required for handling long names in selectOneMenu -->
+                                            <p:selectOneMenu id="rfSI" value="#{recoDocController.recoForm.id}" label="#{labels['pRecoForm.header']}"
+                                                             required="true" disabled="#{recoDocController.recoDataFormSIDisabled}"
+                                                             style="max-width: calc(100% - 46px);" widgetVar="rfSiWV" >
+                                                <f:selectItems value="#{recoFormController.getRecoFormSI(recoDocController.recoForm.id, recoDocController.recoFormName)}" />
+                                                <p:ajax event="change" process="docFields" update="docFields frdData" listener="#{recoDocController.recoFormChangeListener}" />
+                                            </p:selectOneMenu>
+                                            <p:outputLabel value="#{recoDocController.recoFormResult.recoFormConfidence}" class="p-inputgroup-addon"
+                                                           style="min-width: 46px;" >
+                                                <f:convertNumber pattern="#0" />
+                                            </p:outputLabel>
+                                        </div>
+                                    </div>
+
+                                    <p:dataList id="fieldsPaginator" value="#{recoDocController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDocController.pageIndex}" class="col-12"
+                                                type="none" paginator="#{not recoDocController.showAllFields}" rows="1" paginatorPosition="top" lazy="true">
+
+                                        <p:ajax event="page" listener="#{recoDocController.pageIndexEvent}" process="fieldsPaginator" update="fieldsPaginator :f1:frdData :f1:pageTextPreviewArea :f1:pagePaginator"/>
+
+                                        <f:facet name="header">
+                                            <div class="no-print flex align-items-center justify-content-center pr-6">
+                                                <span class="text-base font-normal text-600">#{labels['pDocument.reco.fields.showCurrentPage']}</span>
+                                                <p:toggleSwitch id="previewMode" value="#{recoDocController.showAllFields}" class="mx-2" disabled="#{not recoDocController.perPageFieldsViewAvailable}">
+                                                    <p:ajax process="@this :f1:docFields" update=":f1:fieldsPaginator :f1:frdData" />
+                                                </p:toggleSwitch>
+                                                <span class="text-base font-normal text-600">#{labels['pDocument.reco.fields.showAll']}</span>
+                                            </div>
+                                        </f:facet>
+
+                                        <div class="grid">
+                                            <f:subview id="recoData">
+                                                <ui:include src="/WEB-INF/includes/fieldsCustom.xhtml">
+                                                    <ui:param name="dataSource" value="#{recoDocController.recoData.cfData}" />
+                                                    <ui:param name="fieldsDef" value="#{recoDocController.recoData.cfDef}" />
+                                                    <ui:param name="cfAwareModel" value="#{recoDocController.recoData}" />
+                                                    <ui:param name="modeRead" value="#{!recoDocController.recoDataEditable}" />
+                                                    <ui:param name="modeEdit" value="#{recoDocController.recoDataEditable}" />
+                                                </ui:include>
+                                            </f:subview>
+                                        </div>
+                                    </p:dataList>
+
+                                </ui:fragment>
+
+
+                                <!-- Text-only preview area -->
+                                <div jsf:id="pageTextPreviewArea" class="col-12">
+                                    <ui:fragment rendered="#{empty recoDocController.recoDataList
+                                                             and not (dataSource.state eq BpmConstants.STATE_ID_EXEC and dataSource.step eq BpmConstants.RECO_PROCESS_STEP_RECOBOT)}">
+                                        <div class="info hint-box">
+                                            <span>#{labels['pDocument.reco.textOnlyPreviewHeader']}</span>
+                                            <br/>
+                                            <span>#{labels['pDocument.reco.textOnlyPreviewHint']}</span>
+                                            <ui:fragment rendered="#{userContext.adminDocAny}">
+                                                <strong><h:link value="#{labels['pDocument.reco.textOnlyPreviewRecoRules']}" outcome="#{Pages.PAGE_ADMIN_RECOFORMS}" target="_blank" /></strong>
+                                            </ui:fragment>
+                                            <h:outputText value="#{labels['pDocument.reco.textOnlyPreviewRecoRules']}" rendered="#{!userContext.adminDocAny}" style="margin-left: 5px;"/>
+                                        </div>
+                                        <div id="pageTextPreview" data-id="#{workflowController.id}" data-page-idx="#{recoDocController.pageIndex}"
+                                             data-scroll-tooltip="#{labels['pDocument.reco.scrollTooltip']}" data-notext-msg="#{labels['pDocument.reco.noTextMsg']}"
+                                             class="text-preview">
+                                            <div class="loading-area">
+                                                <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
+                                                <h:outputLabel value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+
+                            </ui:fragment>
+
+
+                            <!-- Content shown below only when document still on the Draft state -->
+                            <ui:fragment rendered="#{dataSource.state eq BpmConstants.STATE_ID_DRAFT}">
+                                <div class="col-12">
+                                    <div jsf:rendered="#{dataSource.status eq BpmConstants.PROCESS_STATUS_NORMAL}" class="info hint-box">
+                                        <span>#{labels['pDocument.reco.preprocessingPendingMsg']}</span>
+                                    </div>
+                                    <div jsf:rendered="#{dataSource.status eq BpmConstants.PROCESS_STATUS_TERMINATED}" class="warning hint-box">
+                                        <span>#{labels['pDocument.reco.preprocessingCancelledMsg']}</span>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+
+                            <!-- Content shown below only when document still in processing on the Execution state and RecoForm auto-generation is enabled -->
+                            <ui:fragment rendered="#{dataSource.state eq BpmConstants.STATE_ID_EXEC and dataSource.step eq BpmConstants.RECO_PROCESS_STEP_RECOBOT}">
+                                <div class="col-12">
+                                    <div class="info hint-box">
+                                        <span>#{labels['pDocument.reco.processingPendingMsg']}</span>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+
+                        </div>
+                    </p:panel>
+                </div>
+
+
+                <!-- Referenced documents area -->
+                <div jsf:id="refDocsOuter" class="col-12">
+                    <p:panel id="refDocs" header="#{labels['general.docs.refDocs']}  &amp; #{labels['general.tags']}" style="overflow: auto; max-height: 600px;">
+                        <ui:include src="/WEB-INF/includes/workflow/refWFList.xhtml" rendered="#{not empty workflowController.getRefDocsUI(dataSource)}">
+                            <ui:param name="value" value="#{workflowController.getRefDocsUI(dataSource)}" />
+                        </ui:include>
+
+                        <ui:fragment rendered="#{not empty workflowController.getRefDocsUI(dataSource) and not empty workflowController.getReferencedByUI(dataSource)}">
+                            <div class="divider" style="margin: 10px 0;"></div>
+                        </ui:fragment>
+
+                        <ui:fragment rendered="#{not empty workflowController.getReferencedByUI(dataSource)}">
+                            <div style="margin-bottom: 5px; font-weight: bold;">
+                                <h:outputText value="#{labels['general.docs.referencedBy']}"/>
+                            </div>
+                            <ui:include src="/WEB-INF/includes/workflow/refWFList.xhtml">
+                                <ui:param name="value" value="#{workflowController.getReferencedByUI(dataSource)}" />
+                            </ui:include>
+                        </ui:fragment>
+
+                        <div class="col-12 p-fluid">
+                            <p:autoComplete id="tags" value="#{dataSource.tags}" multiple="true" selectLimit="10" unique="true" dynamic="true" forceSelection="true"
+                                            completeMethod="#{workflowController.completeTags}" cache="true" dropdown="true" maxResults="15" moreText="..."
+                                            label="#{labels['general.tags']}" disabled="#{!recoDocController.recoDataEditable}"
+                                            placeholder="#{empty dataSource.tags ? labels['general.tags'] : ''}" />
+                        </div>
+                    </p:panel>
+                </div>
+
+
+                <div jsf:id="idpSettingsOuter" class="col-12">
+                    <p:panel id="idpSettings" header="#{labels['pDocument.reco.processingParams']}">
+                        <div class="grid grid-nogutter">
+
+                            <ui:fragment rendered="#{recoQueueController.classificationAvailable}">
+                                <div class="col-7">
+                                    <p:outputLabel value="${labels['recoQueue.autoClassification']}" for="autoClassification" title="${labels['recoQueue.autoClassification.desc']}"/>
+                                </div>
+                                <div class="col-5">
+                                    <p:toggleSwitch id="autoClassification" value="#{recoDocController.sourceFileMeta.properties[RecoFileMeta.IDP_AUTO_CLASSIFICATION]}" converter="jakarta.faces.Boolean" disabled="true" />
+                                </div>
+                            </ui:fragment>
+
+                            <div class="col-7">
+                                <p:outputLabel value="${labels['recoQueue.forcePrProp']}" for="frcPrProc" title="${labels['recoQueue.forcePrProp.title']}"/>
+                            </div>
+                            <div class="col-5">
+                                <p:toggleSwitch  id="frcPrProc" value="#{recoDocController.sourceFileMeta.forcePreprop}" converter="jakarta.faces.Boolean" disabled="true" />
+                            </div>
+
+                            <div class="col-7">
+                                <p:outputLabel value="${labels['recoQueue.langs']}" title="${labels['recoQueue.langs.title']}" />
+
+                            </div>
+                            <div class="col-5 p-fluid">
+                                <p:autoComplete id="langs" value="#{ocrLangController.normilizeLangs(recoDocController.sourceFileMeta.langs)}" multiple="true" selectLimit="3" readonly="true" disabled="true"
+                                                var="ocrLang" itemValue="#{ocrLang}" itemLabel="#{ocrLangController.getOcrLangUiLabelByCode(ocrLang)}" label="${labels['recoQueue.langs']}" maxResults="15">
+                                </p:autoComplete>
+                            </div>
+
+                        </div>
+                    </p:panel>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Column 2: preview -->
+        <div class="col-12 xl:col-7">
+            <p:panel id="previewArea" styleClass="preview-panel" header="#{labels['general.docs.attachments']}">
+
+                <div jsf:id="fileZone">
+                    <ui:include src="/WEB-INF/includes/workflow/filesList.xhtml">
+                        <ui:param name="dataSource" value="#{dataSource}" />
+                        <ui:param name="dbFileList" value="#{recoDocController.files}" />
+                        <ui:param name="allowDeleteMethodBean" value="#{workflowController}" />
+                        <ui:param name="allowDeleteMethodName" value="fileManagerAllowDelete" />
+                        <ui:param name="allowDownload" value="#{workflowController.fileManagerAllowDownload()}" />
+                        <ui:param name="allowResetMethodBean" value="#{workflowController}" />
+                        <ui:param name="allowResetMethodName" value="fileManagerAllowReset" />
+                    </ui:include>
+                </div>
+
+                <div jsf:id="previewImageArea">
+
+                    <p:dataList id="pagePaginator" value="#{recoDocController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDocController.pageIndex}"
+                                type="none" paginator="true" rows="1" paginatorPosition="top" widgetVar="pagePaginatorWV" lazy="true">
+
+                        <f:facet name="header">
+                            <div class="no-print flex align-items-center justify-content-center pr-6">
+                                <span class="text-base font-normal text-600">#{labels['pDocument.reco.preview.source']}</span>
+                                <p:toggleSwitch id="previewMode" value="#{recoDocController.previewPreprocessed}" class="mx-2" widgetVar="PreviewFileModeWV">
+                                    <p:ajax process="@this :f1:docFields" update="pagePaginator :f1:frdData :f1:docFields" />
+                                </p:toggleSwitch>
+                                <span class="text-base font-normal text-600">#{labels['pDocument.reco.preview.preprocessed']}</span>
+                            </div>
+                        </f:facet>
+
+                        <p:ajax event="page" listener="#{recoDocController.pageIndexEvent}" process=":f1:docFields" update=":f1:docFields :f1:frdData :f1:pageTextPreviewArea"/>
+
+                        <p:inputText id="coords" value="#{recoDocController.recoPageResult}" widgetVar="coordsWV"
+                                     rendered="#{not empty recoDocController.recoFormResult.pages and not recoDocController.isRecoFormAltered()}" readonly="true">
+                            <f:converter converterId="recoFormPageResultConverter"/>
+                            <f:attribute name="type" value="hidden" />
+                        </p:inputText>
+
+                        <div jsf:id="ldSpnr" class="loading-area">
+                            <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
+                            <h:outputLabel value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
+                        </div>
+
+                        <div id="pageViewContainer" class="preview-canvas"
+                             imgUrl="/api/preview?id=#{recoDocController.pageImageUrlPreviewId}&amp;p=#{pageIdx}"
+                             spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}"
+                             data-doc-id="#{workflowController.id}"
+                             data-data-id="#{recoDocController.recoData.id}"
+                             data-scroll-tooltip="#{labels['pDocument.reco.scrollTooltip']}">
+                        </div>
+
+                    </p:dataList>
+
+                </div>
+
+            </p:panel>
+        </div>
+
+
+        <!-- Document description area -->
+        <div jsf:rendered="#{dataSource.sfDef.description.enabled}" class="col-12">
+            <p:panel id="desc" header="#{dataSource.sfDef.description.name[localeContext.langSystemCode]}" class="descr-panel">
+
+                <!-- Standard mode -->
+                <c:if test="#{param.print ne 'true' and !dataSource.sfDef.description.useRTeditor}">
+                    <p:inputTextarea id="ed1" value="#{dataSource.note}" style="width: 100%; height: 100px; max-height: 800px; overflow: auto;"
+                                     autoResize="true" label="#{dataSource.sfDef.description.name[localeContext.langSystemCode]}"
+                                     readonly="#{modeRead}" required="#{dataSource.sfDef.description.required}">
+                        <f:validator validatorId="stringFieldSizeBytesValidator" />
+                        <f:attribute name="maxFieldSizeBytes" value="#{1024 * 1024 * 8}" />
+                    </p:inputTextarea>
+                </c:if>
+
+                <c:if test="#{param.print ne 'true' and dataSource.sfDef.description.useRTeditor}">
+                    <p:textEditor id="ed2" value="#{dataSource.note}" readonly="#{modeRead}" height="0"
+                                  allowImages="true" allowBlocks="true" allowFormatting="true" allowLinks="true" allowStyles="true"
+                                  required="#{dataSource.sfDef.description.required}">
+                        <f:attribute name="label" value="#{dataSource.sfDef.description.name[localeContext.langSystemCode]}"/>
+                        <f:validator validatorId="stringFieldSizeBytesValidator" />
+                        <f:attribute name="maxFieldSizeBytes" value="#{1024 * 1024 * 8}" />
+
+                        <f:facet name="toolbar">
+                            <span class="ql-formats">
+                                <select class="ql-font" />
+                                <select class="ql-size" />
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-bold" />
+                                <button class="ql-italic" />
+                                <button class="ql-underline" />
+                                <button class="ql-strike" />
+                            </span>
+                            <span class="ql-formats">
+                                <select class="ql-color" />
+                                <select class="ql-background" />
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-script" value="sub" />
+                                <button class="ql-script" value="super" />
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-header" value="1" />
+                                <button class="ql-header" value="2" />
+                                <button class="ql-blockquote" />
+                                <button class="ql-code-block" />
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered" />
+                                <button class="ql-list" value="bullet" />
+                                <button class="ql-indent" value="-1" />
+                                <button class="ql-indent" value="+1" />
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-direction" value="rtl" />
+                                <select class="ql-align" />
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link" />
+                                <button class="ql-image" />
+                                <!-- <button class="ql-video" /> - disabled as it inserts iframes and gives error with eldoc inside the iframe itself -->
+                                <!-- <button class="ql-formula" /> - requires additional module which is not available at this moment -->
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-clean" />
+                            </span>
+                        </f:facet>
+
+                    </p:textEditor>
+                </c:if>
+
+                <!-- Print mode -->
+                <c:if test="#{param.print eq 'true'}">
+                    <h:outputText value="#{dataSource.note}" escape="false" />
+                </c:if>
+
+            </p:panel>
+        </div>
+
+
+        <!-- Document processes area -->
+        <div class="col-12">
+            <p:panel header="#{labels['general.workflow.states']}" class="assigned-processes">
+
+                <!-- Process Area Approve -->
+                <f:subview id="apprvArea" rendered="#{workflowController.hasState(BpmConstants.STATE_ID_APPROVE)}">
+                    <div class="grid">
+                        <div class="col-12 md:col-1 stateName">
+                            <p:outputLabel value="#{labels['docLayout1.stateApprove']}" />
+                        </div>
+                        <div jsf:id="psbInner" class="col-12 md:col-11 stateContent">
+                            <cc:nameList id="nl" value="#{workflowController.processStates[BpmConstants.STATE_ID_APPROVE].namesAllwGroupMembers}" />
+                            <ui:include src="/WEB-INF/includes/workflow/stageBuilder.xhtml">
+                                <ui:param name="procDS" value="#{dataSource}" />
+                                <ui:param name="stateId" value="#{BpmConstants.STATE_ID_APPROVE}" />
+                                <ui:param name="refreshIdBase" value=":f1:apprvArea" />
+                                <ui:param name="dialogTitle" value="#{labels['docLayout1.stateApprove']}" />
+                                <ui:param name="editable" value="#{workflowController.allowApproveStateUsersAdjustment}" />
+                            </ui:include>
+                        </div>
+                        <h:inputHidden id="apprVldt" validator="#{workflowController.validatorStateApprove}" />
+                    </div>
+                </f:subview>
+
+                <!-- Process Area Sign -->
+                <f:subview id="signArea" rendered="#{workflowController.hasState(BpmConstants.STATE_ID_SIGN)}">
+                    <div class="grid">
+                        <div class="col-12 md:col-1 stateName">
+                            <p:outputLabel value="#{labels['docLayout1.stateSign']}" />
+                        </div>
+                        <div jsf:id="psbInner" class="col-12 md:col-11 stateContent">
+                            <cc:nameList id="nl" value="#{workflowController.processStates[BpmConstants.STATE_ID_SIGN].namesAllwGroupMembers}" />
+                            <ui:include src="/WEB-INF/includes/workflow/stageBuilder.xhtml">
+                                <ui:param name="procDS" value="#{dataSource}" />
+                                <ui:param name="stateId" value="#{BpmConstants.STATE_ID_SIGN}" />
+                                <ui:param name="refreshIdBase" value=":f1:signArea" />
+                                <ui:param name="dialogTitle" value="#{labels['docLayout1.stateSign']}" />
+                                <ui:param name="editable" value="#{workflowController.allowSignStateUsersAdjustment}" />
+                            </ui:include>
+                        </div>
+                        <h:inputHidden id="signVldt" validator="#{workflowController.validatorStateSign}" />
+                    </div>
+                </f:subview>
+
+                <!-- Process Area Execution -->
+                <f:subview id="execArea" rendered="#{workflowController.hasState(BpmConstants.STATE_ID_EXEC)}">
+                    <div class="grid">
+                        <f:event type="preRenderComponent" listener="#{execBuilderBean.enableExecBuilderDialog}" />
+                        <div class="col-12 md:col-1 stateName">
+                            <p:outputLabel value="#{labels['docLayout1.stateExec']}" />
+                        </div>
+                        <div jsf:id="psbInner" class="col-12 md:col-11 stateContent">
+                            <!--<cc:nameList id="nl" value="{workflowController.processStates[BpmConstants.STATE_ID_EXEC].namesAllwGroupMembers}" />-->
+                            <ui:include src="/WEB-INF/includes/workflow/execBuilder.xhtml">
+                                <ui:param name="docRespExecList" value="#{workflowController.resolutionList}" />
+                            </ui:include>
+                        </div>
+                        <h:inputHidden id="execVldt" validator="#{workflowController.validatorStateExec}" />
+                    </div>
+                </f:subview>
+
+            </p:panel>
+        </div>
+
+    </div>
+
+
+    <!-- Document responses list area -->
+    <div class="grid docRespList">
+        <div class="col-12">
+            <!-- do not change id: 'respList' as it is used in JS -->
+            <p:tabView id="respList" class="respList" dynamic="true" cache="false" activeIndex="#{workflowController.activeTabIndex}">
+
+                <!--<p:tab id="proc_#{BpmConstants.STATE_ID_DRAFT}" title="#{labels['pDocument.tabDraft']}" rendered="#{workflowController.tabsVisible.contains(BpmConstants.STATE_ID_DRAFT)}" />-->
+
+                <p:tab id="proc_#{BpmConstants.STATE_ID_APPROVE}" title="#{labels['pDocument.tabApproving']}" rendered="#{workflowController.tabsVisible.contains(BpmConstants.STATE_ID_APPROVE)}" >
+                    <f:subview id="proc_#{BpmConstants.STATE_ID_APPROVE}_area">
+                        <ui:include src="/WEB-INF/includes/workflow/respList.xhtml">
+                            <ui:param name="state" value="#{BpmConstants.STATE_ID_APPROVE}" />
+                        </ui:include>
+                    </f:subview>
+                </p:tab>
+
+                <p:tab id="proc_#{BpmConstants.STATE_ID_SIGN}" title="#{labels['pDocument.tabSigning']}" rendered="#{workflowController.tabsVisible.contains(BpmConstants.STATE_ID_SIGN)}">
+                    <f:subview id="proc_#{BpmConstants.STATE_ID_SIGN}_area">
+                        <ui:include src="/WEB-INF/includes/workflow/respList.xhtml">
+                            <ui:param name="state" value="#{BpmConstants.STATE_ID_SIGN}" />
+                        </ui:include>
+                    </f:subview>
+                </p:tab>
+
+                <p:tab id="proc_#{BpmConstants.STATE_ID_EXEC}" title="#{labels['pDocument.tabExecution']}" rendered="#{workflowController.tabsVisible.contains(BpmConstants.STATE_ID_EXEC)}">
+                    <f:subview id="proc_#{BpmConstants.STATE_ID_EXEC}_area">
+                        <ui:include src="/WEB-INF/includes/workflow/respList.xhtml">
+                            <ui:param name="state" value="#{BpmConstants.STATE_ID_EXEC}" />
+                        </ui:include>
+                    </f:subview>
+                </p:tab>
+
+                <p:tab id="proc_mon" title="#{labels['pDocument.tabMonitoring']}" rendered="#{workflowController.tabsVisible.contains(workflowController.tabMonitoring)}">
+                    <f:subview id="proc_mon_area">
+                        <ui:include src="/WEB-INF/includes/workflow/respMonitoring.xhtml" />
+                    </f:subview>
+                </p:tab>
+
+                <p:tab id="docLogs" title="#{labels['pDocument.tabLogs']}">
+                    <f:subview id="docLogsView">
+                        <ui:include src="/WEB-INF/includes/ccLogs.xhtml">
+                            <ui:param name="wfId" value="#{workflowController.currentWF.getId()}"/>
+                        </ui:include>
+                    </f:subview>
+                </p:tab>
+
+            </p:tabView>
+        </div>
+    </div>
+
+
+    <!-- Document response area -->
+    <f:subview id="dr">
+        <div class="grid docResponse">
+            <div class="col-12">
+                <p:panel id="drForm" header="#{labels['general.docs.actionsDoc']}">
+                    <div class="grid">
+
+                        <ui:include src="/WEB-INF/includes/workflow/controls.xhtml">
+                            <ui:param name="dataSource" value="#{workflowController.currentWFTask}" />
+                            <!--We may show additional buttons only when RecoWorkflow is in Repo or in the Archive-->
+                            <ui:param name="showRight" value="#{workflowController.state eq BpmConstants.STATE_ID_RPSTR or workflowController.state eq BpmConstants.STATE_ID_ARCH}" />
+                            <ui:param name="showLeft" value="#{true}" />
+                        </ui:include>
+
+                    </div>
+                </p:panel>
+            </div>
+        </div>
+    </f:subview>
+
+
+    <!-- Document hidden fields area -->
+    <h:inputHidden id="frdData" value="#{recoDocController.frdData}">
+        <f:attribute name="readonly" value="true" />
+    </h:inputHidden>
+
+</ui:composition>

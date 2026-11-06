@@ -1,0 +1,211 @@
+/*!
+ *
+ *  * Copyright (C) 2022-2026 elDoc Limited
+ *  *
+ *  * This file is part of elDoc IDP OSS.
+ *  *
+ *  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+ *  * it under the terms of the GNU Affero General Public License as published
+ *  * by the Free Software Foundation, version 3.
+ *  *
+ *  * elDoc IDP OSS is distributed in the hope that it will be useful,
+ *  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+ *  * General Public License for more details.
+ *  *
+ *  * SPDX-License-Identifier: AGPL-3.0-only
+ *
+ */
+
+// elDoc GenAI Document Excellence
+// CSS Print Styles
+
+$print-text-color: #000;
+
+* {
+    font-size: 12px;
+}
+
+a {
+    color: $print-text-color;
+    text-decoration: none;
+}
+
+body.eldoc-theme {
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    color: $print-text-color;
+    margin: 0;
+    padding: 0;
+    background: none;
+    line-height: 1;
+    zoom: 85%;
+
+    a {
+        color: $print-text-color;
+        text-decoration: none;
+    }
+
+    // Elements that must not be printed
+    button,
+    .p-button,
+    .no-print,
+    .p-paginator,
+    .layout-wrapper .topbar,
+    .layout-wrapper form#menuform,
+    &.page-workflow .layout-footer,
+    .footer-text-left {
+        display: none;
+    }
+}
+
+button {
+    display: none;
+}
+
+.eldoc-theme {
+    .card.card-page-header {
+        h1 {
+            float: left;
+            padding: 0;
+            font-size: 16px;
+        }
+
+        .barCode {
+            float: right;
+            max-width: 40%;
+
+            img {
+                width: 100%;
+            }
+        }
+    }
+}
+
+// User link
+.userLink {
+    color: $print-text-color;
+
+    &.userLinkCard {
+        text-align: left;
+        display: inline-block;
+        margin: 0 3px 3px 0;
+        padding: 2px;
+        width: auto;
+        overflow: hidden;
+        border-radius: 4px;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        vertical-align: middle;
+        position: relative;
+
+        div.userFoto {
+            display: none;
+        }
+    }
+}
+// End of user link
+
+.eldoc-theme {
+    .p-panel {
+        .p-panel-titlebar,
+        .p-panel-content {
+            padding: 5px;
+        }
+    }
+
+    //
+    // Document form print widths
+    //
+    .wfForm .p-panel.docFields .p-panel-content .grid {
+        div.lg:col-4,
+        div.print-w30 {
+            width: 30%;
+        }
+
+        div.lg:col-8,
+        div.print-w70 {
+            width: 70%;
+        }
+
+        div[class^="col-"] input {
+            background-color: transparent;
+            border-width: 0;
+            padding: 0;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            box-shadow: none;
+        }
+    }
+
+    .p-texteditor-toolbar.ql-toolbar {
+        display: none;
+    }
+
+    table.file-download-table {
+        &,
+        td {
+            border: none;
+            padding: 3px;
+        }
+
+        td.typeColumn {
+            width: 30px;
+        }
+
+        td.btnColumn {
+            width: 0;
+        }
+    }
+
+    //
+    // Workflow page
+    //
+    &.page-workflow {
+        .assigned-processes,
+        .docResponse {
+            display: none;
+        }
+
+        .docRespList {
+            .user-pic {
+                display: none !important;
+            }
+
+            .resp-info {
+                a,
+                .muted {
+                    display: none;
+                }
+
+                .timeStamp {
+                    display: block !important;
+                }
+            }
+
+            .p-tabs-nav {
+                display: none;
+            }
+
+            .p-tabs-panel {
+                padding: 0;
+            }
+        }
+
+        .respList {
+            .iterSwitch,
+            .monitoringSwitch {
+                display: none;
+            }
+
+            .tabInfo {
+                display: block;
+                margin: 15px 0;
+            }
+        }
+    }
+}
+
+body.eldoc-theme .p-datatable tbody > tr > td {
+    padding: 3px;
+}

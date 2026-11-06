@@ -1,0 +1,94 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:jsf="jakarta.faces"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:composite="jakarta.faces.composite"
+    xmlns:p="primefaces">
+
+    <composite:interface>
+        <composite:attribute name="dataSource" type="java.lang.Object" required="true" shortDescription="Document data source" />
+        <composite:attribute name="fieldName" type="java.lang.String" required="true" shortDescription="Field name" />
+        <composite:attribute name="label" type="java.lang.String" required="false" shortDescription="Field UI label" />
+        <composite:attribute name="required" type="java.lang.Boolean" required="false" shortDescription="Required flag" />
+        <composite:attribute name="disabled" type="java.lang.Boolean" required="true" shortDescription="Disabled flag" />
+        <composite:attribute name="fieldIndex" type="java.lang.Integer" required="true" shortDescription="Field Index value" />
+        <composite:attribute name="fieldDef" type="ai.eldoc.model.CustomField" required="true" shortDescription="Custom Field definition" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <ui:fragment rendered="#{recoDocController.showAllFields or recoDocController.isFieldOnPage(cc.attrs.fieldDef)}">
+            <div class="col-12 lg:col-4">
+                <p:outputLabel id="l1" value="#{cc.attrs.label}" />
+            </div>
+
+            <div class="col-12 lg:col-8 p-fluid">
+
+                <div jsf:id="cfRcImg" class="p-inputgroup overflow-y-auto max-h-28rem border-round border-1 border-solid border-300">
+
+                    <!-- Hidden field with image ID, used for 'required' flag validation -->
+                    <p:inputText type="hidden" id="ih1" value="#{cc.attrs.dataSource[cc.attrs.fieldName]}" required="#{cc.attrs.required}" converter="stringTrimConverter" label="#{cc.attrs.label}"/>
+
+                    <p:inputText id="fieldCoords" value="#{recoDocController.selectedCFArea}" widgetVar="fieldCoordsWV" rendered="#{recoDocController.selectedCF eq cc.attrs.fieldDef}">
+                        <f:converter converterId="rectangleToStringConverter"/>
+                        <f:attribute name="type" value="hidden" />
+                        <p:ajax event="change" process="@this" update="cfRcImg" />
+                    </p:inputText>
+
+                    <p:graphicImage id="i1" value="/api/preview?id=#{recoDocController.getFieldImageUrlPreviewId(cc.attrs.fieldDef)}&amp;p=#{pageIdx}" class="w-full m-auto" style="max-width: calc(100% - 45px);"
+                                    rendered="#{not empty cc.attrs.dataSource[cc.attrs.fieldName] and recoDocController.selectedCF ne cc.attrs.fieldDef}"/>
+                    <p:graphicImage id="i1_preview" value="#{recoDocController.fieldImagePreviewOnEdit}" stream="false" class="w-full m-auto" style="max-width: calc(100% - 45px);" rendered="#{recoDocController.selectedCF eq cc.attrs.fieldDef}"/>
+
+                    <span class="p-inputgroup-addon py-2 px-1" style="width: 45px;" jsf:rendered="#{recoDocController.modeEdit}">
+                        <p:commandButton id="btnImgAdd" title="#{labels['general.btn.add']}" action="#{recoDocController.btnAddFieldImage(cc.attrs.fieldDef)}" process="@this" update="@([id$='cfRcImg'])"
+                                         oncomplete="recoFormEditor.selectFieldAndSetDefaultValueRect(#{cc.attrs.fieldDef.recoProp.pageIdx}, #{recoDocController.getFieldOnPageIdx(cc.attrs.fieldDef)})"
+                                         disabled="#{cc.attrs.fieldDef.recoProp.pageIdx ne recoDocController.pageIndex}"
+                                         rendered="#{empty cc.attrs.dataSource[cc.attrs.fieldName] and recoDocController.selectedCF ne cc.attrs.fieldDef}"
+                                         icon="fa-solid fa-fw fa-plus" class="p-button-secondary p-button-outlined" />
+                        <p:commandButton id="btnImgEdit" title="#{labels['general.btn.edit']}" action="#{recoDocController.btnEditField(cc.attrs.fieldDef)}" process="@this" update="@([id$='cfRcImg'])"
+                                         oncomplete="recoFormEditor.selectField(#{cc.attrs.fieldDef.recoProp.pageIdx}, #{recoDocController.getFieldOnPageIdx(cc.attrs.fieldDef)})"
+                                         disabled="#{cc.attrs.fieldDef.recoProp.pageIdx ne recoDocController.pageIndex}"
+                                         rendered="#{not empty cc.attrs.dataSource[cc.attrs.fieldName] and recoDocController.selectedCF ne cc.attrs.fieldDef}"
+                                         icon="fa-regular fa-fw fa-pen-to-square" class="p-button-secondary p-button-outlined" />
+                        <p:commandButton id="btnImgSave" title="#{labels['general.btn.save']}" process="@this" update="@([id$='cfRcImg'])" action="#{recoDocController.btnSaveFieldEdit}"
+                                         onsuccess="recoFormEditor.clearSelection();"
+                                         disabled="#{not recoDocController.modeEdit}" rendered="#{recoDocController.selectedCF eq cc.attrs.fieldDef}"
+                                         icon="fa-regular fa-fw fa-floppy-disk" class="p-button-secondary p-button-outlined" />
+                        <p:commandButton id="btnImgCancel" title="#{labels['general.btn.cancel']}" process="@this" update="@([id$='cfRcImg'])" action="#{recoDocController.btnCancelFieldEdit}"
+                                         onsuccess="recoFormEditor.clearSelection();"
+                                         disabled="#{not recoDocController.modeEdit}" rendered="#{recoDocController.selectedCF eq cc.attrs.fieldDef}"
+                                         icon="fa-solid fa-fw fa-ban" class="p-button-secondary p-button-outlined" />
+                        <p:commandButton id="btnImgDelete" action="#{recoDocController.btnRemoveImage(cc.attrs.fieldDef, -1, -1)}" process="@this" update="@([id$='cfRcImg'])"
+                                         disabled="#{empty cc.attrs.dataSource[cc.attrs.fieldName]}"
+                                         rendered="#{not empty cc.attrs.dataSource[cc.attrs.fieldName] and recoDocController.selectedCF ne cc.attrs.fieldDef}"
+                                         icon="fa-solid fa-fw fa-trash" class="p-button-secondary p-button-outlined"/>
+                    </span>
+                </div>
+
+            </div>
+        </ui:fragment>
+
+
+    </composite:implementation>
+
+</ui:component>

@@ -1,0 +1,87 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:jsf="jakarta.faces"
+    xmlns:cc="jakarta.faces.composite/elcomp">
+
+    <!--@elvariable id="docRespExecList" type="java.util.List<ai.eldoc.model.WorkflowTask>"-->
+
+    <div jsf:id="execBuilderInner">
+
+        <p:dataTable id="execListTable" value="#{docRespExecList}" var="respResolItem" class="table-sm table-executors-list" reflow="true" size="small">
+
+            <p:column headerText="#{labels['general.workflow.step']}" class="procStep" width="50">
+                <h:outputLabel value="#{respResolItem.step}" />
+            </p:column>
+
+            <p:column headerText="#{labels['execution.executor']}" class="resolTo">
+                <cc:nameItem id="ni1" value="#{respResolItem.taskTo}" />
+            </p:column>
+
+            <p:column headerText="${labels['execution.resolution']}" class="resol">
+                <cc:lvLabel value="#{respResolItem.taskKFId}" rendered="#{not empty respResolItem.taskKFId}" />
+            </p:column>
+
+            <p:column headerText="#{labels[execBuilderBean.dateDueLabel]}" class="resolDateDue">
+                <ui:fragment rendered="#{execBuilderBean.viewDocument}">
+                    <p:outputLabel value="#{respResolItem.dateDue}">
+                        <f:convertDateTime pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+                    </p:outputLabel>
+                </ui:fragment>
+                <ui:fragment rendered="#{execBuilderBean.viewProcess}">
+                    <p:outputLabel value="#{respResolItem.dateDue}" converter="numberToDurationConverter" />
+                </ui:fragment>
+            </p:column>
+
+            <p:column headerText="${labels['execution.comment']}" class="resolComment">
+                <p:outputLabel value="#{respResolItem.note}" />
+            </p:column>
+
+            <p:column headerText="${labels['execution.author']}" class="resolAuthor">
+                <cc:nameItem id="ni2" value="#{respResolItem.author}" />
+            </p:column>
+
+            <p:column headerText="${labels['general.actions']}" class="resolActions" style="width:90px;">
+                <div class="resolActions buttons-right">
+                    <p:commandButton id="btnEditExec" action="#{execBuilderBean.initDialog(respResolItem)}" oncomplete="PF('__elDoc_exb').show()"
+                                     process="@this" update="exbf:exbd" immediate="true" partialSubmit="true"
+                                     title="#{labels['resolution.editBtn']}" rendered="#{execBuilderBean.isAllowEdit(respResolItem)}"
+                                     class="p-button-warning" icon="fa-regular fa-fw fa-pen-to-square" />
+
+                    <p:commandButton id="btnDelExec" action="#{execBuilderBean.resolutionRemove(respResolItem)}"
+                                     process="@this" update="@(.table-executors-list)" immediate="true" partialSubmit="true"
+                                     title="#{labels['resolution.delBtn']}" rendered="#{execBuilderBean.isAllowDelete(respResolItem)}"
+                                     onclick="return confirm('#{labels['resolution.delBtn.confirm']}');" class="p-button-secondary" icon="fa-solid fa-fw fa-trash" />
+                </div>
+            </p:column>
+
+        </p:dataTable>
+
+        <p:commandButton id="btnAddExec" action="#{execBuilderBean.initDialog(null)}" oncomplete="PF('__elDoc_exb').show()" process="@this" update="exbf:exbd" immediate="true" partialSubmit="true"
+                         title="#{labels['resolution.editBtn']}" rendered="#{execBuilderBean.allowAdd}" icon="fa-solid fa-fw fa-plus" style="margin-top: 10px;" />
+
+    </div>
+
+</ui:composition>

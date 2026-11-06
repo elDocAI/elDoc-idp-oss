@@ -1,0 +1,53 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces"
+        xmlns:composite="jakarta.faces.composite">
+
+    <composite:interface componentType="refWFPicker">
+        <composite:attribute name="value" type="java.lang.Object" shortDescription="List, Set or String value with refItem"/>
+        <composite:attribute name="refreshId" type="java.lang.String" shortDescription="Id of the component to be refreshed on close" default="@none"/>
+        <composite:attribute name="disabled" type="java.lang.Boolean" shortDescription="Set Desabled state" default="false" />
+        <composite:attribute name="singleSelect" type="java.lang.Boolean" shortDescription="Defines selection type: single or multiple" default="false" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <!-- RefDocs Picker Icon -->
+        <p:commandLink id="rfd_pkr" actionListener="#{cc.initRefDocsPicker}" oncomplete="PF('__elDoc_rfwf').show();"
+                       process="@this" update="rfwf:rfdd" partialSubmit="true" immediate="true"
+                       rendered="#{!cc.attrs.disabled}" >
+            <i class="fa-solid fa-fw fa-link fa-lg" />
+            <h:outputText value="#{labels['general.docs.attachLinks']}" />
+            <p:resetInput target="#{cc.attrs.refreshId}" />
+        </p:commandLink>
+
+        <p:commandLink id="rfd_clr" actionListener="#{cc.clear}" process="@this" update="#{cc.attrs.refreshId}" partialSubmit="true"
+                       rendered="#{!cc.attrs.disabled}" style="font-size: 18px; position: relative; top: -2px;" >
+            <i class="fa-solid fa-fw fa-xmark fa-lg" />
+            <p:resetInput target="#{cc.attrs.refreshId}" />
+        </p:commandLink>
+
+    </composite:implementation>
+
+</ui:component>

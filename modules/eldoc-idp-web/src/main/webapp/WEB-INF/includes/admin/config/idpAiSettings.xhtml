@@ -1,0 +1,67 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces">
+
+    <!-- IDP AI Settings -->
+    <p:panel header="#{labels['pAdminConfig.idpConfig']}" collapsed="false">
+
+        <div class="grid">
+
+            <div class="col-5">
+                <p:outputLabel value="${labels['pAdminConfig.idpConfig.defaultModelClassification']}" for="mdlIdpCls"/>
+            </div>
+            <div class="col-7 p-fluid">
+                <p:selectOneMenu id="mdlIdpCls" value="#{configController.idpClassificationModelDefault}" label="#{labels['pAdminConfig.idpConfig.defaultModelClassification']}"
+                                 hideNoSelectionOption="#{not empty configController.aiDefaultModelAgentSI}"
+                                 converter="stringTrimConverter" disabled="#{configController.modeRead or not configController.idpClassificationModelDefaultConfigurable}">
+                    <f:selectItem itemValue="" noSelectionOption="true" itemLabel="#{labels['pAdminConfig.aiConfig.noModelSelected']}"/>
+                    <f:selectItems value="#{configController.aiDefaultModelAgentSI}"/>
+                </p:selectOneMenu>
+            </div>
+
+            <div class="col-5">
+                <p:outputLabel value="${labels['pAdminConfig.idpConfig.defaultModelExtraction']}" for="mdlIdpExtr"/>
+            </div>
+            <div class="col-7 p-fluid">
+                <p:selectOneMenu id="mdlIdpExtr" value="#{configController.idpExtractionModelDefault}" label="#{labels['pAdminConfig.idpConfig.defaultModelExtraction']}" hideNoSelectionOption="#{not empty configController.aiDefaultModelVisionSI}"
+                                 converter="stringTrimConverter" disabled="#{configController.modeRead or not configController.idpExtractionModelDefaultConfigurable}">
+                    <f:selectItem itemValue="" noSelectionOption="true" itemLabel="#{labels['pAdminConfig.aiConfig.noModelSelected']}"/>
+                    <f:selectItems value="#{configController.aiDefaultModelVisionSI}"/>
+                </p:selectOneMenu>
+            </div>
+
+            <ui:fragment rendered="#{recoQueueController.classificationAvailable}">
+                <div class="col-5">
+                    <p:outputLabel value="#{labels['pAdminConfig.idp.autoClassification']}" for="autoClsf"/>
+                </div>
+                <div class="col-7 p-fluid">
+                    <p:toggleSwitch id="autoClsf" value="#{configController.idpConfig.autoClassification}" label="#{labels['pAdminConfig.idp.autoClassification']}"
+                                    converter="jakarta.faces.Boolean" disabled="#{!userContext.adminSysRW || configController.modeRead}" onIcon="pi pi-times" offIcon="pi pi-check"/>
+                </div>
+            </ui:fragment>
+
+        </div>
+
+    </p:panel>
+
+</ui:composition>

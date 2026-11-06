@@ -1,0 +1,273 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:jsf="jakarta.faces"
+                xmlns:c="jakarta.tags.core"
+                xmlns:pt="jakarta.faces.passthrough"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="id" value="#{formDefController.viewParamId}"/>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true"/>
+            <f:viewAction action="#{formDefController.openFormDef}"/>
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <!-- CodeEditor -->
+        <h:outputStylesheet library="codemirror" name="/lib/codemirror.css"/>
+        <h:outputScript library="codemirror" name="/lib/codemirror.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/mode/javascript/javascript.js" pt:defer="true"/>
+        <!-- CodeMirror editor addons -->
+        <h:outputStylesheet library="codemirror" name="/addon/dialog/dialog.css"/>
+        <h:outputScript library="codemirror" name="/addon/edit/closebrackets.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/edit/matchbrackets.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/dialog/dialog.js" pt:defer="true"/>
+        <!-- CodeMirror scrollbar addons -->
+        <h:outputScript library="codemirror" name="/addon/scroll/annotatescrollbar.js" pt:defer="true"/>
+        <!-- CodeMirror search system -->
+        <h:outputStylesheet library="codemirror" name="/addon/search/matchesonscrollbar.css"/>
+        <h:outputScript library="codemirror" name="/addon/search/search.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/search/searchcursor.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/search/matchesonscrollbar.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/search/match-highlighter.js" pt:defer="true"/>
+        <!-- CodeMirror comments system -->
+        <h:outputScript library="codemirror" name="/addon/comment/comment.js" pt:defer="true"/>
+        <!-- CodeMirror folding system -->
+        <h:outputScript library="codemirror" name="/addon/fold/foldcode.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/fold/brace-fold.js" pt:defer="true"/>
+        <!-- CodeMirror hint system -->
+        <h:outputStylesheet library="codemirror" name="/addon/hint/show-hint.css"/>
+        <h:outputScript library="codemirror" name="/addon/hint/show-hint.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/hint/javascript-hint.js" pt:defer="true"/>
+        <!-- CodeMirror lint system -->
+        <h:outputStylesheet library="codemirror" name="/addon/lint/lint.css"/>
+        <h:outputScript library="codemirror" name="/addon/lint/lint.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/lint/javascript-lint.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/lint/json-lint.js" pt:defer="true"/>
+        <h:outputScript library="codemirror" name="/addon/lint/coffeescript-lint.js" pt:defer="true"/>
+
+        <h:outputScript library="eldoc" name="js/codeEditor.js" pt:defer="true"/>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="f1" styleClass="#{formDefController.modeEdit ? 'modeEdit' : 'modeRead'}">
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header flex gap-1 align-items-center">
+                        <h1>#{labels['pAdminForm.header']}: #{formDefController.formTitleUI} (#{formDefController.currentFD.formId})</h1>
+                        <h:outputText value="#{formDefController.getStatusLabel(formDefController.currentFD.status)}" title="#{labels['pAdminForm.formStatus']}"
+                                      class="status-badge #{formDefController.currentFD.active ? 'is-active' : 'is-suspended'}">
+                        </h:outputText>
+                    </div>
+                </div>
+            </div>
+
+            <ui:fragment rendered="#{userContext.adminDocRW}">
+                <div class="grid">
+                    <div class="col-12">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="btnEdit" value="${labels['general.btn.edit']}" action="#{formDefController.setModeEdit()}" process="@this" update="@form"
+                                                 icon="fa-regular fa-fw fa-pen-to-square" rendered="#{formDefController.modeRead}"/>
+                                <p:commandButton id="btnSave" value="${labels['general.btn.save']}" action="#{formDefController.doSave}" process="@form" update="@form"
+                                                 icon="fa-solid fa-fw fa-check" rendered="#{formDefController.modeEdit}"/>
+                                <p:commandButton id="btnInitIdpForm" value="#{labels['pAdminForms.btn.initIdpForm']}" title="#{labels['pAdminForms.btn.initIdpForm.title']}"
+                                                 action="#{formDefController.doInitIdpForm()}" update="@form" icon="fa-solid fa-fw fa-arrows-rotate" class="p-button-secondary p-button-outlined"
+                                                 onclick="return confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['pAdminForms.btn.initIdpForm'])}')"
+                                                 rendered="#{formDefController.modeEdit and formDefController.currentFD.isRecoWFForm() and userContext.adminDocRW}"/>
+                                <p:commandButton id="btnCancel" value="${labels['general.btn.cancel']}" action="#{formDefController.doCancel}" process="@this" immediate="true"
+                                                 icon="fa-solid fa-fw fa-share" rendered="#{formDefController.modeEdit}" styleClass="p-button-secondary p-button-outlined"/>
+                                <!--<span class="toolbar-separator">-->
+                                <!--<span class="fa-solid fa-ellipsis-vertical" />-->
+                                <!--</span>-->
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+            </ui:fragment>
+
+            <div class="grid">
+                <div class="col-12">
+                    <p:growl id="growl" globalOnly="true" life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                        <p:autoUpdate/>
+                    </p:growl>
+                    <p:messages id="msgs" globalOnly="false" closable="true" redisplay="false">
+                        <p:autoUpdate/>
+                    </p:messages>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="col-12 pt-2">
+                    <p:panel id="pGeneral" header="#{labels['pAdminForm.information']}" collapsed="false">
+
+                        <div class="grid">
+
+                            <div class="col-12 md:col-4 lg:col-3 xl:col-2">
+                                <p:outputLabel value="#{labels['formDef.name']}"/>
+                            </div>
+                            <div class="col-12 md:col-8 lg:col-9 xl:col-10 flex flex-column gap-1">
+                                <c:forEach items="#{configContext.langsEnabled}" var="lang">
+                                    <div class="p-inputgroup flex-grow-1 flex flex-nowrap">
+                                        <span class="p-inputgroup-addon" style="width: 6em;">#{labels['general.lang.'.concat(lang)]}</span>
+                                        <p:inputText value="#{formDefController.currentFD.name[lang]}" label="#{labels['formDef.name']} (#{labels['general.lang.'.concat(lang)]})" converter="stringTrimConverter"
+                                                     autocomplete="off" disabled="#{formDefController.modeRead or !formDefController.nameEditable}" required="true" class="flex-grow-1"/>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </p:panel>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="col-12">
+                    <p:tabView id="tabs" onTabChange="closePreview()" onTabShow="refreshCodeEditors();">
+
+                        <p:tab id="tabFormGeneral" title="#{labels['pAdminForm.tabGeneral']}">
+                            <f:subview id="formGeneral">
+                                <ui:include src="/WEB-INF/includes/admin/form/common.xhtml"/>
+                            </f:subview>
+                        </p:tab>
+
+                        <p:tab id="tabFormBuilder" title="#{labels['pAdminForm.tabFormBuilder']}" rendered="#{formDefController.currentFD.typeDynamic or formDefController.isRecoWFForm()}">
+                            <f:subview id="formBuilder">
+                                <ui:include src="/WEB-INF/includes/admin/form/builder.xhtml"/>
+                            </f:subview>
+                        </p:tab>
+
+                    </p:tabView>
+                </div>
+            </div>
+
+            <p:remoteCommand name="closePreview" action="#{formDefController.closePreview()}" process="@this" update=":formPreview" transient="true"/>
+
+        </h:form>
+
+        <div jsf:id="formPreview">
+            <ui:fragment rendered="#{formDefController.showPreview}">
+
+                <div class="grid">
+                    <div class="col-12">
+
+                        <p:panel header="#{labels['ccFormBuilder.showFormPreview']}">
+
+                            <div class="grid">
+                                <div class="col-12 md:col-6 grid-nogutter" style="margin: 0 auto;">
+
+                                    <h:form id="fprev" styleClass="modeEdit grid">
+
+                                        <!-- Doc column 1 -->
+                                        <div class="col-12">
+                                            <p:panel header="#{labels['docLayout1.docFields']}">
+                                                <div class="grid">
+                                                    <ui:include src="/WEB-INF/includes/fieldsStandard.xhtml">
+                                                        <ui:param name="dataSource" value="#{formDefController.previewDoc}"/>
+                                                        <ui:param name="fieldsData" value="#{formDefController.previewDoc.sfDef}"/>
+                                                    </ui:include>
+                                                    <ui:include src="/WEB-INF/includes/fieldsCustom.xhtml">
+                                                        <ui:param name="dataSource" value="#{formDefController.previewDoc.cfData}"/>
+                                                        <ui:param name="fieldsDef" value="#{formDefController.currentFD.cfDef}"/>
+                                                    </ui:include>
+                                                </div>
+                                            </p:panel>
+                                        </div>
+
+                                        <!-- Doc description area -->
+                                        <ui:fragment rendered="#{formDefController.currentFD.sfDef.description.enabled}">
+                                            <div class="col-12">
+                                                <p:panel header="#{formDefController.currentFD.sfDef.description.name[localeContext.langSystemCode]}">
+
+                                                    <p:outputLabel value="#{formDefController.currentFD.sfDef.description.name[localeContext.langSystemCode]}" for="ed2" style="display: none;"/>
+
+                                                    <p:inputTextarea id="ed1" value="#{formDefController.previewDoc.note}"
+                                                                     rendered="#{!formDefController.currentFD.sfDef.description.useRTeditor}" style="width: 100%; height: 100px; max-height: 300px; overflow: auto;"
+                                                                     autoResize="true" label="#{formDefController.currentFD.sfDef.description.name[localeContext.langSystemCode]}"
+                                                                     required="#{formDefController.currentFD.sfDef.description.required}"/>
+
+                                                    <p:textEditor id="ed2" value="#{formDefController.previewDoc.note}" height="250px"
+                                                                  allowImages="false" allowBlocks="false" allowFormatting="true" allowLinks="true" allowStyles="true"
+                                                                  rendered="#{formDefController.currentFD.sfDef.description.useRTeditor}"
+                                                                  required="#{formDefController.currentFD.sfDef.description.required}">
+
+                                                        <f:facet name="toolbar">
+                                                            <!-- Displaying limited toolbar for ref only -->
+                                                            <span class="ql-formats">
+                                                                <select class="ql-font"/>
+                                                                <select class="ql-size"/>
+                                                            </span>
+                                                            <span class="ql-formats">
+                                                                <button class="ql-bold"/>
+                                                                <button class="ql-italic"/>
+                                                                <button class="ql-underline"/>
+                                                                <button class="ql-strike"/>
+                                                            </span>
+                                                            <span class="ql-formats">
+                                                                <select class="ql-color"/>
+                                                                <select class="ql-background"/>
+                                                            </span>
+                                                            <span class="ql-formats">
+                                                                <button class="ql-script" value="sub"/>
+                                                                <button class="ql-script" value="super"/>
+                                                            </span>
+                                                            <span class="ql-formats">
+                                                                <button class="ql-list" value="ordered"/>
+                                                                <button class="ql-list" value="bullet"/>
+                                                                <button class="ql-indent" value="-1"/>
+                                                                <button class="ql-indent" value="+1"/>
+                                                            </span>
+                                                            <span class="ql-formats">
+                                                                <select class="ql-align"/>
+                                                            </span>
+                                                            <span class="ql-formats">
+                                                                <button class="ql-clean"/>
+                                                            </span>
+                                                        </f:facet>
+
+                                                    </p:textEditor>
+
+                                                </p:panel>
+                                            </div>
+                                        </ui:fragment>
+
+                                    </h:form>
+
+                                </div>
+                            </div>
+
+                        </p:panel>
+
+                    </div>
+                </div>
+
+            </ui:fragment>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

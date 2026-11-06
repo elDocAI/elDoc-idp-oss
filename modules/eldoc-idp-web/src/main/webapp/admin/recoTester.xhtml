@@ -1,0 +1,275 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:jsf="jakarta.faces"
+                xmlns:pt="jakarta.faces.passthrough"
+                xmlns:o="omnifaces"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <!-- CodeEditor -->
+        <h:outputStylesheet library="codemirror" name="/lib/codemirror.css" />
+        <h:outputScript library="codemirror" name="/lib/codemirror.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/mode/javascript/javascript.js" pt:defer="true" />
+        <!-- CodeMirror editor addons -->
+        <h:outputStylesheet library="codemirror" name="/addon/dialog/dialog.css" />
+        <h:outputScript library="codemirror" name="/addon/edit/closebrackets.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/edit/matchbrackets.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/dialog/dialog.js" pt:defer="true" />
+        <!-- CodeMirror scrollbar addons -->
+        <h:outputScript library="codemirror" name="/addon/scroll/annotatescrollbar.js" pt:defer="true" />
+        <!-- CodeMirror search system -->
+        <h:outputStylesheet library="codemirror" name="/addon/search/matchesonscrollbar.css" />
+        <h:outputScript library="codemirror" name="/addon/search/search.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/searchcursor.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/matchesonscrollbar.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/search/match-highlighter.js" pt:defer="true" />
+        <!-- CodeMirror comments system -->
+        <h:outputScript library="codemirror" name="/addon/comment/comment.js" pt:defer="true" />
+        <!-- CodeMirror folding system -->
+        <h:outputScript library="codemirror" name="/addon/fold/foldcode.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/fold/brace-fold.js" pt:defer="true" />
+        <!-- CodeMirror hint system -->
+        <h:outputStylesheet library="codemirror" name="/addon/hint/show-hint.css" />
+        <h:outputScript library="codemirror" name="/addon/hint/show-hint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/hint/javascript-hint.js" pt:defer="true" />
+        <!-- CodeMirror lint system -->
+        <h:outputStylesheet library="codemirror" name="/addon/lint/lint.css" />
+        <h:outputScript library="codemirror" name="/addon/lint/lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/javascript-lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/json-lint.js" pt:defer="true" />
+        <h:outputScript library="codemirror" name="/addon/lint/coffeescript-lint.js" pt:defer="true" />
+
+        <h:outputScript library="eldoc" name="js/codeEditor.js" pt:defer="true" />
+    </ui:define>
+
+    <ui:define name="content">
+        <o:form id="f1" styleClass="#{recoTesterController.modeEdit ? 'modeEdit' : 'modeRead'}" >
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header">
+                        <h1>Recognition testing tools</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="col-12">
+
+                    <p:tabView id="testerArea" dynamic="true">
+
+                        <!-- Tab 1: Regular Expressions tester area -->
+                        <p:tab id="regexTesterTab" title="Regex tester">
+                            <f:subview id="regexTesterArea">
+                                <div jsf:id="regexTester" class="grid p-fluid">
+                                    <div class="col-9">
+                                        <p:selectOneMenu id="recoForm" value="#{recoTesterController.recoFormId}" label="RecoForms"
+                                                         filter="true" filterMatchMode="contains">
+                                            <f:selectItems value="#{recoFormController.recoFormListSI}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="col-3">
+                                        <p:commandButton id="btnInitTester" action="#{recoTesterController.btnInitRegexTester()}"
+                                                         value="Init regex tester from form sample"
+                                                         process="@this recoForm" update="regexTester" icon="fa-solid fa-fw fa-arrows-rotate"/>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <p:inputTextarea id="regexTesterHaystack" value="#{recoTesterController.regexTesterHaystack}"
+                                                         rows="10" autoResize="false" style="resize: vertical;"
+                                                         placeholder="Text content for regex testing" />
+                                    </div>
+                                    <div class="col-10">
+                                        <p:inputText id="regexTesterValue" value="#{recoTesterController.regexTesterPattern}" placeholder="Regex pattern" />
+                                    </div>
+                                    <div class="col-2">
+                                        <p:commandButton id="btnTestRegex" value="Validate" action="#{recoTesterController.btnTestRegex()}" process="regexTester" update="regexTester" />
+                                    </div>
+                                    <div class="col-12">
+                                        <p:inputText id="regexTesterResult" value="#{recoTesterController.regexTesterResult}" readonly="true" placeholder="Regex tester result" />
+                                    </div>
+                                    <div class="col-12 muted" style="padding-top: 0px; font-size: 95%;">
+                                        Regex hints:<br/>
+                                        (?&lt;value&gt;REGEX) - default group for value retrieval, replace REGEX with actual regex expression<br/>
+                                        (?s) - Enables dotall mode<br/>
+                                        (?m) - Enables multiline mode<br/>
+                                        (?i) - Enables case-insensitive matching<br/>
+                                    </div>
+                                </div>
+                            </f:subview>
+                        </p:tab>
+
+
+                        <!-- Tab 2: Field post-processor tester area -->
+                        <p:tab id="fieldPostProcTesterTab" title="Field post-processing tester">
+                            <f:subview id="fieldPostProcTesterArea">
+                                <div jsf:id="fieldPostProcTester" class="grid">
+                                    <div class="col-9 p-fluid" >
+                                        <p:selectOneMenu id="type" value="#{recoTesterController.fieldDataType}" required="true" >
+                                            <o:skipValidators />
+                                            <f:selectItems value="#{recoTesterController.fieldTypesSI}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="col-3 p-fluid">
+                                        <p:commandButton id="btnInitFieldPostProc" action="#{recoTesterController.fieldDataTypeChangeListener()}" value="Init"
+                                                         process="@this type" update="fieldPostProcTester" />
+                                    </div>
+
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="Field post-processor code" for="fieldPostproc"/>
+                                        <div id="editor" class="code-editor-shell">
+                                            <p:inputTextarea id="fieldPostproc" value="#{recoTesterController.postProcFunc}" styleClass="code-editor"
+                                                             rows="10" autoResize="false" style="resize: vertical;" required="true"/>
+                                        </div>
+                                        <div class="muted" style="padding-top: 0px; font-size: 95%;">
+                                            <ui:include src="/WEB-INF/includes/admin/recoForm/postProcHintFormField.xhtml">
+                                                <ui:param name="type" value="#{recoTesterController.fieldDataType}" />
+                                            </ui:include>
+                                        </div>
+                                        <div class='col-4 p-fluid grid-nogutter'>
+                                            <p:commandButton id="btnTestFieldPostProc" action="#{recoTesterController.btnTestFieldPostProc()}" value="Run"
+                                                             process="fieldPostProcTester" update="postProcFieldResultArea" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <p:outputLabel for="postProcFieldInput" value="Field inpunt sample value"/>
+                                        <div id="editor" class="code-editor-shell">
+                                            <p:inputTextarea id='postProcFieldInput' value='#{recoTesterController.postProcFieldInput}' styleClass="code-editor"
+                                                             rows="10" autoResize="false" style="resize: vertical;" required="true"/>
+                                        </div>
+                                    </div>
+
+                                    <div jsf:id="postProcFieldResultArea" class="col-12">
+                                        <div class="grid">
+                                            <div class="col-6">
+                                                <p:outputLabel value="Field post-processing result" for="postProcFieldResult"/>
+                                                <div id="fldRslt" class="code-editor-shell">
+                                                    <p:inputTextarea id="postProcFieldResult" value="#{recoTesterController.postProcFieldResult}" styleClass="code-editor"
+                                                                     rows="10" autoResize="false" readonly="true" />
+                                                </div>
+                                            </div>
+
+                                            <div class="col-6 p-fluid">
+                                                <p:outputLabel value="Console output" for="postProcFieldConsole"/>
+                                                <div id="fldCon" class="code-editor-shell">
+                                                    <p:inputTextarea id="postProcFieldConsole" value="#{recoTesterController.postProcFieldConsole}" styleClass="code-editor"
+                                                                     rows="18" autoResize="false" readonly="true" style="resize: vertical;" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </f:subview>
+                        </p:tab>
+
+
+                        <!-- Tab 3: Form post-processor tester area -->
+                        <p:tab id="formPostProcTesterTab" title="Form post-processing tester">
+                            <f:subview id="formPostProcTesterArea">
+                                <div jsf:id="formPostProcTester" class="grid p-fluid">
+
+                                    <div class="col-9">
+                                        <p:selectOneMenu id="recoForm" value="#{recoTesterController.recoFormId}" label="RecoForms"
+                                                         filter="true" filterMatchMode="contains">
+                                            <f:selectItems value="#{recoFormController.recoFormListSI}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="col-3">
+                                        <p:commandButton id="btnInitFormProcTester" action="#{recoTesterController.initFormPostProc()}"
+                                                         value="Init post-processor tester from form sample"
+                                                         process="@this recoForm" update="formPostProcTester" icon="fa-solid fa-fw fa-arrows-rotate"/>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="Post-processor code" for="formPostProc"/>
+                                        <div id="editor" class="code-editor-shell">
+                                            <h:inputTextarea id="formPostProc" value="#{recoTesterController.postProcFunc}" styleClass="code-editor"
+                                                             style="display: none;" required="true" />
+                                        </div>
+                                        <div class="muted" style="padding-top: 0px; font-size: 95%;">
+                                            <ui:include src="/WEB-INF/includes/admin/recoForm/postProcHintForm.xhtml" />
+                                        </div>
+                                        <div class="col-4">
+                                            <p:commandButton id="btnTestFormPostProc" value="Run" action="#{recoTesterController.btnTestFormPostProc()}"
+                                                             process="formPostProcTester" update="postProcFormResultArea" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="Sample recognition data" for="formPostProcInput"/>
+                                        <div id="editor" class="code-editor-shell">
+                                            <p:inputTextarea id="formPostProcInput" value="#{recoTesterController.postProcRecoDataJson}" styleClass="code-editor"
+                                                             rows="10" autoResize="false" style="resize: vertical;" required="true"
+                                                             placeholder="Form recognition result content for post-processing testing" />
+                                        </div>
+                                    </div>
+
+                                    <div jsf:id="postProcFormResultArea" class="col-12">
+                                        <div class="grid">
+                                            <div class="col-6">
+                                                <p:outputLabel value="Recognition data post-processing result" for="formPostProcResult"/>
+                                                <div id="formRslt" class="code-editor-shell">
+                                                    <p:inputTextarea id="formPostProcResult" value="#{recoTesterController.postProcRecoDataResultJson}" styleClass="code-editor"
+                                                                     rows="10" autoResize="false" readonly="true" />
+                                                </div>
+                                            </div>
+
+                                            <div class="col-6">
+                                                <p:outputLabel value="Console output" for="formPostProcConsole"/>
+                                                <div id="formCon" class="code-editor-shell">
+                                                    <p:inputTextarea id="formPostProcConsole" value="#{recoTesterController.postProcFormConsole}" styleClass="code-editor"
+                                                                     rows="18" autoResize="false" readonly="true" style="resize: vertical;" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </f:subview>
+                        </p:tab>
+
+                    </p:tabView>
+
+                </div>
+            </div>
+
+        </o:form>
+
+        <p:growl id="growl" life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+            <p:autoUpdate />
+        </p:growl>
+
+    </ui:define>
+
+</ui:composition>

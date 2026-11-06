@@ -1,0 +1,231 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:faces="jakarta.faces"
+    xmlns:cc="jakarta.faces.composite/elcomp"
+    xmlns:p="primefaces">
+
+    <!--@elvariable id="viewName" type="java.lang.String"-->
+
+    <p:importConstants type="ai.eldoc.constants.Pages" />
+
+    <div faces:id="controlsArea" class="workflow-list-toolbar flex mb-2">
+
+        <!-- Buttons left -->
+        <div faces:id="controlsAreaLeft" class="flex flex-auto flex-wrap align-items-center justify-content-start gap-1">
+            <p:selectOneMenu id="wrkfViewName" widgetVar="wrkfViewNameWV" value="#{wfListController.viewName}" rendered="#{wfListController.viewNameSelectRendered}" height="400px">
+                <f:selectItems value="#{wfListController.viewNameSI}" />
+                <p:ajax event="valueChange" listener="#{wfListController.viewNameChnageListener}" process="@this" update="@this" oncomplete="workflowViewNameChange();" />
+            </p:selectOneMenu>
+
+            <ui:insert name="buttonsLeft"/>
+        </div>
+
+        <!-- Buttons right -->
+        <div faces:id="controlsAreaRight" class="flex flex-auto flex-wrap align-items-center justify-content-end gap-1">
+            <ui:insert name="buttonsRight"/>
+
+            <div faces:id="btnBlkEdt" class="p-inputgroup" faces:rendered="#{wfListController.btnBulkEditRendered}">
+                <p:commandButton id="btnMassUpdateDocs" value="${labels['general.btn.bulkEdit']}" title="${labels['general.btn.bulkEdit.title']}"
+                                 actionListener="#{workflowBulkController.btnBulkEditDocs}" process="docTbl chkbBulkEditDocsAll @this" update="blkEdtDocsArea"
+                                 class="p-button-secondary p-button-outlined" icon="fa-regular fa-fw fa-pen-to-square" />
+                <span class="p-inputgroup-addon-checkbox">
+                    <p:selectBooleanCheckbox id="chkbBulkEditDocsAll" value="#{requestScope.bulkEditApplyToAllPages}" title="#{labels['general.btn.bulkChkbAllPages.title']}" />
+                </span>
+            </div>
+
+            <p:commandButton id="btnBlockBatch" title="#{labels['ccBtn_common.block.title']}" action="#{workflowController.btnBlockBatch(wfListController.selectedDocs)}"
+                             process="docTbl @this" update="docTbl" rendered="#{wfListController.btnBlockRendered}" class="p-button-danger" icon="fa-solid fa-fw fa-ban"
+                             onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['ccBtn_common.block.title'])}'))
+                                         return false;" />
+
+            <p:commandButton id="btnUnBlockBatch" title="#{labels['ccBtn_common.unBlock.title']}" action="#{workflowController.btnUnBlockBatch(wfListController.selectedDocs)}"
+                             process="docTbl @this" update="docTbl" rendered="#{wfListController.btnUnBlockRendered}" class="p-button-warning" icon="fa-solid fa-fw fa-play"
+                             onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['ccBtn_common.unBlock.title'])}'))
+                                         return false;" />
+
+            <div class="p-inputgroup" faces:rendered="#{wfListController.btnDeleteBatchRendered}">
+                <p:commandButton id="btnDeleteBatchAll" title="#{labels['ccBtn_common.delDoc.title']}"
+                                 action="#{workflowController.btnDeleteBatch(wfListController.selectedDocs, requestScope.applyToAllPages, wfListController.dataProvider.lazyQueryClone)}"
+                                 process="docTbl chkbDeleteBatchAll @this" update="docTbl chkbDeleteBatchAll" class="p-button-secondary p-button-contrast" icon="fa-solid fa-fw fa-trash"
+                                 onclick="if (!confirm('#{labels['confirm.del']}'))
+                                             return false;" />
+                <span class="p-inputgroup-addon-checkbox">
+                    <p:selectBooleanCheckbox id="chkbDeleteBatchAll" value="#{requestScope.applyToAllPages}" title="#{labels['general.btn.bulkChkbAllPages.title']}" />
+                </span>
+            </div>
+
+            <p:commandButton id="btnResume" title="#{labels['ccBtn_common.resume.title']}" action="#{workflowController.btnResumeBatch(wfListController.selectedDocs)}" process="docTbl @this" update="docTbl"
+                             rendered="#{wfListController.btnResumeRendered}" class="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-play"
+                             onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['ccBtn_common.resume.title'])}'))
+                                         return false;"/>
+
+            <p:commandButton id="btnSuspend" title="#{labels['ccBtn_common.suspend.title']}" action="#{workflowController.btnSuspendBatch(wfListController.selectedDocs)}" process="docTbl @this" update="docTbl"
+                             rendered="#{wfListController.btnSuspendRendered}" class="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-pause"
+                             onclick="if (!confirm('#{pageController.getFormattedMessage(labels['confirm.action.template'], labels['ccBtn_common.suspend.title'])}'))
+                                         return false;"/>
+
+            <div class="p-inputgroup">
+                <p:commandButton id="btnCsvExprt" title="#{labels['export.toCsvFile']}" actionListener="#{wfListController.btnCsvExport}" oncomplete="doExportDownload(args.exportUrl);"
+                                 class="p-button-secondary p-button-outlined" icon="fa-solid fa-download"/>
+                <span class="p-inputgroup-addon-checkbox">
+                    <p:selectBooleanCheckbox id="chkbCsvExportAttachments" value="#{requestScope.csvExportWithAttachments}" title="#{labels['btn.export.withAttachments']}" />
+                </span>
+            </div>
+
+            <p:commandButton id="btnRefresh" title="#{labels['general.btn.refresh']}" process="docTbl @this" update="docTbl" class="p-button-secondary p-button-outlined" icon="fa-solid fa-fw fa-arrows-rotate" />
+        </div>
+
+    </div>
+
+    <!-- Bulk Edit area -->
+    <ui:include src="/WEB-INF/includes/workflow/docsBulkEditArea.xhtml" />
+
+    <!-- Main Docs Table -->
+    <div class="grid">
+        <div class="col-12">
+            <p:dataTable id="docTbl" widgetVar="docTblWV" value="#{wfListController.dataProvider}" lazy="true" var="rowData" rowKey="#{rowData.getId()}" rowIndexVar="rowIndex" selectionMode="multiple"
+                         paginator="true" paginatorPosition="both" rows="#{wfListController.rowsPerPage}" rowsPerPageTemplate="#{wfListController.rowsPerPageTemplate}" pageLinks="5" paginatorAlwaysVisible="true"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="Showing {startRecord}-{endRecord} of {totalRecords}"
+                         skipChildren="true" emptyMessage="#{labels['general.dataTable.noDocumentsFound']}" filterDelay="800" resizableColumns="true"
+                         reflow="true" sortBy="#{wfListController.defaultSortBy}" selection="#{wfListController.selectedDocs}" selectionRowMode="add">
+
+                <p:ajax event="filter" update="@none" oncomplete="docTblFtrLblUpdate();" />
+
+                <p:column selectionBox="true" width="20"/>
+
+                <!--Workflow._NUMBER-->
+                <p:column field="#{wfListController.columnsMap.num.dbField}" headerText="#{wfListController.columnsMap.num.header}" rendered="#{not empty wfListController.columnsMap.num}" width="10%">
+                    <h:outputText id="num" value="#{rowData[wfListController.columnsMap.num.modelField]}" styleClass="doc-number" />
+                </p:column>
+
+                <!--Workflow._NAME-->
+                <p:column field="#{wfListController.columnsMap.nm.dbField}.#{localeContext.langSystemCode}" headerText="#{wfListController.columnsMap.nm.header}" rendered="#{not empty wfListController.columnsMap.nm}">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu value="#{wfListController.dataProvider.formFilter}" label="#{labels['general.docs.title']}" collectionType="java.util.ArrayList"
+                                              filter="true" filterMatchMode="contains" panelStyle="width: 350px" scrollHeight="250px" class="custom-filter">
+                            <p:ajax event="change" process="@this" oncomplete="PF('docTblWV').filter();" delay="300" />
+                            <p:ajax event="toggleSelect" process="@this" oncomplete="PF('docTblWV').filter();" delay="300" />
+                            <f:selectItems value="#{wfListController.workflowTitleSI}"/>
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <p:link id="wfName" href="#{Pages.PAGE_WORKFLOW}?id=#{rowData.idWeb}">
+                        <h:outputText value="#{rowData[wfListController.columnsMap.nm.modelField][localeContext.langSystemCode]}" />
+                        <f:param name="v" value="#{not empty viewName ? viewName : 'rcq'}" rendered="#{not empty viewName or wfListController.viewName eq 'RECOQUEUE'}" />
+                    </p:link>
+                </p:column>
+
+                <!--Workflow._TOPIC-->
+                <p:column field="#{wfListController.columnsMap.topic.dbField}" headerText="#{wfListController.columnsMap.topic.header}" rendered="#{not empty wfListController.columnsMap.topic}">
+                    <h:outputText id="topic" value="#{rowData[wfListController.columnsMap.topic.modelField]}" />
+                </p:column>
+
+                <!--Workflow._STATE-->
+                <p:column field="#{wfListController.columnsMap.stt.dbField}" headerText="#{wfListController.columnsMap.stt.header}" rendered="#{not empty wfListController.columnsMap.stt}" width="10%">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu value="#{wfListController.dataProvider.stateFilter}" label="#{labels['general.workflow.state']}" converter="jakarta.faces.Integer" collectionType="java.util.ArrayList"
+                                              filter="true" filterMatchMode="equals" panelStyle="width: 350px" scrollHeight="300px" class="custom-filter">
+                            <p:ajax event="change" process="@this" oncomplete="PF('docTblWV').filter();" delay="300" />
+                            <p:ajax event="toggleSelect" process="@this" oncomplete="PF('docTblWV').filter();" delay="300" />
+                            <f:selectItems value="#{wfListController.workflowStateSI}" />
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <h:outputText id="state" value="#{rowData[wfListController.columnsMap.stt.modelField]}" converter="workflowStateConverter">
+                        <f:attribute name="workflow" value="#{rowData}"/>
+                    </h:outputText>
+                </p:column>
+
+                <!--Workflow._STATUS-->
+                <p:column field="#{wfListController.columnsMap.stts.dbField}" headerText="#{wfListController.columnsMap.stts.header}" rendered="#{not empty wfListController.columnsMap.stts}" width="10%">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu value="#{wfListController.dataProvider.statusFilter}" label="#{labels['general.docs.status']}" converter="jakarta.faces.Integer" collectionType="java.util.ArrayList"
+                                              filter="true" filterMatchMode="equals" panelStyle="width: 350px" scrollHeight="250px" class="custom-filter">
+                            <p:ajax event="change" process="@this" oncomplete="PF('docTblWV').filter();" delay="300" />
+                            <p:ajax event="toggleSelect" process="@this" oncomplete="PF('docTblWV').filter();" delay="300" />
+                            <f:selectItems value="#{wfListController.workflowStatusSI}" />
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <h:outputText id="status" value="#{rowData[wfListController.columnsMap.stts.modelField]}" converter="workflowStatusConverter" />
+                </p:column>
+
+                <!--Workflow._AUTHOR-->
+                <p:column field="#{wfListController.columnsMap.author.dbField}" headerText="#{wfListController.columnsMap.author.header}" rendered="#{not empty wfListController.columnsMap.author}" width="15%">
+                    <cc:nameItemText id="author" value="#{rowData[wfListController.columnsMap.author.modelField]}" addStyleClass="userLinkFontStd" />
+                </p:column>
+
+                <!--Workflow._DATE_CREATED-->
+                <p:column field="#{wfListController.columnsMap.dtCrtd.dbField}" headerText="#{wfListController.columnsMap.dtCrtd.header}" rendered="#{not empty wfListController.columnsMap.dtCrtd}" width="10%">
+                    <f:facet name="filter">
+                        <p:datePicker id="dtCrtdFltr" selectionMode="range" value="#{wfListController.dateCreatedFilter}" timeZone="#{userContext.timezone}" class="custom-filter"
+                                      showButtonBar="true" showIcon="false" showOtherMonths="true" selectOtherMonths="true" monthNavigator="true" yearNavigator="select" autocomplete="off">
+                            <p:ajax event="valueChange" process="@this" update="@none" oncomplete="PF('docTblWV').filter()" />
+                        </p:datePicker>
+                    </f:facet>
+                    <h:outputText id="dtCrtd" value="#{rowData[wfListController.columnsMap.dtCrtd.modelField]}" styleClass="doc-date">
+                        <f:convertDateTime pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+                    </h:outputText>
+                </p:column>
+
+                <!--Workflow._DATE_RECEIVED-->
+                <p:column field="#{wfListController.columnsMap.dtRcvd.dbField}" headerText="#{wfListController.columnsMap.dtRcvd.header}" rendered="#{not empty wfListController.columnsMap.dtRcvd}" width="10%">
+                    <f:facet name="filter">
+                        <p:datePicker id="dtIncmFltr" selectionMode="range" value="#{wfListController.dateIncomeFilter}" timeZone="#{userContext.timezone}" class="custom-filter"
+                                      showButtonBar="true" showIcon="false" showOtherMonths="true" selectOtherMonths="true" monthNavigator="true" yearNavigator="select" autocomplete="off">
+                            <p:ajax event="valueChange" process="@this" update="@none" oncomplete="PF('docTblWV').filter()" />
+                        </p:datePicker>
+                    </f:facet>
+                    <h:outputText id="dtRcvd" value="#{rowData[wfListController.columnsMap.dtRcvd.modelField]}" styleClass="doc-date">
+                        <f:convertDateTime pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+                    </h:outputText>
+                </p:column>
+
+                <!--Workflow._DATE_DUE-->
+                <p:column field="#{wfListController.columnsMap.dtDue.dbField}" headerText="#{wfListController.columnsMap.dtDue.header}" rendered="#{not empty wfListController.columnsMap.dtDue}" width="10%">
+                    <f:facet name="filter">
+                        <p:datePicker id="dtDueFltr" selectionMode="range" value="#{wfListController.dateDueFilter}" timeZone="#{userContext.timezone}" class="custom-filter"
+                                      showButtonBar="true" showIcon="false" showOtherMonths="true" selectOtherMonths="true" monthNavigator="true" yearNavigator="select" autocomplete="off">
+                            <p:ajax event="valueChange" process="@this" update="@none" oncomplete="PF('docTblWV').filter()" />
+                        </p:datePicker>
+                    </f:facet>
+                    <h:outputText id="dtDue" value="#{rowData[wfListController.columnsMap.dtDue.modelField]}" styleClass="doc-date">
+                        <f:convertDateTime pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+                    </h:outputText>
+                </p:column>
+
+                <!--WorkflowTask._TASK_KF_ID-->
+                <p:column headerText="#{wfListController.columnsMap.tskKFId.header}" filterBy="#{tskKFId}" rendered="#{not empty wfListController.columnsMap.tskKFId}">
+                    <h:outputText id="tskKFId" value="#{rowData[wfListController.columnsMap.tskKFId.modelField]}" styleClass="doc-number" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <h:outputLabel id="docTblFtrLbl" value="#{pageController.getFormattedMessage(labels['general.docs.list.footerText'], wfListController.dataProvider.rowCount)}" />
+                    <p:remoteCommand name="docTblFtrLblUpdate" process="@none" update="docTblFtrLbl" />
+                </f:facet>
+
+            </p:dataTable>
+        </div>
+    </div>
+
+</ui:composition>

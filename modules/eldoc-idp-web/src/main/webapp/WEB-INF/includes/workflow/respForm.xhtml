@@ -1,0 +1,75 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces"
+        xmlns:jsf="jakarta.faces"
+        xmlns:cc="jakarta.faces.composite/elcomp">
+
+    <!--@elvariable id="dataSource" type="ai.eldoc.model.WorkflowTask"-->
+
+    <div class="col-12 pb-0">
+        <div class="grid">
+
+            <!--Doc column 1-->
+            <div class="col-12 md:col-5 lg:col-5">
+                <p:panel header="#{labels['general.docs.comments']}" class="panel-condensed">
+                    <p:inputTextarea value="#{dataSource.note}" required="#{param['drCommentRequred'] eq true}" label="#{labels['general.docs.comments']}"
+                                     style="resize: vertical; height: 40px; width: 100%; max-height: 500px;" autoResize="true" />
+                </p:panel>
+            </div>
+
+            <!--Doc column 2-->
+            <div class="col-12 md:col-3 lg:col-3">
+                <p:panel id="refDocs" header="#{labels['general.docs.refDocs']}" class="panel-condensed">
+                    <ui:include src="/WEB-INF/includes/workflow/refWFList.xhtml">
+                        <ui:param name="value" value="#{workflowController.getRefDocsUI(dataSource)}" />
+                    </ui:include>
+                    <cc:refWFPicker id="refWFPicker" value="#{dataSource.refItems}" refreshId=":f1:dr:refDocs" disabled="#{false}" />
+                </p:panel>
+            </div>
+
+            <!--Doc column 3-->
+            <div class="col-12 md:col-4 lg:col-4">
+                <p:panel header="#{labels['general.docs.attachments']}" class="panel-condensed">
+
+                    <div jsf:id="fileZone">
+                        <ui:include src="/WEB-INF/includes/workflow/filesList.xhtml">
+                            <ui:param name="dataSource" value="#{dataSource}" />
+                            <ui:param name="dbFileList" value="#{workflowFilesController.getFiles(dataSource)}" />
+                            <ui:param name="allowDelete" value="true" />
+                            <ui:param name="allowDownload" value="true" />
+                            <ui:param name="allowReset" value="false" />
+                        </ui:include>
+                    </div>
+
+                    <!-- IMPORTANT: sequential="true" is crucial for proper functioning of the file upload control -->
+                    <p:fileUpload listener="#{workflowController.handleFileUploadForWFTask}" process="@this" update="fileZone"
+                                  mode="advanced" dragDrop="true" multiple="true" auto="true" sequential="true"
+                                  label="#{labels['general.docs.attachFile']}" style="margin-top: 10px;" rendered="#{true}" />
+
+                </p:panel>
+            </div>
+
+        </div>
+    </div>
+
+</ui:composition>

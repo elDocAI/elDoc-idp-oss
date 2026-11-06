@@ -1,0 +1,70 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:jsf="jakarta.faces">
+
+    <!--@elvariable id="allowDelete" type="java.lang.Boolean"-->
+    <!--@elvariable id="allowDownload" type="java.lang.Boolean"-->
+    <!--@elvariable id="allowReset" type="java.lang.Boolean"-->
+    <!--@elvariable id="dbFileList" type="java.util.ArrayList<ai.eldoc.model.DbFile>"-->
+
+    <div jsf:id="fileZoneInner">
+
+        <table id="fmTbl" class="file-download-table">
+
+            <ui:repeat id="fMgr" value="#{dbFileList}" var="dbFile" varStatus="indexVar">
+
+                <tr>
+
+                    <td class="typeColumn">
+                        <i class="#{workflowFilesController.getIcon(dbFile)}"></i>
+                    </td>
+
+                    <td class="nameColumn">
+                        <p:outputLabel value="#{dbFile.fileName}" rendered="#{!allowDownload}" />
+                        <p:link value="#{workflowFilesController.getFileNameSizeLabel(dbFile)}" href="#{workflowFilesController.getFileHref(dbFile)}" rendered="#{allowDownload}" target="_blank" />
+                    </td>
+
+                    <td class="btnColumn">
+                        <p:commandButton id="btnDel" action="#{workflowFilesController.btnDeleteFile(dataSource, dbFile)}" title="#{labels['general.btn.delete']}"
+                                         rendered="#{( not empty allowDelete ? allowDelete : allowDeleteMethodBean[allowDeleteMethodName](dbFile) )}"
+                                         icon="fa-solid fa-fw fa-trash" styleClass="p-button-secondary p-button-outlined" process="@this" update="@parent:@parent"
+                                         onclick="if (!confirm('#{labels['confirm.delete.fileCompletely']}'))
+                                                     return false;" />
+
+                        <p:commandButton id="btnReset" action="#{workflowFilesController.btnResetFile(dataSource, dbFile)}" title="#{labels['general.btn.reset.template']}"
+                                         rendered="#{( not empty allowReset ? allowReset : allowResetMethodBean[allowResetMethodName](dbFile) )}"
+                                         icon="fa-solid fa-fw fa-arrows-rotate" styleClass="p-button-secondary p-button-outlined" process="@this" update="@parent:@parent"
+                                         onclick="if (!confirm('#{labels['confirm.action']}'))
+                                                     return false;" />
+                    </td>
+
+                </tr>
+
+            </ui:repeat>
+
+        </table>
+
+    </div>
+
+</ui:composition>

@@ -1,0 +1,159 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:jsf="jakarta.faces"
+                xmlns:p="primefaces"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{pageController.pageLoadGlobalHandler}" immediate="true" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="title">${labels['menuUI.idp.start']} | #{pageController.pageTitleSuffix}</ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="f1">
+
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card card-page-header">
+                        <h1>${labels['menuUI.idp.start']}</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="col-12">
+                    <p:messages id="msgs" globalOnly="false" closable="true" redisplay="false" escape="false" showDetail="true" skipDetailIfEqualsSummary="true">
+                        <p:autoUpdate />
+                    </p:messages>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="col-12 pt-0">
+
+                    <p:panel header="${labels['recoQueue.docUpload']}">
+                        <div class="grid">
+
+                            <!-- Column 1: IDP Upload controls -->
+                            <div class="col-12 lg:col-8">
+                                <h3 class="area-title mb-2">${labels['recoQueue.filesUpload']}</h3>
+
+                                <div class="grid">
+
+                                    <ui:fragment rendered="#{recoQueueController.classificationAvailable}">
+                                        <div class="col-6">
+                                            <p:outputLabel value="${labels['recoQueue.autoClassification']}" for="autoClassification"/>
+                                            <br/>
+                                            <span class="muted">${labels['recoQueue.autoClassification.desc']}</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <p:toggleSwitch id="autoClassification" value="#{recoQueueController.autoClassification}" converter="jakarta.faces.Boolean" onIcon="pi pi-times" offIcon="pi pi-check">
+                                                <p:ajax process="@this" update="@none" />
+                                            </p:toggleSwitch>
+                                        </div>
+                                    </ui:fragment>
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="${labels['recoQueue.forcePrProp']}" for="frcPrProc" title="${labels['recoQueue.forcePrProp.title']}" styleClass="block"/>
+                                        <span class="muted">${labels['recoQueue.forcePrProp.desc']}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <p:toggleSwitch id="frcPrProc" value="#{recoQueueController.forcePreprocessing}" converter="jakarta.faces.Boolean" onIcon="pi pi-times" offIcon="pi pi-check">
+                                            <p:ajax process="@this" update="@none" />
+                                        </p:toggleSwitch>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="${labels['recoQueue.langs']}" title="${labels['recoQueue.langs.title']}" />
+                                    </div>
+                                    <div class="col-6 p-fluid">
+                                        <p:autoComplete id="langs" value="#{recoQueueController.langs}" multiple="true" selectLimit="3" autoSelection="true"
+                                                        completeMethod="#{ocrLangController.completeLangCode}" forceSelection="true"
+                                                        var="ocrLang" itemValue="#{ocrLang}" itemLabel="#{ocrLangController.getOcrLangUiLabelByCode(ocrLang)}"
+                                                        label="${labels['recoQueue.langs']}" cache="true" dropdown="true" maxResults="15" moreText="...">
+                                            <f:attribute name="collectionType" value="java.util.ArrayList" />
+                                            <p:ajax event="itemSelect" process="@this" update="@none" />
+                                            <p:ajax event="itemUnselect" process="@this" update="@none" />
+                                        </p:autoComplete>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <p:outputLabel value="#{labels['general.tags']}" for="tags"/>
+                                    </div>
+                                    <div class="col-6 p-fluid">
+                                        <p:autoComplete id="tags" value="#{recoQueueController.dataSource.tags}" multiple="true" selectLimit="5" unique="true" dynamic="true"
+                                                        completeMethod="#{recoQueueController.completeTags}" cache="true" dropdown="true" maxResults="15" moreText="..."
+                                                        label="#{labels['general.tags']}" forceSelection="true">
+                                            <f:attribute name="collectionType" value="java.util.ArrayList" />
+                                            <p:ajax event="itemSelect" process="@this" update="@none" />
+                                            <p:ajax event="itemUnselect" process="@this" update="@none" />
+                                        </p:autoComplete>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <p:remoteCommand name="submitCustomFields" process="cFld" />
+                                        <p:fileUpload id="idpFileUpload" listener="#{recoQueueController.handleFileUpload}" onstart="submitCustomFields()" update="@none" sequential="false"
+                                                      mode="advanced" dragDrop="true" multiple="true"
+                                                      accept=".jpeg,.jpg,.tif,.tiff,.png,.bmp,.webp,.pdf"
+                                                      label="#{labels['fileUpload.label']}" uploadLabel="#{labels['fileUpload.uploadLabel']}" cancelLabel="#{labels['fileUpload.cancelLabel']}" >
+                                            <p:validateFile allowTypes="/(\.|\/)(jpeg|jpg|tiff|tif|bmp|png|webp|pdf)$/" sizeLimit="104857600" contentType="true" />
+                                        </p:fileUpload>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Column 2: Custom fields -->
+                            <div jsf:id="cFld" class="col-12 lg:col-4">
+                                <h3 class="area-title mb-2">#{labels['ccFormBuilder.otherFields']}</h3>
+                                <div class="grid">
+                                    <ui:include src="/WEB-INF/includes/fieldsCustom.xhtml">
+                                        <ui:param name="dataSource" value="#{recoQueueController.dataSource.cfData}" />
+                                        <ui:param name="fieldsDef" value="#{recoQueueController.dataSource.cfDef}" />
+                                        <ui:param name="modeRead" value="#{false}" />
+                                        <ui:param name="modeEdit" value="#{true}" />
+                                    </ui:include>
+                                </div>
+                            </div>
+
+                        </div>
+                    </p:panel>
+
+                </div>
+            </div>
+
+            <!-- It has to be in the bottom as otherwise messages added in the @PostConstruct view bean method are not shown -->
+            <p:growl id="growl" globalOnly="true" life="5000" showDetail="true" skipDetailIfEqualsSummary="true" widgetVar="growlWV">
+                <p:autoUpdate />
+            </p:growl>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

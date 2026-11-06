@@ -1,0 +1,69 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:component
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces"
+        xmlns:composite="jakarta.faces.composite"
+        xmlns:jsf="jakarta.faces">
+
+    <!--{labels['ccNamePicker.searchDirectory']}-->
+    <!--{labels['general.search.btnSearch']}-->
+    <!--{labels['ccNamePicker.departmentJobTitle']}-->
+    <!--{labels['ccNamePicker.btn.removeSelected']}-->
+    <!--{labels['ccNamePicker.btn.removeSelected.title']}-->
+    <!--{labels['ccNamePicker.btn.removeAll']}-->
+    <!--{labels['ccNamePicker.btn.removeAll.title']}-->
+
+    <composite:interface componentType="namePicker">
+        <composite:attribute name="value" type="java.lang.Object" shortDescription="List, Set or String value with systemId"/>
+        <composite:attribute name="bindTo" type="java.lang.Object" shortDescription="Binds ccNamePiker directly to model property which holds systemId(s): List or String"/>
+        <composite:attribute name="objectBean" type="java.lang.Object" shortDescription="Any object can be passed as elObjectBean, and depending on its class - corresponding logic will be executed"/>
+        <composite:attribute name="excludeNames" type="Object" shortDescription="Single name or List of names (systemIds) to be excluded"/>
+        <composite:attribute name="singleName" type="java.lang.Boolean" shortDescription="Allows to choose only one single name item" default="false"/>
+        <composite:attribute name="persons" type="java.lang.Boolean" shortDescription="Make persons available for selection" default="true"/>
+        <composite:attribute name="groups" type="java.lang.Boolean" shortDescription="Make groups available for selection" default="false"/>
+        <composite:attribute name="units" type="java.lang.Boolean" shortDescription="Make orgUnits available for selection" default="false"/>
+        <composite:attribute name="bpmNames" type="java.lang.Boolean" shortDescription="Make BPM names available for selection" default="false"/>
+        <composite:attribute name="integrations" type="java.lang.Boolean" shortDescription="Make Integrations available for selection" default="false"/>
+        <composite:attribute name="apiNames" type="java.lang.Boolean" shortDescription="Make API accounts available for selection" default="false"/>
+        <composite:attribute name="refreshId" type="java.lang.String" shortDescription="Id of the component to be refreshed on close"/>
+        <composite:attribute name="disabled" type="java.lang.Boolean" shortDescription="Set Desabled state" default="false"/>
+    </composite:interface>
+
+    <composite:implementation>
+
+        <div id="#{cc.clientId}" class="inline-block">
+
+            <!-- Name Picker Icon -->
+            <div jsf:id="od" class="inline-block" style="cursor: not-allowed" jsf:rendered="#{cc.attrs.disabled}">
+                <i class="fa-solid fa-user-group muted" aria-hidden="true" />
+            </div>
+            <p:commandLink id="oe" action="#{cc.initNamePicker}" oncomplete="PF('__elDoc_np').show();"
+                           process="@this" update="npf:npd" partialSubmit="true" immediate="true"
+                           rendered="#{!cc.attrs.disabled}">
+                <i class="fa-solid fa-user-group" aria-hidden="true" />
+            </p:commandLink>
+
+        </div>
+
+    </composite:implementation>
+
+</ui:component>

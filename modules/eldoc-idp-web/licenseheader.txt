@@ -1,0 +1,7 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Copyright 2022-present elDoc Limited
+<#if licenseLast??>
+${licenseLast}
+</#if>

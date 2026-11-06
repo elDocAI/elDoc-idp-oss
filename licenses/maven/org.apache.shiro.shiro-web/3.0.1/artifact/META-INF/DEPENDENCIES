@@ -1,0 +1,85 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+Apache Shiro :: Web
+
+
+From: 'an unknown organization'
+
+  - Bouncy Castle Provider (https://www.bouncycastle.org/download/bouncy-castle-java/) org.bouncycastle:bcprov-jdk18on:jar:1.85.2
+    License: Bouncy Castle Licence  (https://www.bouncycastle.org/licence.html)
+
+
+From: 'Eclipse Foundation' (https://www.eclipse.org)
+
+  - Jakarta Servlet (https://projects.eclipse.org/projects/ee4j.servlet) jakarta.servlet:jakarta.servlet-api:jar:6.1.0
+    License: EPL 2.0  (http://www.eclipse.org/legal/epl-2.0)
+    License: GPL2 w/ CPE  (https://www.gnu.org/software/classpath/license.html)
+
+  - Jakarta Server Pages API (https://projects.eclipse.org/projects/ee4j.jsp) jakarta.servlet.jsp:jakarta.servlet.jsp-api:jar:4.0.0
+    License: Eclipse Public License v. 2.0  (https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt)
+    License: GNU General Public License, version 2 with the GNU Classpath Exception  (https://www.gnu.org/software/classpath/license.html)
+
+
+From: 'OWASP (Open Web-Application Security Project)' (https://www.owasp.org/)
+
+  - Java Encoder (https://www.owasp.org/index.php/OWASP_Java_Encoder_Project/encoder) org.owasp.encoder:encoder:jar:1.4.0
+    License: The BSD 3-Clause License  (http://www.opensource.org/licenses/BSD-3-Clause)
+
+
+From: 'QOS.ch' (http://www.qos.ch)
+
+  - SLF4J API Module (http://www.slf4j.org) org.slf4j:slf4j-api:jar:2.0.18
+    License: MIT  (https://opensource.org/license/mit)
+
+
+From: 'The Apache Software Foundation' (http://www.apache.org/)
+
+  - Apache Commons Collections (http://commons.apache.org/collections/) commons-collections:commons-collections:jar:3.2.2
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+
+From: 'The Apache Software Foundation' (https://www.apache.org/)
+
+  - Apache Commons BeanUtils (https://commons.apache.org/proper/commons-beanutils) commons-beanutils:commons-beanutils:jar:1.11.0
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Cache (https://shiro.apache.org/shiro-cache/) org.apache.shiro:shiro-cache:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Configuration :: Core (https://shiro.apache.org/shiro-config/shiro-config-core/) org.apache.shiro:shiro-config-core:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Configuration :: OGDL (https://shiro.apache.org/shiro-config/shiro-config-ogdl/) org.apache.shiro:shiro-config-ogdl:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Core (https://shiro.apache.org/shiro-core/) org.apache.shiro:shiro-core:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Cryptography :: Ciphers (https://shiro.apache.org/shiro-crypto/shiro-crypto-cipher/) org.apache.shiro:shiro-crypto-cipher:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Cryptography :: Core (https://shiro.apache.org/shiro-crypto/shiro-crypto-core/) org.apache.shiro:shiro-crypto-core:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Cryptography :: Hashing (https://shiro.apache.org/shiro-crypto/shiro-crypto-hash/) org.apache.shiro:shiro-crypto-hash:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Event (https://shiro.apache.org/shiro-event/) org.apache.shiro:shiro-event:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Lang (https://shiro.apache.org/shiro-lang/) org.apache.shiro:shiro-lang:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Cryptography :: Support :: Argon2 (https://shiro.apache.org/shiro-crypto/shiro-crypto-support/hashes/shiro-hashes-argon2/) org.apache.shiro.crypto:shiro-hashes-argon2:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+  - Apache Shiro :: Cryptography :: Support :: BCrypt (https://shiro.apache.org/shiro-crypto/shiro-crypto-support/hashes/shiro-hashes-bcrypt/) org.apache.shiro.crypto:shiro-hashes-bcrypt:bundle:3.0.1
+    License: Apache-2.0  (https://www.apache.org/licenses/LICENSE-2.0.txt)
+
+
+
+
+

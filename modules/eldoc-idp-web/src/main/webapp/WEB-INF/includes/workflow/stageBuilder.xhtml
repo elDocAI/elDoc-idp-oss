@@ -1,0 +1,57 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="primefaces">
+
+    <!--@elvariable id="stateId" type="java.lang.Integer"-->
+
+    <div class="inline-block">
+
+        <p:commandLink action="#{workflowController.initProcBuilderDialog(procDS, stateId, editable)}" oncomplete="PF('psb_#{stateId}').show();" process="@this" update="psb_#{stateId}">
+            <i class="fa-solid fa-user-group" aria-hidden="true"></i>
+        </p:commandLink>
+
+        <p:dialog id="psb_#{stateId}" widgetVar="psb_#{stateId}" header="#{dialogTitle}" modal="true" closeOnEscape="true"
+                  resizable="false" fitViewport="true" responsive="true" position="center" dynamic="true" styleClass="sys-dialog proc-builder-dialog">
+
+            <ui:include src="/WEB-INF/includes/workflow/stageBuilderContent.xhtml">
+                <ui:param name="procState" value="#{viewScope.uiProcBuilder.procState}" />
+                <ui:param name="processSteps" value="#{viewScope.uiProcBuilder.processSteps}" />
+                <ui:param name="refreshIdBase" value="#{refreshIdBase}" />
+                <ui:param name="editable" value="#{editable}" />
+                <ui:param name="groups" value="true" />
+            </ui:include>
+
+            <f:facet name="footer">
+                <div class="buttons-right">
+                    <p:commandButton id="btnOk" action="#{viewScope.uiProcBuilder.btnOk}" oncomplete="PF('psb_#{stateId}').hide();"
+                                     process="@this" update="#{refreshIdBase}:psbInner" partialSubmit="true"
+                                     value="#{labels['ccProcessBuilder.btn.ok']}" icon="fa-solid fa-fw fa-check" rendered="#{editable}" />
+                </div>
+            </f:facet>
+
+        </p:dialog>
+
+    </div>
+
+</ui:composition>

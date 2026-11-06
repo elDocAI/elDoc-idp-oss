@@ -1,0 +1,43 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <div class="grid">
+
+        <div class="col-12">
+            <div id="editor" style="border: solid 1px var(--p-content-border-color); border-radius: 4px;">
+                <h:inputTextarea id="formPostCreateHook" value="#{formDefController.currentFD.postCreateHook}" styleClass="code-editor" converter="stringToBase64Converter" readonly="#{formDefController.modeRead}"/>
+            </div>
+        </div>
+
+        <div class="col-12 muted" style="font-size: 95%;">
+            <!-- Workflow post-create hook hint -->
+            Scripting hints:<br/>
+            The form definition and data are passed as the "workflow" variable, with the following properties:<br/>
+            * workflow._cfDef - (List&lt;CustomField&gt;) Provides access to the following properties of CustomFields: name, type, tags, enabled, required, _properties, etc. Writable properties are: enabled, required, and _properties<br/>
+            * workflow._cfData - (Map&lt;String, Object&gt;) Provides access to the values of CustomFields, where the key has the format cfX (X - index matching the custom field index) and the corresponding value<br/>
+            Hint: You may modify the provided workflow variable as needed and use "return workflow;" at the end of the script code to save the modified values.
+        </div>
+
+    </div>
+
+</ui:composition>

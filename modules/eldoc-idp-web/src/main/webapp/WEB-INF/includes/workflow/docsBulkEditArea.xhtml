@@ -1,0 +1,83 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="primefaces"
+                xmlns:faces="jakarta.faces">
+
+    <div faces:id="blkEdtDocsArea">
+        <div faces:id="blkEdtDocs" class="grid" faces:rendered="#{workflowBulkController.bulkEditDocs}">
+            <div class="col">
+                <div class="grid m-0 bg-white border-1 border-solid border-300 border-round">
+
+                    <div class="col-12 p-0">
+                        <h3 class="area-title">#{pageController.getFormattedMessage(labels['bulkEdit.headerWithTotal'], workflowBulkController.totalCount)}</h3>
+                    </div>
+
+                    <div class="col-6 md:col-3 lg:col-3 xl:col-2">
+                        <p:outputLabel value="#{labels['general.tags']}" for="bulkEditTags"/>
+                    </div>
+                    <div class="col-6 md:col-3 lg:col-3 xl:col-2 p-fluid">
+                        <p:selectOneMenu id="tgsOp" value="#{workflowBulkController.operationTags}">
+                            <f:selectItems value="#{pageController.operationSI}"/>
+                            <p:ajax event="change" process="@this" update="@none" />
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col-6 xl:col-8 p-fluid">
+                        <!-- Do not use cache as autocomplete result changes based on the selected op -->
+                        <p:autoComplete id="bulkEditTags" value="#{workflowBulkController.tags}" multiple="true" selectLimit="15" unique="true" dynamic="true"
+                                        completeMethod="#{workflowBulkController.completeTags}" cache="false" dropdown="true" maxResults="15" moreText="..."
+                                        label="#{labels['general.tags']}" forceSelection="true">
+                            <f:attribute name="collectionType" value="java.util.ArrayList" />
+                        </p:autoComplete>
+                    </div>
+
+                    <div class="col-6 md:col-3 lg:col-3 xl:col-2">
+                        <p:outputLabel value="#{labels['general.docs.readers']}" />
+                    </div>
+                    <div class="col-6 md:col-3 lg:col-3 xl:col-2 p-fluid">
+                        <p:selectOneMenu id="aclRdrsOp" value="#{workflowBulkController.operationReaders}">
+                            <f:selectItems value="#{pageController.operationSI}"/>
+                            <p:ajax event="change" process="@this" update="@none" />
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col-6 xl:col-8 p-fluid">
+                        <!-- Do not use cache as autocomplete result changes based on the selected op -->
+                        <p:autoComplete id="aclRPkr" value="#{workflowBulkController.docReaders}" completeMethod="#{workflowBulkController.completeDocAclNames}"
+                                        var="systemId" itemValue="#{systemId}" itemLabel="#{empty systemId ? '' : directoryController.getDirectoryItem(systemId).getItemNameUI()}"
+                                        multiple="true" selectLimit="25" autoSelection="true" forceSelection="true" unique="true"
+                                        minQueryLength="2" cache="false" dropdown="true" maxResults="15" moreText="..."
+                                        label="#{labels['general.docs.readers']}" emptyMessage="#{labels['general.dataTable.noRecordsFound']}" />
+                    </div>
+
+                    <div class="col-12 buttons-right">
+                        <p:commandButton id="btnCancel" actionListener="#{workflowBulkController.btnBulkEditCancel}" process="@this" update="docTbl blkEdtDocsArea"
+                                         value="#{labels['general.btn.cancel']}" icon="fa-solid fa-fw fa-share" styleClass="p-button-secondary p-button-outlined" />
+                        <p:commandButton id="btnOk" actionListener="#{workflowBulkController.btnExecuteBulkEdit}" process="blkEdtDocsArea" update="docTbl blkEdtDocsArea"
+                                         value="#{labels['general.btn.execute']}" icon="fa-solid fa-fw fa-check" styleClass="p-button-warning" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

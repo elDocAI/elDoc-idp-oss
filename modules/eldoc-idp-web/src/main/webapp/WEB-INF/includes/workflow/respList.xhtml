@@ -1,0 +1,148 @@
+<!--
+  - /*
+  -  * Copyright (C) 2022-2026 elDoc Limited
+  -  *
+  -  * This file is part of elDoc IDP OSS.
+  -  *
+  -  * elDoc IDP OSS is free software: you can redistribute it and/or modify
+  -  * it under the terms of the GNU Affero General Public License as published
+  -  * by the Free Software Foundation, version 3.
+  -  *
+  -  * elDoc IDP OSS is distributed in the hope that it will be useful,
+  -  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+  -  * General Public License for more details.
+  -  *
+  -  * SPDX-License-Identifier: AGPL-3.0-only
+  -  */
+  -->
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="primefaces"
+    xmlns:faces="jakarta.faces"
+    xmlns:cc="jakarta.faces.composite/elcomp"
+    xmlns:pt="jakarta.faces.passthrough"
+    xmlns:c="jakarta.tags.core">
+
+    <!--@elvariable id="state" type="java.lang.Integer"-->
+
+    <p:importConstants type="ai.eldoc.constants.DirectoryConstants" />
+
+    <div class="grid">
+
+        <div class="col-12 iterSwitch">
+            <p:outputLabel id="itlb1" value="#{labels['ccRespsMonitor.iteration']}" class="mr-1" />
+            <p:selectOneMenu id="itsl1" value="#{workflowController.iterationSelector}" disabled="#{workflowController.iterationSelectorDisabled}" rendered="#{workflowController.refreshIterationSelector(state)}">
+                <p:ajax event="change" process="@this" update="rTbl tabInfo" />
+                <f:selectItems value="#{workflowController.iterationSelectorSI}" />
+            </p:selectOneMenu>
+        </div>
+
+        <div faces:id="tabInfo" class="col-12 tabInfo">
+            <p:outputLabel value="#{labels['pDocument.print.respList']}" style="margin-right: 5px;" />
+            <p:outputLabel id="state" pt:state="#{state}" value="#{labels[workflowController.getStateLabelByStateId(state)]}" />
+            <br/>
+            <p:outputLabel value="#{labels['ccRespsMonitor.iteration']}:" style="margin-right: 5px;" />
+            <p:outputLabel id="iter" pt:iter="#{workflowController.iterationSelector}" value="#{pageController.getFormattedMessage(labels['general.XofY'], workflowController.iterationSelector, workflowController.iterationSelectorSI.size())}" />
+        </div>
+
+        <div class="col-12">
+
+            <p:dataTable id="rTbl" value="#{workflowController.responsesForStateAndIteration}" var="rowData" rowIndexVar="rowIndex" rows="500" reflow="#{param.print ? false : true}"
+                         rowsPerPageTemplate="500,1000" paginator="true" paginatorPosition="top" paginatorAlwaysVisible="false"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         emptyMessage="#{labels['general.dataTable.noRecordsFound']}" filterDelay="800" class="table-sm resp-table" size="small">
+
+                <!--@elvariable id="rowIndex" type="java.lang.Integer"-->
+
+                <p:column headerText="#" style="text-align: center;" width="35">
+                    <h:outputLabel value="#{rowIndex + 1}" />
+                </p:column>
+
+                <p:column headerText="#{labels['ccListResp.authorDate']}">
+                    <!-- IMPORTANT: do not change 'respUser' - it is hard-coded in the ReactionController, see: ReactionController.reactionActionListener -->
+                    <div faces:id="respUser" class="resp-user flex flex-row flex-nowrap gap-0.5">
+                        <div class="user-pic flex flex-shrink-0 justify-content-center align-items-center">
+                            <c:set var="dirItemPic" value="#{directoryController.getItemPicUrl(directoryController.getDirectoryItem(rowData.author))}" />
+                            <p:graphicImage value="#{dirItemPic}" rendered="#{not empty dirItemPic}" />
+                            <i class="fa-solid fa-fw #{directoryController.getDirectoryItem(rowData.author).getItemIconClassUI()}" faces:rendered="#{empty dirItemPic and not empty directoryController.getDirectoryItem(rowData.author).getItemIconClassUI()}" style="font-size: 28px;" />
+                        </div>
+                        <div class="user-data">
+                            <div class="flex flex-row flex-nowrap gap-2">
+                                <cc:nameItemText id="nmt" value="#{directoryController.getDirectoryItem(rowData.author)}" />
+
+                                <!-- Show this block when action performed by someone else (on behalf of assigned person) AND not by elDocROBOT -->
+                                <div faces:rendered="#{not empty rowData.authorBy and rowData.authorBy ne DirectoryConstants.ELDOC_ROBOT}" class="flex flex-row flex-nowrap gap-0.5">
+                                    <div class="muted" style="font-size: 90%;">#{labels['deputy.doneBy']}</div>
+                                    <cc:nameItemText value="#{rowData.authorBy}" addStyleClass="muted" />
+                                </div>
+                            </div>
+
+                            <div class="resp-info flex flex-row flex-nowrap gap-1">
+                                <h:outputText value="#{workflowController.getDocResponseDateUI(rowData)}" class="timeStamp muted">
+                                    <f:convertDateTime pattern="#{userContext.dateTimeFormat}" timeZone="#{userContext.timezone}" />
+                                </h:outputText>
+                                <ui:fragment rendered="#{not directoryController.isSystemUser(rowData.author)}">
+                                    <span class="muted">|</span>
+                                    <ui:include src="/WEB-INF/includes/workflow/reactionControls.xhtml">
+                                        <ui:param name="reactionTo" value="#{rowData.author}" />
+                                        <ui:param name="refId" value="#{rowData.id}" />
+                                    </ui:include>
+                                </ui:fragment>
+                            </div>
+                        </div>
+                    </div>
+                </p:column>
+
+                <p:column headerText="#{labels['ccListResp.action']}">
+                    <!-- Show this block when taskStatus == 6, means "Delegated to" -->
+                    <ui:fragment rendered="#{rowData.taskStatus == 6}">
+                        <p:outputLabel value="#{labels['ccListResp.delegatedTo']}" class="mr-1" />
+                        <cc:nameItem value="#{rowData.delegatedTo}" />
+                    </ui:fragment>
+
+                    <!-- Show this label when taskStatus != 6, means all other cases, excluding "Delegated to" -->
+                    <ui:fragment rendered="#{rowData.taskStatus != 6}">
+                        <p:outputLabel value="#{labels[workflowController.getRespStatusName(rowData)]}" class="mr-1" />
+                    </ui:fragment>
+
+                    <!-- Show this block when action performed by someone else (on behalf of assigned person) -->
+                    <ui:fragment rendered="#{not empty rowData.authorBy}">
+                        <!-- Show this when action performed by elDocROBOT -->
+                        <p:outputLabel value="#{labels['ccListResp.doneByRobot']}" title="#{labels['ccListResp.doneByRobot.title']}" rendered="#{rowData.authorBy eq DirectoryConstants.ELDOC_ROBOT}" class="muted" />
+                    </ui:fragment>
+                </p:column>
+
+                <p:column headerText="#{labels['general.docs.comments']}">
+                    <!-- We do not show description for docResponse with process backup -->
+                    <p:outputLabel value="#{rowData.note}" rendered="#{empty rowData.process}" />
+                </p:column>
+
+                <p:column headerText="#{labels['ccListResp.refDocs']}">
+                    <div faces:rendered="#{rowIndex gt 0 or (rowIndex eq 0 and workflowController.showAuthorAttachments)}" class="panel-condensed">
+                        <ui:include src="/WEB-INF/includes/workflow/refWFList.xhtml">
+                            <ui:param name="value" value="#{workflowController.getRefDocsUI(rowData)}" />
+                        </ui:include>
+                        <div faces:id="fileZone">
+                            <ui:include src="/WEB-INF/includes/workflow/filesList.xhtml">
+                                <ui:param name="dataSource" value="#{rowData}" />
+                                <ui:param name="dbFileList" value="#{workflowFilesController.getFiles(rowData)}" />
+                                <ui:param name="allowDelete" value="false" />
+                                <ui:param name="allowDownload" value="true" />
+                                <ui:param name="allowReset" value="false" />
+                            </ui:include>
+                        </div>
+                    </div>
+                </p:column>
+
+            </p:dataTable>
+
+        </div>
+
+    </div>
+
+</ui:composition>
