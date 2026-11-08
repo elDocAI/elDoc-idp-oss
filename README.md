@@ -93,26 +93,28 @@ For macOS, use `./mvnw clean verify` and the generated `-server-mac.jar`. See [p
 
 elDoc IDP OSS provides the core AI document processing and human review workflow. The full version adds enterprise administration, integrations, and document collaboration capabilities.
 
-| Capability | elDoc IDP OSS | elDoc GenAI full version |
+| Capability | elDoc IDP OSS | elDoc GenAI (full version) |
 | --- | --- | --- |
-| Document ingestion, OCR, PDF and image processing | Included | Included |
-| AI classification, extraction, and validation | Included | Included |
+| Document ingestion, OCR, and PDF and image processing | Included | Included |
+| Image normalization, deskewing, and rotation correction | Included | Included |
+| AI classification and data extraction | Included | Included |
+| Optional post-processing of extracted data | Included | Included |
 | Web UI and human validation of results | Included | Included |
 | CSV export through the UI | Included | Included |
-| Multitenancy | Not included | Included |
-| LLM and integration management | Configuration file | Integrations page |
-| Active Directory (AD) integration | Not included | Included |
-| IDP plugins | Not included | Included |
-| Full-text search | Not included | Included |
-| API access | Not included | Included |
-| Organization structure | Not included | Included |
-| Group management | Not included | Included |
-| User management | Not included | Included |
-| AI chat | Not included | Included |
-| Text indexing | Not included | Included |
-| Online document preview and editing | Not included | Included |
-| Recognition processors (Anchor Processor, Regex Processor) | Not included | Included |
 | Google Cloud Vision OCR integration | Not included | Included |
+| AI chat with agentic RAG | Not included | Included |
+| Full-text search | Not included | Included |
+| Semantic search | Not included | Included |
+| LLM and integration management | Via configuration file | Via the Integrations page |
+| IDP plugins | Not included | Included |
+| Recognition processors (Anchor Processor, Regex Processor) | Not included | Included |
+| API access | Not included | Included |
+| Online document preview and editing | Not included | Included |
+| User management | Not included | Included |
+| Group management | Not included | Included |
+| Organizational structure | Not included | Included |
+| Active Directory (AD) integration | Not included | Included |
+| Multitenancy | Not included | Included |
 
 ## Commercial / Enterprise
 
@@ -186,6 +188,8 @@ Additional OCR engines supported by elDoc IDP OSS include:
 
 While the embedded Tesseract OCR simplifies initial deployment and setup, more advanced OCR engines, such as **PaddleOCR**, can deliver higher recognition accuracy, particularly for complex document layouts and challenging input quality. Therefore, evaluating alternative OCR engines is recommended for production deployments where OCR accuracy is a priority.
 
+On first launch, TessData is downloaded to the directory specified by the `ELDOC_OCR_TESSDATA_DIR` environment variable, which maps to the `idp.tessdata.path` configuration parameter.
+
 ### MongoDB
 
 When `idposs.db.conn` (mapped to `ELDOC_MONGODB_URI` by default) is blank or unset, the application starts an anonymous, loopback-only embedded MongoDB replica set before database clients initialize.
@@ -205,7 +209,6 @@ On Windows, `${java.io.tmpdir}` normally resolves to `%TEMP%`.
 | `ELDOC_MONGODB_PASSWORD` | Optional password; supply together with the username |
 | `ELDOC_EMBEDDED_MONGODB_DATA_DIR` | Embedded database directory |
 | `ELDOC_EMBEDDED_MONGODB_BINARY_CACHE_DIR` | Binary download/extraction cache |
-| `ELDOC_OCR_TESSDATA_DIR` | Prepared TessData directory; skips the language-data download |
 
 An external URI takes precedence. Authenticated and anonymous external deployments are supported. For production, use a separately managed MongoDB replica set with appropriate authentication, TLS, backups, monitoring, and availability. **The embedded fallback is intended for local development and evaluation only.**
 
@@ -240,15 +243,15 @@ On behalf of the entire elDoc team, we would like to express our gratitude to th
 
 We would like to extend our **special thanks to three foundational open-source projects** that played a crucial role in bringing elDoc IDP to life back in 2019–2020:
 
-- **TwelveMonkeys ImageIO**
-- **Bytedeco**
-- **Apache PDFBox**
+- **[TwelveMonkeys ImageIO](https://github.com/haraldk/TwelveMonkeys)**
+- **[Bytedeco](https://github.com/bytedeco)**
+- **[Apache PDFBox](https://github.com/apache/pdfbox)**
 
 These three projects formed the essential technological pillars upon which the early versions of elDoc IDP were built. Without them, bringing our vision to life at that time would not have been possible.
 
 ### Our Appreciation to the Open-Source Community
 
-We are equally grateful to the many other open-source projects and their contributors whose work continues to power and enrich elDoc IDP OSS, including **LangChain4j, Tesseract, OpenCV, PrimeFaces, Payara, MongoDB**, and many others.
+We are equally grateful to the many other open-source projects and their contributors whose work continues to power and enrich elDoc IDP OSS, including **LangChain4j**, **Tesseract**, **OpenCV**, **PrimeFaces**, **Apache Shiro**, **Payara**, **MongoDB**, and many others.
 
 To all the developers, maintainers, and contributors behind these projects: **thank you for making open-source innovation possible.**
 
