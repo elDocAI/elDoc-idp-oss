@@ -253,24 +253,25 @@
                         </div>
 
                         <!-- File preview area -->
-                        <p:dataList id="pagePaginator" value="#{recoDiagController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDiagController.pageIdx}"
+                        <p:dataView id="pagePaginator" value="#{recoDiagController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDiagController.pageIdx}"
                                     type="none" paginator="true" rows="1" paginatorPosition="top" widgetVar="pagePaginatorWV" lazy="true"
                                     rendered="#{not empty recoDiagController.recoMetaDoc}">
 
                             <p:ajax event="page" listener="#{recoDiagController.setPageIdxEvent}"/>
 
-                            <p:graphicImage id="pageImage" value="#{recoDiagController.pageImage}" stream="false" style="display:none" />
+                            <p:dataViewListItem>
+                                <p:graphicImage id="pageImage" value="#{recoDiagController.pageImage}" stream="false" style="display:none" />
 
-                            <div jsf:id="ldSpnr" class="loading-area">
-                                <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
-                                <h:outputLabel value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
-                            </div>
+                                <div jsf:id="ldSpnr" class="loading-area">
+                                    <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
+                                    <h:outputLabel value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
+                                </div>
 
-                            <div id="pageViewContainer"
-                                 imgId="#{p:resolveFirstComponentWithId('pageImage', view).clientId}"
-                                 spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}" />
-
-                        </p:dataList>
+                                <div id="pageViewContainer"
+                                     imgId="#{p:resolveFirstComponentWithId('pageImage', view).clientId}"
+                                     spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}" />
+                            </p:dataViewListItem>
+                        </p:dataView>
 
                         <div jsf:id="fileZone" jsf:rendered="#{not empty recoDiagController.recoMetaDoc}">
                             <ui:include src="/WEB-INF/includes/workflow/filesList.xhtml">

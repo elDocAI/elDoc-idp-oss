@@ -259,7 +259,7 @@
                                         </div>
                                     </div>
 
-                                    <p:dataList id="fieldsPaginator" value="#{recoDocController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDocController.pageIndex}" class="col-12"
+                                    <p:dataView id="fieldsPaginator" value="#{recoDocController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDocController.pageIndex}" class="col-12"
                                                 type="none" paginator="#{not recoDocController.showAllFields}" rows="1" paginatorPosition="top" lazy="true">
 
                                         <p:ajax event="page" listener="#{recoDocController.pageIndexEvent}" process="fieldsPaginator" update="fieldsPaginator :f1:frdData :f1:pageTextPreviewArea :f1:pagePaginator"/>
@@ -274,18 +274,20 @@
                                             </div>
                                         </f:facet>
 
-                                        <div class="grid">
-                                            <f:subview id="recoData">
-                                                <ui:include src="/WEB-INF/includes/fieldsCustom.xhtml">
-                                                    <ui:param name="dataSource" value="#{recoDocController.recoData.cfData}" />
-                                                    <ui:param name="fieldsDef" value="#{recoDocController.recoData.cfDef}" />
-                                                    <ui:param name="cfAwareModel" value="#{recoDocController.recoData}" />
-                                                    <ui:param name="modeRead" value="#{!recoDocController.recoDataEditable}" />
-                                                    <ui:param name="modeEdit" value="#{recoDocController.recoDataEditable}" />
-                                                </ui:include>
-                                            </f:subview>
-                                        </div>
-                                    </p:dataList>
+                                        <p:dataViewListItem>
+                                            <div class="grid">
+                                                <f:subview id="recoData">
+                                                    <ui:include src="/WEB-INF/includes/fieldsCustom.xhtml">
+                                                        <ui:param name="dataSource" value="#{recoDocController.recoData.cfData}" />
+                                                        <ui:param name="fieldsDef" value="#{recoDocController.recoData.cfDef}" />
+                                                        <ui:param name="cfAwareModel" value="#{recoDocController.recoData}" />
+                                                        <ui:param name="modeRead" value="#{!recoDocController.recoDataEditable}" />
+                                                        <ui:param name="modeEdit" value="#{recoDocController.recoDataEditable}" />
+                                                    </ui:include>
+                                                </f:subview>
+                                            </div>
+                                        </p:dataViewListItem>
+                                    </p:dataView>
 
                                 </ui:fragment>
 
@@ -429,7 +431,7 @@
 
                 <div jsf:id="previewImageArea">
 
-                    <p:dataList id="pagePaginator" value="#{recoDocController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDocController.pageIndex}"
+                    <p:dataView id="pagePaginator" value="#{recoDocController.pageIndexList}" var="page" rowIndexVar="pageIdx" first="#{recoDocController.pageIndex}"
                                 type="none" paginator="true" rows="1" paginatorPosition="top" widgetVar="pagePaginatorWV" lazy="true">
 
                         <f:facet name="header">
@@ -444,26 +446,28 @@
 
                         <p:ajax event="page" listener="#{recoDocController.pageIndexEvent}" process=":f1:docFields" update=":f1:docFields :f1:frdData :f1:pageTextPreviewArea"/>
 
-                        <p:inputText id="coords" value="#{recoDocController.recoPageResult}" widgetVar="coordsWV"
-                                     rendered="#{not empty recoDocController.recoFormResult.pages and not recoDocController.isRecoFormAltered()}" readonly="true">
-                            <f:converter converterId="recoFormPageResultConverter"/>
-                            <f:attribute name="type" value="hidden" />
-                        </p:inputText>
+                        <p:dataViewListItem>
+                            <p:inputText id="coords" value="#{recoDocController.recoPageResult}" widgetVar="coordsWV"
+                                         rendered="#{not empty recoDocController.recoFormResult.pages and not recoDocController.isRecoFormAltered()}" readonly="true">
+                                <f:converter converterId="recoFormPageResultConverter"/>
+                                <f:attribute name="type" value="hidden" />
+                            </p:inputText>
 
-                        <div jsf:id="ldSpnr" class="loading-area">
-                            <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
-                            <h:outputLabel value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
-                        </div>
+                            <div jsf:id="ldSpnr" class="loading-area">
+                                <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
+                                <h:outputLabel value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
+                            </div>
 
-                        <div id="pageViewContainer" class="preview-canvas"
-                             imgUrl="/api/preview?id=#{recoDocController.pageImageUrlPreviewId}&amp;p=#{pageIdx}"
-                             spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}"
-                             data-doc-id="#{workflowController.id}"
-                             data-data-id="#{recoDocController.recoData.id}"
-                             data-scroll-tooltip="#{labels['pDocument.reco.scrollTooltip']}">
-                        </div>
+                            <div id="pageViewContainer" class="preview-canvas"
+                                 imgUrl="/api/preview?id=#{recoDocController.pageImageUrlPreviewId}&amp;p=#{pageIdx}"
+                                 spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}"
+                                 data-doc-id="#{workflowController.id}"
+                                 data-data-id="#{recoDocController.recoData.id}"
+                                 data-scroll-tooltip="#{labels['pDocument.reco.scrollTooltip']}">
+                            </div>
+                        </p:dataViewListItem>
 
-                    </p:dataList>
+                    </p:dataView>
 
                 </div>
 

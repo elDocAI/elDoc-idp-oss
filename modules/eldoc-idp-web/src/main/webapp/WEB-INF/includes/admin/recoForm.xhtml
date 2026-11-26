@@ -532,157 +532,159 @@
 
         <ui:fragment rendered="#{not empty recoFormController.recoForm.sourceFile}">
 
-            <p:dataList id="pagePaginator" value="#{recoFormController.recoForm.pages}" var="page" rowIndexVar="pageIdx"
+            <p:dataView id="pagePaginator" value="#{recoFormController.recoForm.pages}" var="page" rowIndexVar="pageIdx"
                         type="none" paginator="true" rows="1" paginatorPosition="top" widgetVar="pagePaginatorWV" lazy="true">
 
                 <p:ajax event="page" listener="#{recoFormController.setCurrentPageNumber}"
                         process=":f1:layoutSettingsArea :f1:fieldSettingsArea :f1:docPreviewArea" update=":f1:layoutSettingsArea :f1:fieldSettingsArea :f1:frdData"/>
 
-                <div faces:id="pageProperties" class="grid section-divider" faces:rendered="#{recoFormController.modeEdit and not empty recoFormController.recoForm and recoFormController.recoForm.type ne RecoForm.TYPE_AIBASED}">
-                    <div class="col-12">
-                        <h3 class="area-title">#{labels['recoFormUI.recoPage.settings']}</h3>
-                    </div>
+                <p:dataViewListItem>
+                    <div faces:id="pageProperties" class="grid section-divider" faces:rendered="#{recoFormController.modeEdit and not empty recoFormController.recoForm and recoFormController.recoForm.type ne RecoForm.TYPE_AIBASED}">
+                        <div class="col-12">
+                            <h3 class="area-title">#{labels['recoFormUI.recoPage.settings']}</h3>
+                        </div>
 
-                    <!-- Misc settings -->
-                    <div class="col-12 py-0">
-                        <div class="grid">
-                            <div class="col-12 lg:col-6">
-                                <p:selectBooleanCheckbox id="applyAfter" value="#{recoFormController.applyHeaderFooterRemainingPages}" itemLabel="#{labels['recoFormUI.recoPage.applyHeaderFooterAfter']}"
-                                                         label="#{labels['recoFormUI.recoPage.applyHeaderFooterAfter']}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:selectBooleanCheckbox>
+                        <!-- Misc settings -->
+                        <div class="col-12 py-0">
+                            <div class="grid">
+                                <div class="col-12 lg:col-6">
+                                    <p:selectBooleanCheckbox id="applyAfter" value="#{recoFormController.applyHeaderFooterRemainingPages}" itemLabel="#{labels['recoFormUI.recoPage.applyHeaderFooterAfter']}"
+                                                             label="#{labels['recoFormUI.recoPage.applyHeaderFooterAfter']}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:selectBooleanCheckbox>
+                                </div>
+
+                                <div class="col-12 lg:col-6" faces:rendered="#{pageIdx > 0}">
+                                    <p:selectBooleanCheckbox id="usePageBreakBefore" value="#{page.prop.applyPageBreakBefore}" itemLabel="#{labels['recoPage.prop.applyPageBreakBefore']}"
+                                                             label="#{labels['recoPage.prop.applyPageBreakBefore']}" title="#{labels['recoPage.prop.applyPageBreakBefore.title']}"
+                                                             disabled="#{recoFormController.modeRead}">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:selectBooleanCheckbox>
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="col-12 lg:col-6" faces:rendered="#{pageIdx > 0}">
-                                <p:selectBooleanCheckbox id="usePageBreakBefore" value="#{page.prop.applyPageBreakBefore}" itemLabel="#{labels['recoPage.prop.applyPageBreakBefore']}"
-                                                         label="#{labels['recoPage.prop.applyPageBreakBefore']}" title="#{labels['recoPage.prop.applyPageBreakBefore.title']}"
-                                                         disabled="#{recoFormController.modeRead}">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:selectBooleanCheckbox>
+                        <!-- Header settings -->
+                        <div class="col-12 lg:col-6">
+                            <div faces:id="pageHeaderArea" class="grid">
+                                <div class="col-12 pb-0">
+                                    <h3 class="area-title">#{labels['recoFormUI.recoPage.header.settings']}</h3>
+                                </div>
+
+                                <div class="col-12">
+                                    <p:selectBooleanCheckbox id="headerEnabled" value="#{recoFormController.headerEnabled}" itemLabel="#{labels['recoFormUI.recoPage.header.enabled']}"
+                                                             label="#{labels['recoFormUI.recoPage.header.enabled']}" title="#{labels['recoFormUI.recoPage.header.enabled.title']}"
+                                                             disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerEnabledWV">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:selectBooleanCheckbox>
+                                </div>
+
+                                <div class="col-12">
+                                    <p:selectBooleanCheckbox id="headerAuto" value="#{recoFormController.headerAuto}" itemLabel="#{labels['recoFormUI.recoPage.header.auto']}"
+                                                             label="#{labels['recoFormUI.recoPage.header.auto']}" title="#{labels['recoFormUI.recoPage.header.auto.title']}"
+                                                             disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerAutoWV">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:selectBooleanCheckbox>
+                                </div>
+
+                                <div class="col-12 md:col-4 lg:col-3">
+                                    <p:outputLabel value="#{labels['recoFormUI.recoPage.header.height']}" for="hdrHeight"/>
+                                </div>
+                                <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                                    <p:inputNumber id="hdrHeight" value="#{recoFormController.headerHeight}" label="#{labels['recoFormUI.recoPage.header.height']}" minValue="0" maxValue="25" symbol="%" symbolPosition="s"
+                                                   autocomplete="off" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" required="true" widgetVar="headerHeightWV">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:inputNumber>
+                                </div>
+
+                                <div class="col-12 md:col-4 lg:col-3">
+                                    <p:outputLabel value="#{labels['recoFormUI.recoPage.header.keywords']}" for="hdrKwrds"/>
+                                </div>
+                                <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                                    <p:chips id="hdrKwrds" value="#{recoFormController.headerKeywords}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerKwdsWV">
+                                        <f:attribute name="collectionType" value="java.util.ArrayList"/>
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:chips>
+                                </div>
+
+                                <div class="col-12">
+                                    <p:selectBooleanCheckbox id="headerKeywordsAsBorder" value="#{recoFormController.headerUseKeywordsAsBorder}" itemLabel="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder']}"
+                                                             label="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder']}" title="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder.title']}"
+                                                             disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerKeywordsAsBorderdWV">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:selectBooleanCheckbox>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Footer settings -->
+                        <div class="col-12 lg:col-6">
+                            <div faces:id="pageFooterArea" class="grid">
+                                <div class="col-12 pb-0">
+                                    <h3 class="area-title">#{labels['recoFormUI.recoPage.footer.settings']}</h3>
+                                </div>
+
+                                <div class="col-12">
+                                    <p:selectBooleanCheckbox id="footerEnabled" value="#{recoFormController.footerEnabled}" itemLabel="#{labels['recoFormUI.recoPage.footer.enabled']}"
+                                                             label="#{labels['recoFormUI.recoPage.footer.enabled']}" title="#{labels['recoFormUI.recoPage.footer.enabled.title']}"
+                                                             disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerEnabledWV">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:selectBooleanCheckbox>
+                                </div>
+
+                                <div class="col-12">
+                                    <p:selectBooleanCheckbox id="footerAuto" value="#{recoFormController.footerAuto}" itemLabel="#{labels['recoFormUI.recoPage.footer.auto']}"
+                                                             label="#{labels['recoFormUI.recoPage.footer.auto']}" title="#{labels['recoFormUI.recoPage.footer.auto.title']}"
+                                                             disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerAutoWV">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:selectBooleanCheckbox>
+                                </div>
+
+                                <div class="col-12 md:col-4 lg:col-3">
+                                    <p:outputLabel value="#{labels['recoFormUI.recoPage.footer.height']}" for="ftrHeight"/>
+                                </div>
+                                <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                                    <p:inputNumber id="ftrHeight" value="#{recoFormController.footerHeight}" label="#{labels['recoFormUI.recoPage.footer.height']}" minValue="0" maxValue="25" symbol="%" symbolPosition="s"
+                                                   autocomplete="off" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" required="true" widgetVar="footerHeightWV">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:inputNumber>
+                                </div>
+
+                                <div class="col-12 md:col-4 lg:col-3">
+                                    <p:outputLabel value="#{labels['recoFormUI.recoPage.footer.keywords']}" for="ftrKwrds"/>
+                                </div>
+                                <div class="col-3 md:col-8 lg:col-9 p-fluid">
+                                    <p:chips id="ftrKwrds" value="#{recoFormController.footerKeywords}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerKwdsWV">
+                                        <f:attribute name="collectionType" value="java.util.ArrayList"/>
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:chips>
+                                </div>
+
+                                <div class="col-12">
+                                    <p:selectBooleanCheckbox id="footerKeywordsAsBorder" value="#{recoFormController.footerUseKeywordsAsBorder}" itemLabel="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder']}"
+                                                             label="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder']}" title="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder.title']}"
+                                                             disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerKeywordsAsBorderdWV">
+                                        <p:ajax event="change" process="@this" update="@none"/>
+                                    </p:selectBooleanCheckbox>
+                                </div>
+
                             </div>
                         </div>
                     </div>
 
-                    <!-- Header settings -->
-                    <div class="col-12 lg:col-6">
-                        <div faces:id="pageHeaderArea" class="grid">
-                            <div class="col-12 pb-0">
-                                <h3 class="area-title">#{labels['recoFormUI.recoPage.header.settings']}</h3>
-                            </div>
-
-                            <div class="col-12">
-                                <p:selectBooleanCheckbox id="headerEnabled" value="#{recoFormController.headerEnabled}" itemLabel="#{labels['recoFormUI.recoPage.header.enabled']}"
-                                                         label="#{labels['recoFormUI.recoPage.header.enabled']}" title="#{labels['recoFormUI.recoPage.header.enabled.title']}"
-                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerEnabledWV">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:selectBooleanCheckbox>
-                            </div>
-
-                            <div class="col-12">
-                                <p:selectBooleanCheckbox id="headerAuto" value="#{recoFormController.headerAuto}" itemLabel="#{labels['recoFormUI.recoPage.header.auto']}"
-                                                         label="#{labels['recoFormUI.recoPage.header.auto']}" title="#{labels['recoFormUI.recoPage.header.auto.title']}"
-                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerAutoWV">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:selectBooleanCheckbox>
-                            </div>
-
-                            <div class="col-12 md:col-4 lg:col-3">
-                                <p:outputLabel value="#{labels['recoFormUI.recoPage.header.height']}" for="hdrHeight"/>
-                            </div>
-                            <div class="col-3 md:col-8 lg:col-9 p-fluid">
-                                <p:inputNumber id="hdrHeight" value="#{recoFormController.headerHeight}" label="#{labels['recoFormUI.recoPage.header.height']}" minValue="0" maxValue="25" symbol="%" symbolPosition="s"
-                                               autocomplete="off" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" required="true" widgetVar="headerHeightWV">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:inputNumber>
-                            </div>
-
-                            <div class="col-12 md:col-4 lg:col-3">
-                                <p:outputLabel value="#{labels['recoFormUI.recoPage.header.keywords']}" for="hdrKwrds"/>
-                            </div>
-                            <div class="col-3 md:col-8 lg:col-9 p-fluid">
-                                <p:chips id="hdrKwrds" value="#{recoFormController.headerKeywords}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerKwdsWV">
-                                    <f:attribute name="collectionType" value="java.util.ArrayList"/>
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:chips>
-                            </div>
-
-                            <div class="col-12">
-                                <p:selectBooleanCheckbox id="headerKeywordsAsBorder" value="#{recoFormController.headerUseKeywordsAsBorder}" itemLabel="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder']}"
-                                                         label="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder']}" title="#{labels['recoFormUI.recoPage.header.useKeywordsAsBorder.title']}"
-                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="headerKeywordsAsBorderdWV">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:selectBooleanCheckbox>
-                            </div>
-
-                        </div>
+                    <div faces:id="ldSpnr" class="loading-area">
+                        <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
+                        <h:outputText value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
                     </div>
 
-                    <!-- Footer settings -->
-                    <div class="col-12 lg:col-6">
-                        <div faces:id="pageFooterArea" class="grid">
-                            <div class="col-12 pb-0">
-                                <h3 class="area-title">#{labels['recoFormUI.recoPage.footer.settings']}</h3>
-                            </div>
+                    <div id="pageViewContainer"
+                         imgUrl="/api/preview?id=#{recoFormController.pageImageUrlPreviewId}&amp;p=#{pageIdx}"
+                         spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}"
+                         data-form-id="#{recoFormController.id}"/>
+                </p:dataViewListItem>
 
-                            <div class="col-12">
-                                <p:selectBooleanCheckbox id="footerEnabled" value="#{recoFormController.footerEnabled}" itemLabel="#{labels['recoFormUI.recoPage.footer.enabled']}"
-                                                         label="#{labels['recoFormUI.recoPage.footer.enabled']}" title="#{labels['recoFormUI.recoPage.footer.enabled.title']}"
-                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerEnabledWV">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:selectBooleanCheckbox>
-                            </div>
-
-                            <div class="col-12">
-                                <p:selectBooleanCheckbox id="footerAuto" value="#{recoFormController.footerAuto}" itemLabel="#{labels['recoFormUI.recoPage.footer.auto']}"
-                                                         label="#{labels['recoFormUI.recoPage.footer.auto']}" title="#{labels['recoFormUI.recoPage.footer.auto.title']}"
-                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerAutoWV">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:selectBooleanCheckbox>
-                            </div>
-
-                            <div class="col-12 md:col-4 lg:col-3">
-                                <p:outputLabel value="#{labels['recoFormUI.recoPage.footer.height']}" for="ftrHeight"/>
-                            </div>
-                            <div class="col-3 md:col-8 lg:col-9 p-fluid">
-                                <p:inputNumber id="ftrHeight" value="#{recoFormController.footerHeight}" label="#{labels['recoFormUI.recoPage.footer.height']}" minValue="0" maxValue="25" symbol="%" symbolPosition="s"
-                                               autocomplete="off" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" required="true" widgetVar="footerHeightWV">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:inputNumber>
-                            </div>
-
-                            <div class="col-12 md:col-4 lg:col-3">
-                                <p:outputLabel value="#{labels['recoFormUI.recoPage.footer.keywords']}" for="ftrKwrds"/>
-                            </div>
-                            <div class="col-3 md:col-8 lg:col-9 p-fluid">
-                                <p:chips id="ftrKwrds" value="#{recoFormController.footerKeywords}" disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerKwdsWV">
-                                    <f:attribute name="collectionType" value="java.util.ArrayList"/>
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:chips>
-                            </div>
-
-                            <div class="col-12">
-                                <p:selectBooleanCheckbox id="footerKeywordsAsBorder" value="#{recoFormController.footerUseKeywordsAsBorder}" itemLabel="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder']}"
-                                                         label="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder']}" title="#{labels['recoFormUI.recoPage.footer.useKeywordsAsBorder.title']}"
-                                                         disabled="#{recoFormController.modeRead or recoFormController.pageHeaderFooterPropInherited}" widgetVar="footerKeywordsAsBorderdWV">
-                                    <p:ajax event="change" process="@this" update="@none"/>
-                                </p:selectBooleanCheckbox>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div faces:id="ldSpnr" class="loading-area">
-                    <i class="pi pi-spin pi-spinner loading-spinner" aria-hidden="true"/>
-                    <h:outputText value="#{labels['pDocument.frd.previewLoadingMsg']}" styleClass="loading-label"/>
-                </div>
-
-                <div id="pageViewContainer"
-                     imgUrl="/api/preview?id=#{recoFormController.pageImageUrlPreviewId}&amp;p=#{pageIdx}"
-                     spnrId="#{p:resolveFirstComponentWithId('ldSpnr', view).clientId}"
-                     data-form-id="#{recoFormController.id}"/>
-
-            </p:dataList>
+            </p:dataView>
 
             <div style="margin-top: 5px;">
                 <p:link value="#{workflowFilesController.getFileNameSizeLabel(recoFormController.recoForm.sourceFile)}"

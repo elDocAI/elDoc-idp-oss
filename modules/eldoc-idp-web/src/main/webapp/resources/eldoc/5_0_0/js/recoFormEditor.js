@@ -2057,14 +2057,15 @@ function createSvgElement(name) {
 }
 
 function createMutationObserver(monitoredNodeId, childIds, handler) {
+    let selector = childIds.map(id => `#${CSS.escape(id)}`).join(', ');
+
     let observer = new MutationObserver((mutationsList) => {
         mutationsList
-                .filter(mutation => mutation.type === 'childList')
-                .filter(mutation => mutation.addedNodes)
-                .filter(mutation => mutation.addedNodes.length)
-                .flatMap(mutation => Array.from(mutation.addedNodes))
-                .filter(node => childIds.includes(node.id))
-                .forEach((node) => handler(node));
+            .filter(mutation => mutation.type === 'childList')
+            .flatMap(mutation => Array.from(mutation.addedNodes))
+            .filter(node => node instanceof Element)
+            .filter(node => node.matches(selector) || node.querySelector(selector))
+            .forEach(node => handler(node));
     });
     if (typeof monitoredNodeId === 'string') {
         observer.observe(document.getElementById(monitoredNodeId), {subtree: true, childList: true});
