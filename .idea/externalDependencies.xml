@@ -12,7 +12,6 @@
     <plugin id="com.intellij.javaee.el" />
     <plugin id="com.intellij.javaee.jakarta.data" />
     <plugin id="com.intellij.javaee.web" />
-    <plugin id="com.intellij.jpa.jpb.model" />
     <plugin id="com.intellij.jsf" />
     <plugin id="com.intellij.jsp" />
     <plugin id="com.intellij.microservices.ui" />

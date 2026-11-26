@@ -182,10 +182,7 @@ public class WorkflowAcl {
                             aclSet.add(ACTION_TO_WORK);
                         }
 
-                        //
-                        // http://jira.dms-solutions.co/browse/ELDOC-171
                         // Allow Author to edit document before sending it to the next process phase in case it was at least one "Approved with remarks" DocResponse
-                        //
                         if (state == STATE_ID_APPROVE && _workflowTaskDao.count(docId, state, null, iteration, List.of(TASK_STATUS_DONE_W_COMMENTS), null) > 0) {
                             aclSet.add(ACTION_EDIT);
                             if (processState.getAttachmentManager().isAllowEdit()) {

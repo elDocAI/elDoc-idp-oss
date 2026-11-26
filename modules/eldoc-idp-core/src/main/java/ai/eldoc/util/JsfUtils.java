@@ -289,8 +289,8 @@ public class JsfUtils {
 
     /**
      * Returns protocol schema and server name only from the current request<br>
-     * So in case the full app url looks like <code>http://demo.eldoc.com.ua:1001/elDoc</code><br>
-     * this method will return <code>http://demo.eldoc.com.ua</code> only
+     * So in case the full app url looks like <code>http://demo.eldoc.local:1001/elDoc</code><br>
+     * this method will return <code>http://demo.eldoc.local</code> only
      *
      * @return string representing URL or null in case of internal exception
      */

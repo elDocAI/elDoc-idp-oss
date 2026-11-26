@@ -1790,7 +1790,6 @@ public class RecognitionService {
         RecoFormResult recoFormResult = RecoFormResultUtils.initWithRecoForm(fragment.getRecoForm());
 
         // Reset value region coordinates for all fields if form is assigned by keywords, so fields won't be shown on document preview
-        // See: http://jira.dms-solutions.co/browse/ELDOC-492
         recoFormResult.getFields().forEach(recoFieldResult -> {
             recoFieldResult.setRegion(new Rectangle());
             recoFieldResult.setMatchConfidence(RecoFieldResult.FIELD_NOT_FOUND_CONFIDENCE);
